@@ -1,0 +1,19 @@
+package-as: KkthnxUI_Classic
+enable-nolib-creation: no
+
+move-folders:
+    KkthnxUI/KkthnxUI: KkthnxUI
+    KkthnxUI/KkthnxUI_Config: KkthnxUI_Config
+
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
+license-output: LICENSE.txt
+
+ignore:
+    - CHANGELOG.md
+    - CODE_OF_CONDUCT.md
+    - LICENSE.md
+    - README.md
+    - .github
