@@ -5,14 +5,11 @@ local FilterConfig = C.ActionBars.leaveVehicle
 local _G = _G
 local table_insert = _G.table.insert
 
-local CanExitVehicle = _G.CanExitVehicle
 local CreateFrame = _G.CreateFrame
 local MainMenuBarVehicleLeaveButton_OnEnter = _G.MainMenuBarVehicleLeaveButton_OnEnter
-local RegisterStateDriver = _G.RegisterStateDriver
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UIParent = _G.UIParent
 local UnitOnTaxi = _G.UnitOnTaxi
-local VehicleExit = _G.VehicleExit
 
 local padding, margin = 0, 5
 
@@ -55,31 +52,26 @@ function Module:CreateLeaveVehicle()
 	button.icon:SetTexCoord(0.216, 0.784, 0.216, 0.784)
 	button.icon.__lockdown = true
 
-	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
-	button:SetScript("OnLeave", K.HideTooltip)
-	button:SetScript("OnClick", function(self)
+	hooksecurefunc("MainMenuBarVehicleLeaveButton_Update", function()
 		if UnitOnTaxi("player") then
-			TaxiRequestEarlyLanding()
+			button:Show()
 		else
-			VehicleExit()
+			button:Hide()
+			button:SetChecked(false)
 		end
-		self:SetChecked(true)
 	end)
 
-	button:SetScript("OnShow", function(self)
-		self:SetChecked(false)
+	button:SetScript("OnClick", function()
+		if UnitOnTaxi("player") then
+			TaxiRequestEarlyLanding()
+		end
+		button:SetChecked(true)
 	end)
+	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
+	button:SetScript("OnLeave", K.HideTooltip)
 
 	frame.buttonList = buttonList
 	SetFrameSize(frame, buttonSize, num)
-
-	frame.frameVisibility = "[canexitvehicle]c;[mounted]m;n"
-	RegisterStateDriver(frame, "exit", frame.frameVisibility)
-
-	frame:SetAttribute("_onstate-exit", [[ if CanExitVehicle() then self:Show() else self:Hide() end ]])
-	if not CanExitVehicle() then
-		frame:Hide()
-	end
 
 	-- create the mouseover functionality
 	if FilterConfig.fader then

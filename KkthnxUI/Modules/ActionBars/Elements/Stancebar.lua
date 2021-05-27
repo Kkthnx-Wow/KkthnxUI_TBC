@@ -50,6 +50,7 @@ function Module:CreateStancebar()
 	-- Stance Bar
 	-- Move The Buttons Into Position And Reparent Them
 	if C["ActionBar"].StanceBar then
+		-- StanceBar
 		_G.StanceBarFrame:SetParent(frame)
 		_G.StanceBarFrame:EnableMouse(false)
 		_G.StanceBarLeft:SetTexture(nil)
@@ -67,23 +68,6 @@ function Module:CreateStancebar()
 				local previous = _G["StanceButton"..i-1]
 				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
 			end
-		end
-	end
-
-	PossessBarFrame:SetParent(frame)
-	PossessBarFrame:EnableMouse(false)
-	PossessBackground1:SetTexture(nil)
-	PossessBackground2:SetTexture(nil)
-
-	for i = 1, NUM_POSSESS_SLOTS do
-		local button = _G["PossessButton"..i]
-		table_insert(buttonList, button)
-		button:ClearAllPoints()
-		if i == 1 then
-			button:SetPoint("BOTTOMLEFT", frame, padding, padding + 1)
-		else
-			local previous = _G["PossessButton"..i - 1]
-			button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
 		end
 	end
 

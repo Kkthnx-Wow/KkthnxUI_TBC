@@ -60,7 +60,7 @@
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
-   <!-- <Script file="Auras\Elements\AuraWatch.lua" /> -->
+   <Script file="Auras\Elements\AuraWatch.lua" />
    <Script file="Auras\Elements\Reminder.lua" />
    <Script file="Auras\Elements\Totems.lua" />
    <!-- <Include file="Auras\Lumos\Lumos.xml" /> -->

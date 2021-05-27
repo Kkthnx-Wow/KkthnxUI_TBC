@@ -111,41 +111,18 @@ function Module:CreateBar1()
 	end
 
 	frame:Execute(([[
-	buttons = table.new()
-	for i = 1, %d do
-		table.insert(buttons, self:GetFrameRef("%s"..i))
-	end
+		buttons = table.new()
+		for i = 1, %d do
+			tinsert(buttons, self:GetFrameRef("%s"..i))
+		end
 	]]):format(num, buttonName))
 
 	frame:SetAttribute("_onstate-page", [[
-	for _, button in next, buttons do
-		button:SetAttribute("actionpage", newstate)
-	end
+		for _, button in next, buttons do
+			button:SetAttribute("actionpage", newstate)
+		end
 	]])
 	RegisterStateDriver(frame, "page", actionPage)
-
-	-- Fix button texture, need reviewed
-	local function FixActionBarTexture()
-		for _, button in next, buttonList do
-			local action = button.action
-			if action < 120 then
-				break
-			end
-
-			local icon = button.icon
-			local texture = GetActionTexture(action)
-			if texture then
-				icon:SetTexture(texture)
-				icon:Show()
-			else
-				icon:Hide()
-			end
-			--Module.UpdateButtonStatus(button)
-		end
-	end
-	K:RegisterEvent("SPELL_UPDATE_ICON", FixActionBarTexture)
-	-- K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", FixActionBarTexture)
-	-- K:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", FixActionBarTexture)
 end
 
 function Module:OnEnable()
@@ -168,10 +145,9 @@ function Module:OnEnable()
 	self:CreateBar4()
 	self:CreateBar5()
 	self:CreateCustomBar()
-	-- self:CreateExtrabar()
-	-- self:CreateLeaveVehicle()
+	self:CreateLeaveVehicle()
 	self:CreatePetbar()
-	-- self:CreateStancebar()
+	self:CreateStancebar()
 	self:HideBlizz()
 	self:CreateBarSkin()
 end

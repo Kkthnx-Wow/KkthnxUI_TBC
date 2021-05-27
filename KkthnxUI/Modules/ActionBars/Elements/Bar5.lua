@@ -56,7 +56,6 @@ function Module:CreateBar5()
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarLeft:SetParent(frame)
 	_G.MultiBarLeft:EnableMouse(false)
-	-- _G.MultiBarLeft.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
 		local button = _G["MultiBarLeftButton"..i]

@@ -325,7 +325,7 @@ local function InitSetup()
 	BuildAuraList()
 	BuildUnitIDTable()
 	BuildCooldownTable()
-	K:RegisterEvent("PLAYER_TALENT_UPDATE", BuildCooldownTable)
+	K:RegisterEvent("SPELLS_CHANGED", BuildCooldownTable)
 	BuildAura()
 	SetupAnchor()
 end

@@ -217,8 +217,8 @@ local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTi
 
 		local c = DispellColor[debuffType] or DispellColor.none
 
-		if f.Backdrop then
-			f.Backdrop:SetBorderColor(c[1], c[2], c[3])
+		if f.KKUI_Border then
+			f.KKUI_Border:SetBorderColor(c[1], c[2], c[3])
 		else
 			f:SetBackdropBorderColor(c[1], c[2], c[3])
 		end

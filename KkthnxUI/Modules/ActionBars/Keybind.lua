@@ -62,7 +62,7 @@ function Module:Bind_Create()
 		return
 	end
 
-	local frame = CreateFrame("Frame", nil, UIParent)
+	local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	frame:SetFrameStrata("DIALOG")
 	frame:EnableMouse(true)
 	frame:EnableKeyboard(true)

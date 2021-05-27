@@ -9,11 +9,35 @@ local table_insert = _G.table.insert
 local FilterConfig = C.ActionBars.actionBarCustom
 local padding, margin = 0, 6
 
+local prevPage = 8
+local function ChangeActionPageForDruid()
+	local page = IsPlayerSpell(33891) and 10 or 8
+	if prevPage ~= page then
+		RegisterStateDriver(_G["KKUI_CustomBar"], "page", page)
+		for i = 1, 12 do
+			local button = _G["KKUI_CustomBarButton"..i]
+			button.id = (page - 1) * 12 + i
+			button:SetAttribute("action", button.id)
+		end
+
+		prevPage = page
+	end
+end
+
+local function UpdatePageBySpells()
+	if InCombatLockdown() then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", UpdatePageBySpells)
+	else
+		ChangeActionPageForDruid()
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", UpdatePageBySpells)
+	end
+end
+
 function Module:SetupCustomBar(anchor)
 	local size = C["ActionBar"].CustomBarButtonSize
 	local num = 12
 	local name = "KKUI_CustomBar"
-	local page = 8
+	local page = K.Class == "WARRIOR" and 10 or 8
 
 	local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
@@ -22,7 +46,7 @@ function Module:SetupCustomBar(anchor)
 	frame.mover = K.Mover(frame, L[name], "CustomBar", anchor)
 	frame.buttons = {}
 
-	RegisterStateDriver(frame, "visibility", "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show")
+	-- RegisterStateDriver(frame, "visibility", "[petbattle] hide; show")
 	RegisterStateDriver(frame, "page", page)
 
 	local buttonList = {}
@@ -83,7 +107,13 @@ function Module:UpdateCustomBar()
 end
 
 function Module:CreateCustomBar()
-	if C["ActionBar"].CustomBar then
-		Module:SetupCustomBar({"BOTTOM", UIParent, "BOTTOM", 0, 140})
+	if not C["ActionBar"].CustomBar then
+		return
+	end
+
+	Module:CreateCustomBar({"BOTTOM", UIParent, "BOTTOM", 0, 140})
+	if K.Class == "DRUID" then
+		UpdatePageBySpells()
+		K:RegisterEvent("LEARNED_SPELL_IN_TAB", UpdatePageBySpells)
 	end
 end

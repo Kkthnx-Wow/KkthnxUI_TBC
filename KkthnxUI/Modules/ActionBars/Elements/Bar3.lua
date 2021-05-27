@@ -56,7 +56,6 @@ function Module:CreateBar3()
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarBottomRight:SetParent(frame)
 	_G.MultiBarBottomRight:EnableMouse(false)
-	-- _G.MultiBarBottomRight.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
 		local button = _G["MultiBarBottomRightButton"..i]

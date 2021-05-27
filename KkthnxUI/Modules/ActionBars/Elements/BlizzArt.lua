@@ -20,10 +20,7 @@ local OverrideActionBarHealthBar = _G.OverrideActionBarHealthBar
 local OverrideActionBarPitchFrame = _G.OverrideActionBarPitchFrame
 local OverrideActionBarPowerBar = _G.OverrideActionBarPowerBar
 local StatusTrackingBarManager = _G.StatusTrackingBarManager
-local StreamingIcon = _G.StreamingIcon
 local hooksecurefunc = _G.hooksecurefunc
-
-local updateAfterCombat
 
 local scripts = {
 	"OnClick",
@@ -41,7 +38,6 @@ local scripts = {
 local framesToHide = {
 	MainMenuBar,
 	OverrideActionBar,
-	StreamingIcon,
 }
 
 local framesToDisable = {
@@ -63,32 +59,6 @@ local function DisableAllScripts(frame)
 	for _, script in next, scripts do
 		if frame:HasScript(script) then
 			frame:SetScript(script, nil)
-		end
-	end
-end
-
-local function buttonShowGrid(name, showgrid)
-	for i = 1, 12 do
-		local button = _G[name..i]
-		if button then
-			button:SetAttribute("showgrid", showgrid)
-			button:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_CVAR)
-		end
-	end
-end
-
-local function toggleButtonGrid()
-	if InCombatLockdown() then
-		updateAfterCombat = true
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-	else
-		local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
-		buttonShowGrid("ActionButton", showgrid)
-		buttonShowGrid("MultiBarBottomRightButton", showgrid)
-		buttonShowGrid("KKUI_CustomBarButton", showgrid)
-		if updateAfterCombat then
-			K:UnregisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-			updateAfterCombat = false
 		end
 	end
 end
@@ -131,7 +101,7 @@ function Module:HideBlizz()
 			buttonShowGrid("MultiBarBottomRightButton", showgrid)
 			buttonShowGrid("MultiBarRightButton", showgrid)
 			buttonShowGrid("MultiBarLeftButton", showgrid)
-			buttonShowGrid("NDui_CustomBarButton", showgrid)
+			buttonShowGrid("KKUI_CustomBarButton", showgrid)
 			if updateAfterCombat then
 				K:UnregisterEvent("PLAYER_REGEN_ENABLED", ToggleButtonGrid)
 				updateAfterCombat = false

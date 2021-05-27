@@ -31,7 +31,6 @@ local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local ResetCursor = _G.ResetCursor
 local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local RollOnLoot = _G.RollOnLoot
-local SetDesaturation = _G.SetDesaturation
 local ShowInspectCursor = _G.ShowInspectCursor
 
 local pos = "TOP"
@@ -56,15 +55,11 @@ local function HideTip2()
 	ResetCursor()
 end
 
-local rolltypes = {[1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass"}
+local rolltypes = {[1] = 'need', [2] = 'greed', [0] = 'pass'}
 local function SetTip(frame)
-	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+	local GameTooltip = _G.GameTooltip
+	GameTooltip:SetOwner(frame, 'ANCHOR_RIGHT')
 	GameTooltip:SetText(frame.tiptext)
-
-	if frame:IsEnabled() == 0 then
-		GameTooltip:AddLine("|cffff3333".."Can't Roll")
-	end
-
 	for name, tbl in pairs(frame.parent.rolls) do
 		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
 			local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[tbl[2]] or RAID_CLASS_COLORS[tbl[2]]
@@ -188,6 +183,10 @@ function Module:CreateRollFrame()
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
+	button.stack = button:CreateFontString(nil, 'OVERLAY')
+	button.stack:SetPoint('BOTTOMRIGHT', -1, 1)
+	button.stack:FontTemplate(nil, nil, 'OUTLINE')
+
 	local tfade = frame:CreateTexture(nil, "BORDER")
 	tfade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, 0)
 	tfade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 0)
@@ -210,13 +209,11 @@ function Module:CreateRollFrame()
 	spark:SetBlendMode("ADD")
 	status.spark = spark
 
-	local need, needtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Dice-Up", "Interface\\Buttons\\UI-GroupLoot-Dice-Highlight", "Interface\\Buttons\\UI-GroupLoot-Dice-Down", 1, NEED, "LEFT", frame.button, "RIGHT", 5, -1)
-	local greed, greedtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Coin-Up", "Interface\\Buttons\\UI-GroupLoot-Coin-Highlight", "Interface\\Buttons\\UI-GroupLoot-Coin-Down", 2, GREED, "LEFT", need, "RIGHT", 0, -1)
-	local de, detext
-	de, detext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-DE-Up", "Interface\\Buttons\\UI-GroupLoot-DE-Highlight", "Interface\\Buttons\\UI-GroupLoot-DE-Down", 3, ROLL_DISENCHANT, "LEFT", greed, "RIGHT", 0, -1)
-	local pass, passtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Pass-Up", nil, "Interface\\Buttons\\UI-GroupLoot-Pass-Down", 0, PASS, "LEFT", de or greed, "RIGHT", 0, 2)
-	frame.needbutt, frame.greedbutt, frame.disenchantbutt = need, greed, de
-	frame.need, frame.greed, frame.pass, frame.disenchant = needtext, greedtext, passtext, detext
+	local need, needtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Dice-Up', 'Interface\\Buttons\\UI-GroupLoot-Dice-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Dice-Down', 1, NEED, 'LEFT', frame.button, 'RIGHT', 5, -1)
+	local greed, greedtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Coin-Up', 'Interface\\Buttons\\UI-GroupLoot-Coin-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Coin-Down', 2, GREED, 'LEFT', need, 'RIGHT', 0, -1)
+	local pass, passtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Pass-Up', nil, 'Interface\\Buttons\\UI-GroupLoot-Pass-Down', 0, PASS, 'LEFT', greed, 'RIGHT', 0, 2)
+	frame.needbutt, frame.greedbutt = need, greed
+	frame.need, frame.greed, frame.pass = needtext, greedtext, passtext
 
 	local bind = frame:CreateFontString()
 	bind:SetPoint("LEFT", pass, "RIGHT", 3, 1)
@@ -271,51 +268,30 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	f.need:SetText(0)
 	f.greed:SetText(0)
 	f.pass:SetText(0)
-	f.disenchant:SetText(0)
 
-	local texture, name, _, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
+	local texture, name, count, quality, bop, canNeed, canGreed, _, reasonNeed, reasonGreed = GetLootRollItemInfo(rollID)
 
 	f.button.icon:SetTexture(texture)
+	f.button.stack:SetText(count > 1 and count or "")
 	f.button.link = GetLootRollItemLink(rollID)
 
 	if canNeed then
 		f.needbutt:Enable()
+		f.needbutt:SetAlpha(1)
+		f.needbutt.tiptext = NEED
 	else
 		f.needbutt:Disable()
+		f.needbutt:SetAlpha(0.2)
+		f.needbutt.tiptext = _G['LOOT_ROLL_INELIGIBLE_REASON'..reasonNeed]
 	end
-
 	if canGreed then
 		f.greedbutt:Enable()
+		f.greedbutt:SetAlpha(1)
+		f.greedbutt.tiptext = GREED
 	else
 		f.greedbutt:Disable()
-	end
-
-	if canDisenchant then
-		f.disenchantbutt:Enable()
-	else
-		f.disenchantbutt:Disable()
-	end
-
-	SetDesaturation(f.needbutt:GetNormalTexture(), not canNeed)
-	SetDesaturation(f.greedbutt:GetNormalTexture(), not canGreed)
-	SetDesaturation(f.disenchantbutt:GetNormalTexture(), not canDisenchant)
-
-	if canNeed then
-		f.needbutt:SetAlpha(1)
-	else
-		f.needbutt:SetAlpha(0.2)
-	end
-
-	if canGreed then
-		f.greedbutt:SetAlpha(1)
-	else
 		f.greedbutt:SetAlpha(0.2)
-	end
-
-	if canDisenchant then
-		f.disenchantbutt:SetAlpha(1)
-	else
-		f.disenchantbutt:SetAlpha(0.2)
+		f.greedbutt.tiptext = _G['LOOT_ROLL_INELIGIBLE_REASON'..reasonGreed]
 	end
 
 	f.fsbind:SetText(bop and "BoP" or "BoE")
@@ -328,10 +304,8 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
 
-	f:SetPoint("CENTER", WorldFrame, "CENTER")
+	f:SetPoint("CENTER", UIParent, "CENTER")
 	f:Show()
-
-	AlertFrame:UpdateAnchors()
 
 	-- Add cached roll info, if any
 	for rollid, rollTable in pairs(cachedRolls) do

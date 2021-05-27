@@ -8,93 +8,71 @@ local table_insert = _G.table.insert
 local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
-local GetItemCooldown = _G.GetItemCooldown
-local GetItemCount = _G.GetItemCount
-local GetItemIcon = _G.GetItemIcon
-local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local InCombatLockdown = _G.InCombatLockdown
-local IsEquippedItem = _G.IsEquippedItem
 local IsInInstance = _G.IsInInstance
 local IsPlayerSpell = _G.IsPlayerSpell
 local UIParent = _G.UIParent
 local UnitBuff = _G.UnitBuff
-local UnitInVehicle = _G.UnitInVehicle
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4
 local frames, parentFrame = {}
 
+function Module:Reminder_ConvertToName(cfg)
+	local cache = {}
+	for spellID in pairs(cfg.spells) do
+		local name = GetSpellInfo(spellID)
+		if name then
+			cache[name] = true
+		end
+	end
+	for name in pairs(cache) do
+		cfg.spells[name] = true
+	end
+end
+
+function Module:Reminder_CheckMeleeSpell()
+	for _, cfg in pairs(groups) do
+		local depends = cfg.depends
+		if depends then
+			for _, spellID in pairs(depends) do
+				if IsPlayerSpell(spellID) then
+					cfg.dependsKnown = true
+					break
+				end
+			end
+		end
+	end
+end
+
 function Module:Reminder_Update(cfg)
 	local frame = cfg.frame
 	local depend = cfg.depend
-	local spec = cfg.spec
+	local depends = cfg.depends
 	local combat = cfg.combat
 	local instance = cfg.instance
 	local pvp = cfg.pvp
-	local itemID = cfg.itemID
-	local equip = cfg.equip
-	local isPlayerSpell, isRightSpec, isEquipped, isInCombat, isInInst, isInPVP = true, true, true
+	local isPlayerSpell, isInCombat, isInInst, isInPVP = true
 	local inInst, instType = IsInInstance()
-	local weaponIndex = cfg.weaponIndex
 
-	if itemID then
-		if equip and not IsEquippedItem(itemID) then
-			isEquipped = false
-		end
-
-		if GetItemCount(itemID) == 0 or (not isEquipped) or GetItemCooldown(itemID) > 0 then -- Check item cooldown
-			frame:Hide()
-			return
-		end
-	end
-
-	if depend and not IsPlayerSpell(depend) then
-		isPlayerSpell = false
-	end
-
-	if spec and spec ~= GetSpecialization() then
-		isRightSpec = false
-	end
-
-	if combat and InCombatLockdown() then
-		isInCombat = true
-	end
-
-	if instance and inInst and (instType == "scenario" or instType == "party" or instType == "raid") then
-		isInInst = true
-	end
-
-	if pvp and (instType == "arena" or instType == "pvp" or GetZonePVPInfo() == "combat") then
-		isInPVP = true
-	end
-
-	if not combat and not instance and not pvp then
-		isInCombat, isInInst, isInPVP = true, true, true
-	end
+	if depend and not IsPlayerSpell(depend) then isPlayerSpell = false end
+	if depends and not cfg.dependsKnown then isPlayerSpell = false end
+	if combat and InCombatLockdown() then isInCombat = true end
+	if instance and inInst and (instType == "scenario" or instType == "party" or instType == "raid") then isInInst = true end
+	if pvp and (instType == "pvp" or GetZonePVPInfo() == "combat") then isInPVP = true end
+	if not combat and not instance and not pvp then isInCombat, isInInst, isInPVP = true, true, true end
 
 	frame:Hide()
-	if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") and not UnitIsDeadOrGhost("player") then
-		if weaponIndex then
-			local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo()
-			if (hasMainHandEnchant and weaponIndex == 1) or (hasOffHandEnchant and weaponIndex == 2) then
+	if isPlayerSpell and (isInCombat or isInInst or isInPVP) and not UnitIsDeadOrGhost("player") then
+		for i = 1, 32 do
+			local name = UnitBuff("player", i)
+			if not name then break end
+			if name and cfg.spells[name] then
 				frame:Hide()
 				return
-			end
-		else
-			for i = 1, 32 do
-				local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
-				if not name then
-					break
-				end
-
-				if name and cfg.spells[spellID] then
-					frame:Hide()
-					return
-				end
 			end
 		end
 		frame:Show()
@@ -148,6 +126,7 @@ function Module:Reminder_OnEvent()
 	for _, cfg in pairs(groups) do
 		if not cfg.frame then
 			Module:Reminder_Create(cfg)
+			Module:Reminder_ConvertToName(cfg)
 		end
 		Module:Reminder_Update(cfg)
 	end
@@ -155,29 +134,8 @@ function Module:Reminder_OnEvent()
 	Module:Reminder_UpdateAnchor()
 end
 
-function Module:Reminder_AddItemGroup()
-	if not groups then
-		groups = {}
-	end
-
-	for _, value in pairs(C.SpellReminderBuffs["ITEMS"]) do
-		if not value.disable and GetItemCount(value.itemID) > 0 then
-			if not value.texture then
-				value.texture = GetItemIcon(value.itemID)
-			end
-
-			if not groups then
-				groups = {}
-			end
-			table_insert(groups, value)
-		end
-	end
-end
-
 function Module:CreateReminder()
-	Module:Reminder_AddItemGroup()
-
-	if not groups or not next(groups) then
+	if not groups then
 		return
 	end
 
@@ -189,10 +147,11 @@ function Module:CreateReminder()
 		end
 		parentFrame:Show()
 
+		Module:Reminder_CheckMeleeSpell()
+		K:RegisterEvent("LEARNED_SPELL_IN_TAB", Module.Reminder_CheckMeleeSpell)
+
 		Module:Reminder_OnEvent()
 		K:RegisterEvent("UNIT_AURA", Module.Reminder_OnEvent, "player")
-		K:RegisterEvent("UNIT_EXITED_VEHICLE", Module.Reminder_OnEvent)
-		K:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.Reminder_OnEvent)
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.Reminder_OnEvent)
 		K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.Reminder_OnEvent)
 		K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
@@ -200,9 +159,8 @@ function Module:CreateReminder()
 	else
 		if parentFrame then
 			parentFrame:Hide()
+			K:UnregisterEvent("LEARNED_SPELL_IN_TAB", Module.Reminder_CheckMeleeSpell)
 			K:UnregisterEvent("UNIT_AURA", Module.Reminder_OnEvent)
-			K:UnregisterEvent("UNIT_EXITED_VEHICLE", Module.Reminder_OnEvent)
-			K:UnregisterEvent("UNIT_ENTERED_VEHICLE", Module.Reminder_OnEvent)
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.Reminder_OnEvent)
 			K:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.Reminder_OnEvent)
 			K:UnregisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
