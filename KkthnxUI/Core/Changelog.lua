@@ -15,7 +15,12 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"You are not Prepared!",
+	"Fixed error with CheckChat function",
+	"Fixed error with autoinvite module",
+	"Updated Character Stats Panel",
+	"Updated EnergyManaRegen module",
+	"Updated MagicResFrame icons",
+	"Updated pet status in tooltip",
 }
 
 local changelogFrame
@@ -31,7 +36,7 @@ local function changelog()
 	changelogFrame:CreateBorder()
 
 	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 140, 16)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 208, 16)
 	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
 	K.CreateMoverFrame(changelogFrame)
 

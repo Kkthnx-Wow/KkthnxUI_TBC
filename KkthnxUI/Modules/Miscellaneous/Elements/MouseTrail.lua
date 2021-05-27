@@ -22,13 +22,12 @@ local function OnUpdate(_, elapsed)
 	local weight = 2048 ^ -elapsed
 	speed = min(weight * speed + (1 - weight) * sqrt(dX * dX + dY * dY) / elapsed, 1024)
 
-	local size = speed / 6 - 16
+	local size = speed / 8 - 16
 	if size > 0 then
 		local scale = UIParent:GetEffectiveScale()
 		Module.Texture:SetSize(size, size)
 		Module.Texture:SetPoint("CENTER", UIParent, "BOTTOMLEFT", (x + 0.5 * dX) / scale, (y + 0.5 * dY) / scale)
 		Module.Texture:Show()
-		Module.Texture:SetVertexColor(unpack(C["Misc"].MouseTrailColor))
 	else
 		Module.Texture:Hide()
 	end
@@ -40,9 +39,10 @@ function Module:CreateMouseTrail()
 		Module.Frame:SetFrameStrata("TOOLTIP")
 
 		Module.Texture = Module.Frame:CreateTexture()
-		Module.Texture:SetTexture([[Interface\PetBattles\PetBattle-SelectedPetGlow]]) -- Create texture picker dropdown in future?
+		Module.Texture:SetTexture([[Interface\Buttons\IconBorder-GlowRing]]) -- Create texture picker dropdown in future?
 		Module.Texture:SetBlendMode("ADD")
-		Module.Texture:SetAlpha(0.5)
+		Module.Texture:SetAlpha(1)
+		Module.Texture:SetVertexColor(unpack(C["Misc"].MouseTrailColor))
 
 		Module.Frame:SetScript("OnUpdate", OnUpdate)
 	else

@@ -196,6 +196,7 @@ local function ToggleMagicRes()
 		CharacterResistanceFrame:ClearAllPoints()
 		CharacterResistanceFrame:SetPoint("TOPLEFT", M.StatPanel.child, 26, -6)
 		CharacterResistanceFrame:SetParent(M.StatPanel.child)
+		CharacterModelFrame:SetSize(231, 320)
 
 		for i = 1, 5 do
 			local bu = _G["MagicResFrame"..i]
@@ -206,14 +207,15 @@ local function ToggleMagicRes()
 		end
 	else
 		CharacterResistanceFrame:ClearAllPoints()
-		CharacterResistanceFrame:SetPoint("TOPRIGHT", PaperDollFrame, "TOPLEFT", 297, -77)
+		CharacterResistanceFrame:SetPoint("TOPRIGHT", PaperDollFrame, "TOPLEFT", 297, -81)
 		CharacterResistanceFrame:SetParent(PaperDollFrame)
+		CharacterModelFrame:SetSize(233, 224)
 
 		for i = 1, 5 do
 			local bu = _G["MagicResFrame"..i]
 			if i > 1 then
 				bu:ClearAllPoints()
-				bu:SetPoint("TOP", _G["MagicResFrame"..(i-1)], "BOTTOM")
+				bu:SetPoint("TOP", _G["MagicResFrame"..(i-1)], "BOTTOM", 0, -6)
 			end
 		end
 	end
@@ -285,7 +287,7 @@ function M:CharacterStatePanel()
 
 	-- Expand button
 	local bu = CreateFrame("Button", nil, PaperDollFrame)
-	bu:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", -3, -11)
+	bu:SetPoint("BOTTOM", CharacterHandsSlot, "TOP", 0, 12)
 	K.ReskinArrow(bu, "right")
 
 	bu:SetScript("OnClick", function(self)

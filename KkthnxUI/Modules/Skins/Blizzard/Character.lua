@@ -23,12 +23,19 @@ tinsert(C.defaultThemes, function()
 		highlight:SetAllPoints()
 	end)
 
+	local newResIcons = {136116, 135826, 136074, 135843, 135945}
 	for i = 1, 5 do
 		local bu = _G["MagicResFrame"..i]
 		bu:SetSize(24, 24)
-		--bu:CreateBorder()
 		local icon = bu:GetRegions()
-		local a, b, _, _, _, _, c, d = icon:GetTexCoord()
-		icon:SetTexCoord(a+.2, c-.2, b+.018, d-.018)
+
+		local iconborder = CreateFrame("Frame", nil, bu)
+		iconborder:SetAllPoints(icon)
+		iconborder:SetFrameLevel(bu:GetFrameLevel())
+		iconborder:CreateBorder()
+
+		icon:SetTexCoord(unpack(K.TexCoords))
+		icon:SetTexture(newResIcons[i])
+		icon:SetAlpha(.5)
 	end
 end)

@@ -126,17 +126,17 @@ local Enable = function(self, unit)
 		element.__owner = self
 
 		if(element:IsObjectType('StatusBar')) then
-			element:SetStatusBarTexture([[Interface\Buttons\WHITE8X8]])
+			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			element:GetStatusBarTexture():SetAlpha(0)
 			element:SetMinMaxValues(0, 2)
 		end
 
 		local spark = element.Spark
 		if(spark and spark:IsObjectType('Texture')) then
-			spark:SetTexture([[Interface\CastingBar\UI-CastingBar-Spark]])
+			spark:SetTexture(([[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]]))
 			spark:SetBlendMode('ADD')
-			spark:SetPoint("TOPLEFT", element:GetStatusBarTexture(), "TOPRIGHT", -10, 10)
-			spark:SetPoint("BOTTOMRIGHT", element:GetStatusBarTexture(), "BOTTOMRIGHT", 10, -10)
+			spark:SetPoint("TOPLEFT", element:GetStatusBarTexture(), "TOPRIGHT", -16, -1)
+			spark:SetPoint("BOTTOMRIGHT", element:GetStatusBarTexture(), "BOTTOMRIGHT", 16, 1)
 		end
 
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", EventHandler, true)

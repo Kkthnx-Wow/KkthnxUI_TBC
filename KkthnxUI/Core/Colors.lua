@@ -115,4 +115,10 @@ function oUF:UnitSelectionColor(unit)
     return color[1], color[2], color[3]
 end
 
+oUF.colors.happiness = {
+	[1] = {.69,.31,.31},
+	[2] = {.65,.63,.35},
+	[3] = {.33,.59,.33},
+}
+
 K["Colors"] = oUF.colors

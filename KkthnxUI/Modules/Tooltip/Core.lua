@@ -225,40 +225,6 @@ function Module:OnTooltipSetUnit()
 				end
 			end
 
-			-- if C["Tooltip"].LFDRole then
-			-- 	local role = UnitGroupRolesAssigned(unit)
-			-- 	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
-			-- 		if role == "HEALER" then
-			-- 			role = "|CFF00FF96"..HEALER.."|r"
-			-- 		elseif role == "TANK" then
-			-- 			role = "|CFF294F9C"..TANK.."|r"
-			-- 		elseif role == "DAMAGER" then
-			-- 			role = "|CFFC41F3D"..DAMAGE.."|r"
-			-- 		end
-
-			-- 		-- if in raid add also the assist function here eg: Role: Tank(Maintank)
-			-- 		local isGroupLeader = UnitIsGroupLeader(unit)
-			-- 		local isGroupAssist = UnitIsGroupAssistant(unit)
-			-- 		local raidId = UnitInRaid(unit)
-			-- 		local raidRole = ""
-			-- 		if raidId then
-			-- 			local raidR = select(10, GetRaidRosterInfo(raidId))
-			-- 			if raidR == "MAINTANK" then
-			-- 				raidRole = " ("..MAINTANK..")"
-			-- 			end
-
-			-- 			if raidR == "MAINASSIST" then
-			-- 				raidRole = " ("..MAIN_ASSIST..")"
-			-- 			end
-			-- 		end
-
-			-- 		GameTooltip:AddLine(string_format("%s: %s", _G.ROLE, role..(raidRole ~= "" and raidRole or "")))
-			-- 		if isGroupLeader or isGroupAssist then
-			-- 			GameTooltip:AddLine(string_format("%s", isGroupLeader and RAID_LEADER or RAID_ASSISTANT))
-			-- 		end
-			-- 	end
-			-- end
-
 			local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 			local hasText = GameTooltipTextLeft2:GetText()
 			if guildName and hasText then
@@ -325,6 +291,31 @@ function Module:OnTooltipSetUnit()
 			local npcID = K.GetNPCID(guid)
 			if npcID then
 				self:AddLine(string_format(npcIDstring, npcID))
+			end
+		end
+
+		if K.Class == "HUNTER" and unit == "pet" then
+			local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
+			local _, isHunterPet = HasPetUI()
+			local petFoodTypes = GetPetFoodTypes()
+			if not happiness or not isHunterPet or not petFoodTypes then
+				return
+			end
+
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(_G['PET_HAPPINESS'..happiness])
+			GameTooltip:AddLine(string_format(PET_DAMAGE_PERCENTAGE, damagePercentage))
+			GameTooltip:AddLine(string_format(PET_DIET_TEMPLATE, BuildListString(petFoodTypes)))
+
+			local tooltipLoyalty = nil
+			if (loyaltyRate < 0) then
+				tooltipLoyalty = _G['LOSING_LOYALTY']
+			elseif (loyaltyRate > 0) then
+				tooltipLoyalty = _G['GAINING_LOYALTY']
+			end
+
+			if (tooltipLoyalty) then
+				GameTooltip:AddLine(tooltipLoyalty)
 			end
 		end
 

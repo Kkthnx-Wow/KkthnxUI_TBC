@@ -394,9 +394,7 @@ end
 
 -- Chat channel check
 function K.CheckChat(useRaidWarning)
-	if IsPartyLFG() then
-		return "INSTANCE_CHAT"
-	elseif IsInRaid() then
+	if IsInRaid() then
 		if useRaidWarning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
 			return "RAID_WARNING"
 		else

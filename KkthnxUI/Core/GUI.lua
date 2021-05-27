@@ -1377,7 +1377,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
 	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
-	Swatch.Select = CreateFrame("Frame", nil, Swatch)
+	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
 	Swatch.Select:SetPoint("LEFT", Swatch, "RIGHT", Spacing, 0)
 	Swatch.Select:CreateBorder()
