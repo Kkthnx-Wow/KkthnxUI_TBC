@@ -165,6 +165,7 @@ if IsAddOnLoaded("Anti-Deluxe") then
 		if string.match(buffs, "Reawakened") then
 			Check = "False"
 			DeluxeAndy = GetUnitName("target")
+
 			if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
 				return
 			end
@@ -176,8 +177,7 @@ if IsAddOnLoaded("Anti-Deluxe") then
 				end
 			end
 
-			if Check == "False" then -- No Need to keep cheering the same person
-				-- DoEmote("cheer") -- Fuck off with the spitting bullshit, we will cheer them on!
+			if Check == "False" then -- No Need to keep emoting the same person
 				DoEmote(setEmotes[math.random(1, #setEmotes)])
 				table.insert(MountOwners, DeluxeAndy)
 			end
