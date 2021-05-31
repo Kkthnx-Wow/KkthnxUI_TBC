@@ -17,8 +17,10 @@ local CLOSE = _G.CLOSE
 local changelogData = {
 	"Added Dominos skin back",
 	"Added actionbar button highlight if item equipped",
+	"Added code to counter the shitty addon Anti-Deluxe... FUCK YOU!",
 	"Added talent frame icon skins",
 	"Fixed custombar error when enabled",
+	"Fixed guild datatext info being misaligned",
 	"Fixed left over files that failed to load",
 	"Fixed party pets lua error",
 }
