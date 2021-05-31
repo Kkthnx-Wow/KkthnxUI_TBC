@@ -15,12 +15,12 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Fixed error with CheckChat function",
-	"Fixed error with autoinvite module",
-	"Updated Character Stats Panel",
-	"Updated EnergyManaRegen module",
-	"Updated MagicResFrame icons",
-	"Updated pet status in tooltip",
+	"Added Dominos skin back",
+	"Added actionbar button highlight if item equipped",
+	"Added talent frame icon skins",
+	"Fixed custombar error when enabled",
+	"Fixed left over files that failed to load",
+	"Fixed party pets lua error",
 }
 
 local changelogFrame

@@ -13,7 +13,6 @@ local unpack = _G.unpack
 
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
-local C_Timer_After = _G.C_Timer.After
 local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
 local DeleteCursorItem = _G.DeleteCursorItem
@@ -38,7 +37,6 @@ local bagsFont = K.GetFont(C["UIFonts"].InventoryFonts)
 local toggleButtons = {}
 local deleteEnable, favouriteEnable, splitEnable, customJunkEnable
 local sortCache = {}
-local uncollectedCache = {}
 
 _G.StaticPopupDialogs["KKUI_WIPE_JUNK_LIST"] = {
 	text = "Are you sure to wipe the custom junk list?",
@@ -255,7 +253,9 @@ function Module:CreateKeyToggle()
 		if self.keyring:IsShown() then
 			--bu.bg:SetBackdropBorderColor(1, .8, 0)
 			PlaySound(SOUNDKIT.KEY_RING_OPEN)
-			if self.BagBar and self.BagBar:IsShown() then self.bagToggle:Click() end
+			if self.BagBar and self.BagBar:IsShown() then
+				self.bagToggle:Click()
+			end
 		else
 			--B.SetBorderColor(bu.bg)
 			PlaySound(SOUNDKIT.KEY_RING_CLOSE)
@@ -747,13 +747,15 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 7, "Junk", filters.bagsJunk)
-		AddNewContainer("Bag", 3, "BagFavourite", filters.bagFavourite)
 		AddNewContainer("Bag", 1, "AmmoItem", filters.bagAmmo)
-		AddNewContainer("Bag", 2, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 5, "Consumable", filters.bagConsumable)
-		AddNewContainer("Bag", 4, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 6, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 2, "BagMount", filters.bagMount)
+		AddNewContainer("Bag", 3, "Equipment", filters.bagEquipment)
+		AddNewContainer("Bag", 4, "BagFavourite", filters.bagFavourite)
+		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
+		AddNewContainer("Bag", 6, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 7, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 8, "BagMount", filters.bagMount)
+		AddNewContainer("Bag", 9, "Junk", filters.bagsJunk)
 
 		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
@@ -882,11 +884,11 @@ function Module:OnEnable()
 	end
 
 	local bagTypeColor = {
-		[-1] = {.67, .83, .45},
-		[0] = {1, 1, 1},
-		[1] = {.53, .53, .93},
-		[2] = {0, .5, 0},
-		[3] = {0, .5, .8},
+		[-1] = {0.67, 0.83, 0.45, 0.4},
+		[0] = {C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4]},
+		[1] = {0.53, 0.53, 0.93, 0.4},
+		[2] = {0, 0.5, 0, 0.4},
+		[3] = {0, 0.5, 0.8, 0.4},
 	}
 
 	local function isItemNeedsLevel(item)
@@ -982,13 +984,9 @@ function Module:OnEnable()
 		if C["Inventory"].SpecialBagsColor then
 			local bagType = Module.BagsType[item.bagID]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
-			self.KKUI_Border:SetVertexColor(unpack(color))
-		-- else
-		-- 	if C["General"].ColorTextures then
-		-- 		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
-		-- 	else
-		-- 		self.KKUI_Border:SetVertexColor(1, 1, 1)
-		-- 	end
+			self.KKUI_Background:SetVertexColor(unpack(color))
+		else
+			self.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 		end
 
 		-- Hide empty tooltip
@@ -1093,7 +1091,11 @@ function Module:OnEnable()
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
+		elseif string_match(name, "Mount") then
+			label = MOUNTS
 		end
+
+		-- AddNewContainer("Bag", 8, "BagMount", filters.bagMount)
 
 		if label then
 			self.label = K.CreateFontString(self, 13, label, "OUTLINE", true, "TOPLEFT", 5, -8)

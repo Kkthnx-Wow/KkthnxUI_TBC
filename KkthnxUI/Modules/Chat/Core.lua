@@ -152,7 +152,7 @@ end
 local function CreateBackground(self)
 	local frame = CreateFrame("Frame", nil, self)
 	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
-	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 1, -1)
+	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 22, -1)
 	frame:SetFrameLevel(self:GetFrameLevel())
 	frame:CreateBorder()
 	frame:SetShown(C["Chat"].Background)

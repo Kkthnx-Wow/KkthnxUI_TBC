@@ -1,50 +1,18 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("GameMenuTest")
+local Module = K:NewModule("DevCore")
 
 local GUI = K["GUI"]
 
-function Module:SetupGameMenu()
-	if Module.GameMenuButtonKkthnxUI then
-        GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight() + 32)
+function Module:OnEnable()
+	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
+	gui:SetText(K.InfoColor.."KkthnxUI|r")
+	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	GameMenuFrame:HookScript("OnShow", function(self)
+		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
+	end)
 
-		GameMenuButtonHelp:ClearAllPoints()
-		GameMenuButtonHelp:SetPoint("CENTER", GameMenuFrame, "TOP", 0, -50)
-
-		GameMenuButtonOptions:ClearAllPoints()
-		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -6)
-
-		GameMenuButtonUIOptions:ClearAllPoints()
-		GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -6)
-
-		GameMenuButtonKeybindings:ClearAllPoints()
-		GameMenuButtonKeybindings:SetPoint("TOP", GameMenuButtonUIOptions, "BOTTOM", 0, -6)
-
-		GameMenuButtonMacros:ClearAllPoints()
-		GameMenuButtonMacros:SetPoint("TOP", GameMenuButtonKeybindings, "BOTTOM", 0, -6)
-
-		GameMenuButtonAddons:ClearAllPoints()
-		GameMenuButtonAddons:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -6)
-
-		GameMenuButtonLogout:ClearAllPoints()
-		GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButtonKkthnxUI, "BOTTOM", 0, -18)
-
-		GameMenuButtonQuit:ClearAllPoints()
-		GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -6)
-
-		GameMenuButtonContinue:ClearAllPoints()
-		GameMenuButtonContinue:SetPoint("TOP", GameMenuButtonQuit, "BOTTOM", 0, -18)
-
-		Module.GameMenuButtonKkthnxUI:ClearAllPoints()
-		Module.GameMenuButtonKkthnxUI:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -6)
-	end
-end
-
-function Module:CreateGameMenu()
-	Module.GameMenuButtonKkthnxUI = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-	Module.GameMenuButtonKkthnxUI:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
-	Module.GameMenuButtonKkthnxUI:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -6)
-	Module.GameMenuButtonKkthnxUI:SetText(K.InfoColor.."KkthnxUI|r")
-	Module.GameMenuButtonKkthnxUI:SetScript("OnClick", function()
+	gui:SetScript("OnClick", function()
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
@@ -54,60 +22,16 @@ function Module:CreateGameMenu()
 		HideUIPanel(GameMenuFrame)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 	end)
-
-	hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", Module.SetupGameMenu)
 end
 
-function Module:OnEnable()
-	Module:CreateGameMenu()
-
-    do -- NZoth textures
-		local texTop = GameMenuFrame:CreateTexture(nil, "OVERLAY", 7)
-		local texBotomLeft = GameMenuFrame:CreateTexture(nil, "OVERLAY", 7)
-		local texBottomRight = GameMenuFrame:CreateTexture(nil, "OVERLAY", 7)
-
-		GameMenuFrame.textures = {
-			TOP = texTop, BOTTOMLEFT = texBotomLeft, BOTTOMRIGHT = texBottomRight,
-			Show = function() texTop:Show() texBotomLeft:Show() texBottomRight:Show() end,
-			Hide = function() texTop:Hide() texBotomLeft:Hide() texBottomRight:Hide() end,
-		}
-
-		texTop:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothTop]])
-		texTop:SetPoint("CENTER", GameMenuFrame, "TOP", 0, -19)
-		texBotomLeft:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomLeft]])
-		texBotomLeft:SetPoint("BOTTOMLEFT", GameMenuFrame, "BOTTOMLEFT", -7, -10)
-		texBottomRight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomRight]])
-		texBottomRight:SetPoint("BOTTOMRIGHT", GameMenuFrame, "BOTTOMRIGHT", 7, -10)
-	end
-
-    GameMenuButtonLogoutText:SetTextColor(1, 1, 0)
-    GameMenuButtonQuitText:SetTextColor(1, 0, 0)
-    GameMenuButtonContinueText:SetTextColor(0, 1, 0)
-
-	GameMenuFrameHeader:StripTextures()
-	GameMenuFrameHeader:ClearAllPoints()
-	GameMenuFrameHeader:SetPoint("TOP", GameMenuFrame, 0, 1)
-    -- GameMenuFrameHeader.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, 13)
-
-    GameMenuFrame:StripTextures()
-	GameMenuFrame:CreateBorder(nil, -1)
-
-	for _, Button in pairs({GameMenuFrame:GetChildren()}) do
-		if Button.IsObjectType and Button:IsObjectType("Button") then
-			Button:SkinButton()
-		end
-	end
-end
-
--------------------------------------
 local helpCommands = {
 	["checkquest"] = "|cff669DFF/checkquest ID|r or |cff669DFF/questcheck ID|r - Check the completion status of a quest",
 	["clearchat"] = "|cff669DFF/clearchat|r - Clear your chat window of all text in it",
 	["clearcombat"] = "|cff669DFF/clearcombat|r - Clear your combatlog of all text in it",
 	["convert"] = "|cff669DFF/convert|r or |cff669DFF/toraid|r or |cff669DFF/toparty|r - Convert to party or raid and vise versa",
 	["dbmtest"] = "|cff669DFF/dbmtest|r - Test DeadlyBossMods bars (Must have DBM installed/enabled)",
-	["deleteheirlooms"] = "|cff669DFF/deleteheirlooms|r or |cff669DFF/deletelooms|r - Delete all heirlooms that are in your bags",
 	["deletequestitems"] = "|cff669DFF/deletequestitems|r or |cff669DFF/dqi|r - Delete all quest items that are in your bags",
+	["grid"] = "|cff669DFF/grid #|r or |cff669DFF/align #|r - Display a grid which allows you to better align frames",
 	["install"] = "|cff669DFF/install|r - Show KkthnxUI installer",
 	["kaw"] = "|cff669DFF/kaw|r - Show KkthnxUI aurawatch configurations window",
 	["kcl"] = "|cff669DFF/kcl|r - Show KkthnxUI most recent changelog",
@@ -117,9 +41,8 @@ local helpCommands = {
 	["rc"] = "|cff669DFF/rc|r - Start a readycheck on your current group",
 	["ri"] = "|cff669DFF/ri|r - Reset the most recent instance you were in",
 	["rl"] = "|cff669DFF/rl|r - Reload your user interface quickly",
-	["statpriority"] = "|cff669DFF/ksp|r - Show commands for KthnxUI Stat Priority",
 	["ticket"] = "|cff669DFF/ticket|r - Write a ticket to Blizzard for help",
-	["grid"] = "|cff669DFF/grid #|r or |cff669DFF/align #|r - Display a grid which allows you to better align frames",
+	["trackingdebuffs"] = "|cff669DFF/tracking|r or |cff669DFF/kt|r - Add/remove debuff tracking for auras on raid",
 }
 
 local Help = CreateFrame("Frame", "KKUI_Help", UIParent)
@@ -173,9 +96,108 @@ end
 
 Help:Enable()
 
-K["Help"] = Help
-
 SlashCmdList["KKUI_HELP"] = function()
-	K.Help:Show()
+	Help:Show()
 end
 _G.SLASH_KKUI_HELP1 = "/khelp"
+
+-- Function to show vendor price
+local function ShowSellPrice(tooltip, tooltipObject)
+	if IsAddOnLoaded("Leatrix_Plus") then
+		return
+	end
+
+	if tooltip.shownMoneyFrames then
+		return
+	end
+
+	tooltipObject = tooltipObject or GameTooltip
+
+	-- Get container
+	local container = GetMouseFocus()
+	if not container then
+		return
+	end
+
+	-- Get item
+	local _, itemlink = tooltipObject:GetItem()
+	if not itemlink then
+		return
+	end
+
+	local _, _, _, _, _, _, _, _, _, _, sellPrice, classID = GetItemInfo(itemlink)
+	if sellPrice and sellPrice > 0 then
+		local count = container and type(container.count) == "number" and container.count or 1
+		if sellPrice and count > 0 then
+			if classID and classID == 11 then -- Fix for quiver/ammo pouch so ammo is not included
+				count = 1
+			end
+			SetTooltipMoney(tooltip, sellPrice * count, "STATIC", SELL_PRICE .. ":")
+		end
+	end
+
+	-- Refresh chat tooltips
+	if tooltipObject == ItemRefTooltip then
+		ItemRefTooltip:Show()
+	end
+end
+
+-- Show vendor price when tooltips are shown
+GameTooltip:HookScript("OnTooltipSetItem", ShowSellPrice)
+hooksecurefunc(GameTooltip, "SetHyperlink", function(tip) ShowSellPrice(tip, GameTooltip) end)
+hooksecurefunc(ItemRefTooltip, "SetHyperlink", function(tip) ShowSellPrice(tip, ItemRefTooltip) end)
+
+
+if IsAddOnLoaded("Anti-Deluxe") then
+	local function FuckYou_AntiDeluxe() -- Dont let others hook and change this
+		local buffs, i = { }, 1
+		local buff = UnitBuff("target", i)
+		local check = ""
+		local setEmotes = {"CHEER", "HUG", "CLAP", "CONGRATS", "GLAD"} -- make it interesting
+
+		while buff do
+			buffs[#buffs + 1] = buff
+			i = i + 1
+			buff = UnitBuff("target", i)
+		end
+
+		buffs = table.concat(buffs, ", ")
+		if string.match(buffs, "Reawakened") then
+			Check = "False"
+			DeluxeAndy = GetUnitName("target")
+			if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
+				return
+			end
+
+			for _, v in pairs(MountOwners) do
+				if v == DeluxeAndy then
+					Check = "True"
+					break
+				end
+			end
+
+			if Check == "False" then -- No Need to keep cheering the same person
+				-- DoEmote("cheer") -- Fuck off with the spitting bullshit, we will cheer them on!
+				DoEmote(setEmotes[math.random(1, #setEmotes)])
+				table.insert(MountOwners, DeluxeAndy)
+			end
+		end
+	end
+
+	BuffCheck = FuckYou_AntiDeluxe -- Hook this shitty addon to fix the shitty choices this dev has made
+end
+
+-- function FuckYou_Spitters(_, msg, sender)
+-- 	if msg and msg:find("spits on you") then
+-- 		local Responses = {"Spit on me Daddy", "Oh yeah I like it dirty", "uWu thanks"}
+-- 		SendChatMessage(Responses[math.random(1, #Responses)], "WHISPER", nil, sender)
+-- 	end
+-- end
+
+-- local frame = CreateFrame("Frame")
+-- frame:RegisterEvent("PLAYER_LOGIN")
+-- frame:RegisterEvent("CHAT_MSG_EMOTE")
+-- frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
+-- frame:SetScript("OnEvent", function(self, event)
+-- 	FuckYou_Spitters()
+-- end)

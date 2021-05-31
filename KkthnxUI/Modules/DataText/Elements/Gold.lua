@@ -8,11 +8,7 @@ local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CURRENCY = _G.CURRENCY
--- local C_CurrencyInfo_GetBackpackCurrencyInfo = _G.C_CurrencyInfo.GetBackpackCurrencyInfo
--- local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_Timer_NewTicker = _G.C_Timer.NewTicker
-local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMarketPrice
-local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
 local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
@@ -26,7 +22,6 @@ local TOTAL = _G.TOTAL
 local YES = _G.YES
 
 local slotString = "Bags"..": %s%d"
-local ticker
 local profit = 0
 local spent = 0
 local oldMoney = 0
@@ -81,11 +76,6 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	if not ticker then
-		C_WowTokenPublic_UpdateMarketPrice()
-		ticker = C_Timer_NewTicker(60, C_WowTokenPublic_UpdateMarketPrice)
-	end
-
 	local newMoney = GetMoney()
 	local change = newMoney - oldMoney -- Positive if we gain money
 	if oldMoney > newMoney then -- Lost Money
@@ -129,7 +119,7 @@ end
 
 local function OnEnter()
 	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
+	GameTooltip:SetPoint("BOTTOMLEFT", Module.GoldDataTextFrame, "TOPRIGHT", 2, 2)
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
@@ -161,29 +151,9 @@ local function OnEnter()
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-	-- GameTooltip:AddLine(" ")
-	-- GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.6, 0.8, 1, 1, 1, 1)
-
-	for i = 1, GetNumWatchedTokens() do
-		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
-		if name and i == 1 then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
-		end
-
-		if name and count then
-			local _, _, _, _, _, total = GetCurrencyInfo(currencyID)
-			local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
-			if total > 0 then
-				GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
-			else
-				GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
-			end
-		end
-	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Toggle Bags".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, .6,.8,1)
 	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
@@ -209,7 +179,7 @@ local function OnMouseUp(_, btn)
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
 		end
-		ToggleCharacter("TokenFrame")
+		ToggleAllBags()
 	end
 end
 

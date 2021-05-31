@@ -5,6 +5,8 @@ local wipe, gmatch, tinsert, ipairs, pairs = wipe, gmatch, tinsert, ipairs, pair
 local tonumber, tostring = tonumber, tostring
 local cr, cg, cb = K.r, K.g, K.b
 
+-- Don't see a point in making these options
+local ExpandStat = true
 local StatOrder = "12345"
 
 local function SetCharacterStats(statsTable, category)
@@ -134,6 +136,7 @@ local function CreateStatRow(parent, index)
 	local frame = CreateFrame("Frame", "$parentRow"..index, parent, "StatFrameTemplate")
 	frame:SetWidth(180)
 	frame:SetPoint("TOP", parent.header, "BOTTOM", 0, -2 - (index-1)*16)
+
 	local background = frame:CreateTexture(nil, "BACKGROUND")
 	background:SetAtlas("UI-Character-Info-Line-Bounce", true)
 	background:SetAlpha(.3)
@@ -190,7 +193,6 @@ local function CreateStatHeader(parent, index, category)
 	return frame
 end
 
-local ExpandStat = true
 local function ToggleMagicRes()
 	if ExpandStat then
 		CharacterResistanceFrame:ClearAllPoints()
@@ -243,7 +245,7 @@ local function ToggleStatPanel(texture)
 end
 
 function M:CharacterStatePanel()
-	local statPanel = CreateFrame("Frame", "NDuiStatePanel", PaperDollFrame)
+	local statPanel = CreateFrame("Frame", "KKUI_StatePanel", PaperDollFrame)
 	statPanel:SetSize(200, 418)
 	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -16)
 	statPanel:CreateBorder()

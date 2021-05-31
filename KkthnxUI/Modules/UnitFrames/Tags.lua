@@ -33,6 +33,14 @@ local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
 
+local FEIGN_DEATH
+local function GetFeignDeathTag()
+	if not FEIGN_DEATH then
+		FEIGN_DEATH = GetSpellInfo(5384)
+	end
+	return FEIGN_DEATH
+end
+
 local function ColorPercent(value)
 	local r, g, b
 	if value < 20 then
@@ -66,7 +74,7 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per = GetUnitHealthPerc(unit) or 0
@@ -78,7 +86,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 		end
 	end
 end
-oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["hp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["power"] = function(unit)
 	local cur = UnitPower(unit)
@@ -99,9 +107,7 @@ oUF.Tags.Methods["color"] = function(unit)
 	local class = select(2, UnitClass(unit))
 	local reaction = UnitReaction(unit, "player")
 
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		return "|cffA0A0A0"
-	elseif UnitIsTapDenied(unit) then
+	if UnitIsTapDenied(unit) then
 		return K.RGBToHex(oUF.colors.tapped)
 	elseif UnitIsPlayer(unit) then
 		return K.RGBToHex(K.Colors.class[class])
@@ -123,11 +129,13 @@ end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
-	if UnitIsDead(unit) then
+	if UnitIsFeignDeath(unit) then
+		return "|cff99ccff"..GetFeignDeathTag().."|r"
+	elseif UnitIsDead(unit) then
 		return "|cffCFCFCF"..DEAD.."|r"
 	elseif UnitIsGhost(unit) then
 		return "|cffCFCFCF"..L["Ghost"].."|r"
-	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
+	elseif not UnitIsConnected(unit) then
 		return "|cffCFCFCF"..PLAYER_OFFLINE.."|r"
 	end
 end
@@ -161,7 +169,7 @@ oUF.Tags.Events["fulllevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_C
 
 -- RaidFrame tags
 oUF.Tags.Methods["raidhp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	elseif C["Raid"].HealthFormat.Value == 2 then
 		local per = GetUnitHealthPerc(unit) or 0
@@ -175,7 +183,7 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 		return K.ShortValue(loss)
 	end
 end
-oUF.Tags.Events["raidhp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["raidhp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 -- Nameplate tags
 oUF.Tags.Methods["nphp"] = function(unit)
@@ -187,7 +195,7 @@ oUF.Tags.Methods["nphp"] = function(unit)
 		return ColorPercent(per)
 	end
 end
-oUF.Tags.Events["nphp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION"
+oUF.Tags.Events["nphp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION"
 
 oUF.Tags.Methods["nppp"] = function(unit)
 	local per = oUF.Tags.Methods["perpp"](unit)

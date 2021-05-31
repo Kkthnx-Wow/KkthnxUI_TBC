@@ -28,11 +28,13 @@ local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
 -- Reputation
 local backupColor = _G.FACTION_BAR_COLORS[1]
--- Honor
-local CurrentHonor, MaxHonor, CurrentLevel, PercentHonor, RemainingHonor
 
 function Module:ExperienceBar_ShouldBeVisible()
 	return K.Level ~= _G.MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
+end
+
+function Module:PetExperienceBar_ShouldBeVisible()
+	return UnitLevel("pet") ~= MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
 end
 
 function Module:SetupExperience()
@@ -90,31 +92,6 @@ function Module:SetupReputation()
 
 	self.Bars.Reputation = reputation
 	reputation.Text = rtext
-end
-
-function Module:SetupHonor()
-	local honor = CreateFrame("StatusBar", "KKUI_HonorBar", self.Container)
-	honor:SetStatusBarTexture(self.DatabaseTexture)
-	honor:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
-	honor:SetSize(C["DataBars"].Width, C["DataBars"].Height)
-	honor:CreateBorder()
-
-	local hspark = honor:CreateTexture(nil, "OVERLAY")
-	hspark:SetTexture(C["Media"].Textures.Spark16Texture)
-	hspark:SetHeight(C["DataBars"].Height)
-	hspark:SetBlendMode("ADD")
-	hspark:SetPoint("CENTER", honor:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-	local htext = honor:CreateFontString(nil, "OVERLAY")
-	htext:SetFontObject(self.DatabaseFont)
-	htext:SetFont(select(1, htext:GetFont()), 11, select(3, htext:GetFont()))
-	htext:SetWidth(C["DataBars"].Width - 6)
-	htext:SetWordWrap(false)
-	htext:SetPoint("LEFT", honor, "RIGHT", -3, 0)
-	htext:SetPoint("RIGHT", honor, "LEFT", 3, 0)
-
-	self.Bars.Honor = honor
-	honor.Text = htext
 end
 
 function Module:UpdateExperience()
@@ -193,7 +170,7 @@ end
 
 function Module:UpdateReputation()
 	local repBar = self.Bars.Reputation
-	local name, reaction, Min, Max, value, factionID = GetWatchedFactionInfo()
+	local name, reaction, Min, Max, value = GetWatchedFactionInfo()
 
 	if not name then
 		repBar:Hide()
@@ -202,7 +179,6 @@ function Module:UpdateReputation()
 		repBar:Show()
 	end
 
-	local name, reaction, Min, Max, value = GetWatchedFactionInfo()
 	local displayString, textFormat = "", C["DataBars"].Text.Value
 	local isCapped, standingLabel
 	local color = FACTION_BAR_COLORS[reaction] or backupColor
@@ -248,47 +224,6 @@ function Module:UpdateReputation()
 	repBar.Text:SetText(displayString)
 end
 
-function Module:UpdateHonor(event, unit)
-	local honBar = self.Bars.Honor
-
-	if not C["DataBars"].TrackHonor or (event == "PLAYER_FLAGS_CHANGED" and unit ~= "player") then
-		honBar:Hide()
-	else
-		honBar:Show()
-
-		CurrentHonor, MaxHonor, CurrentLevel = UnitHonor("player"), UnitHonorMax("player"), UnitHonorLevel("player")
-
-		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
-		if MaxHonor == 0 then
-			MaxHonor = 1
-		end
-
-		PercentHonor, RemainingHonor = (CurrentHonor / MaxHonor) * 100, MaxHonor - CurrentHonor
-		local displayString, textFormat = "", C["DataBars"].Text.Value
-
-		honBar:SetMinMaxValues(0, MaxHonor)
-		honBar:SetValue(CurrentHonor)
-
-		if textFormat == 1 then
-			displayString = string_format("%d%%", PercentHonor)
-		elseif textFormat == 2 then
-			displayString = string_format("%s - %s", K.ShortValue(CurrentHonor), K.ShortValue(MaxHonor))
-		elseif textFormat == 3 then
-			displayString = string_format("%s - %d%%", K.ShortValue(CurrentHonor), PercentHonor)
-		elseif textFormat == 4 then
-			displayString = string_format("%s", K.ShortValue(CurrentHonor))
-		elseif textFormat == 5 then
-			displayString = string_format("%s", K.ShortValue(RemainingHonor))
-		elseif textFormat == 6 then
-			displayString = string_format("%s - %s", K.ShortValue(CurrentHonor), K.ShortValue(RemainingHonor))
-		elseif textFormat == 7 then
-			displayString = string_format("%s - %d%% (%s)", K.ShortValue(CurrentHonor), CurrentHonor, K.ShortValue(RemainingHonor))
-		end
-
-		honBar.Text:SetText(displayString)
-	end
-end
-
 function Module:OnEnter()
 	if GameTooltip:IsForbidden() then
 		return
@@ -322,22 +257,21 @@ function Module:OnEnter()
 		if name then
 			local color = FACTION_BAR_COLORS[reaction] or backupColor
 			GameTooltip:AddLine(name, color.r, color.g, color.b)
-			_G.GameTooltip:AddDoubleLine(STANDING..':', _G['FACTION_STANDING_LABEL'..reaction], 1, 1, 1)
+			_G.GameTooltip:AddDoubleLine(STANDING..":", _G["FACTION_STANDING_LABEL"..reaction], 1, 1, 1)
 			if reaction ~= _G.MAX_REPUTATION_REACTION then
-				_G.GameTooltip:AddDoubleLine(REPUTATION..':', format('%d / %d (%d%%)', value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
+				_G.GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
 			_G.GameTooltip:Show()
 		end
 	end
 
-	if C["DataBars"].TrackHonor then
-		if IsPlayerAtEffectiveMaxLevel() then
+	if K.Class == "HUNTER" and HasPetUI() then
+		local cur, max = GetPetExperience()
+		if max ~= 0 then
 			GameTooltip:AddLine(" ")
-
-			GameTooltip:AddLine(HONOR)
-			GameTooltip:AddDoubleLine(LEVEL, CurrentLevel, 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %d / %d (%d%%)", CurrentHonor, MaxHonor, PercentHonor), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Honor Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", RemainingHonor, (RemainingHonor) / MaxHonor * 100, 20 * (RemainingHonor) / MaxHonor), 1, 1, 1)
+			GameTooltip:AddLine("Pet Experience")
+			GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
 		end
 	end
 
@@ -355,7 +289,6 @@ end
 function Module:OnUpdate()
 	Module:UpdateExperience()
 	Module:UpdateReputation()
-	Module:UpdateHonor()
 
 	if C["DataBars"].MouseOver then
 		Module.Container:SetAlpha(0)
@@ -385,7 +318,6 @@ end
 function Module:UpdateDataBarsSize()
 	KKUI_ExperienceBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	KKUI_ReputationBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
-	KKUI_HonorBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 
 	local num_bars = 0
 	for _, bar in pairs(Module.Bars) do
@@ -416,7 +348,6 @@ function Module:OnEnable()
 
 	self:SetupExperience()
 	self:SetupReputation()
-	self:SetupHonor()
 	self:OnUpdate()
 
 	-- Experience
@@ -435,15 +366,6 @@ function Module:OnEnable()
 	-- Reputation
 	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
 	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
-
-	-- Honor
-	if C["DataBars"].TrackHonor then
-		K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
-		K:RegisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
-	else
-		K:UnregisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
-		K:UnregisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
-	end
 
 	if not self.Container.mover then
 		self.Container.mover = K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})

@@ -72,7 +72,6 @@ table_insert(C.defaultThemes, function()
 	for i = 1, 4 do
 		local frame = _G["StaticPopup"..i]
 		local bu = _G["StaticPopup"..i.."ItemFrame"]
-		local icon = _G["StaticPopup"..i.."ItemFrameIconTexture"]
 		local close = _G["StaticPopup"..i.."CloseButton"]
 
 		local gold = _G["StaticPopup"..i.."MoneyInputFrameGold"]
@@ -80,22 +79,23 @@ table_insert(C.defaultThemes, function()
 		local copper = _G["StaticPopup"..i.."MoneyInputFrameCopper"]
 
 		_G["StaticPopup"..i.."ItemFrameNameFrame"]:Hide()
+		_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetTexCoord(.08, .92, .08, .92)
 
 		bu:SetNormalTexture("")
 		bu:SetHighlightTexture("")
 		bu:SetPushedTexture("")
-		--bu.bg = B.ReskinIcon(icon)
-		--B.ReskinIconBorder(bu.IconBorder)
+		bu:CreateBorder()
+		bu.IconBorder:SetAlpha(0)
 
 		silver:SetPoint("LEFT", gold, "RIGHT", 1, 0)
 		copper:SetPoint("LEFT", silver, "RIGHT", 1, 0)
 
-		--frame.Border:Hide()
+		frame:StripTextures()
 		frame:CreateBorder()
 		for j = 1, 4 do
 			frame["button"..j]:SkinButton()
 		end
-		frame.extraButton:SkinButton()
+		frame["extraButton"]:SkinButton()
 		close:SkinCloseButton()
 
 		ReskinEditBox(_G["StaticPopup"..i.."EditBox"], 20)
@@ -103,60 +103,65 @@ table_insert(C.defaultThemes, function()
 		ReskinEditBox(silver)
 		ReskinEditBox(copper)
 	end
-end)
 
-hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
-	local info = StaticPopupDialogs[which]
+	hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
+		local info = StaticPopupDialogs[which]
 
-	if not info then
-		return
-	end
-
-	local dialog = nil
-	dialog = StaticPopup_FindVisible(which, data)
-
-	if not dialog then
-		local index = 1
-		if info.preferredIndex then
-			index = info.preferredIndex
+		if not info then
+			return
 		end
-		for i = index, STATICPOPUP_NUMDIALOGS do
-			local frame = _G["StaticPopup"..i]
-			if not frame:IsShown() then
-				dialog = frame
-				break
+
+		local dialog = nil
+		dialog = StaticPopup_FindVisible(which, data)
+
+		if not dialog then
+			local index = 1
+			if info.preferredIndex then
+				index = info.preferredIndex
 			end
-		end
 
-		if not dialog and info.preferredIndex then
-			for i = 1, info.preferredIndex do
+			for i = index, STATICPOPUP_NUMDIALOGS do
 				local frame = _G["StaticPopup"..i]
 				if not frame:IsShown() then
 					dialog = frame
 					break
 				end
 			end
+
+			if not dialog and info.preferredIndex then
+				for i = 1, info.preferredIndex do
+					local frame = _G["StaticPopup"..i]
+					if not frame:IsShown() then
+						dialog = frame
+						break
+					end
+				end
+			end
 		end
-	end
 
-	if not dialog then
-		return
-	end
-
-	if info.closeButton then
-		local closeButton = _G[dialog:GetName().."CloseButton"]
-
-		closeButton:SetNormalTexture("")
-		closeButton:SetPushedTexture("")
-
-		if info.closeButtonIsHide then
-			closeButton.__texture:Hide()
-			closeButton.minimize:Show()
-		else
-			closeButton.__texture:Show()
-			closeButton.minimize:Hide()
+		if not dialog then
+			return
 		end
-	end
+
+		if info.closeButton then
+			local closeButton = _G[dialog:GetName().."CloseButton"]
+
+			closeButton:SetNormalTexture("")
+			closeButton:SetPushedTexture("")
+
+			if info.closeButtonIsHide then
+				for _, pixel in pairs(closeButton.pixels) do
+					pixel:Hide()
+				end
+				closeButton.minimize:Show()
+			else
+				for _, pixel in pairs(closeButton.pixels) do
+					pixel:Show()
+				end
+				closeButton.minimize:Hide()
+			end
+		end
+	end)
 end)
 
 -- PlayerReportFrame

@@ -58,18 +58,18 @@ function addon:ResetDebuffData()
 end
 
 local DispellColor = {
-	['Magic']	= {.2, .6, 1},
-	['Curse']	= {.6, 0, 1},
-	['Disease']	= {.6, .4, 0},
-	['Poison']	= {0, .6, 0},
-	['none'] = {1, 0, 0},
+	["Magic"]	= {.2, .6, 1},
+	["Curse"]	= {.6, 0, 1},
+	["Disease"]	= {.6, .4, 0},
+	["Poison"]	= {0, .6, 0},
+	["none"]	= {1, 1, 1},
 }
 
 local DispellPriority = {
-	['Magic']	= 4,
-	['Curse']	= 3,
-	['Disease']	= 2,
-	['Poison']	= 1,
+	["Magic"]	= 4,
+	["Curse"]	= 3,
+	["Disease"]	= 2,
+	["Poison"]	= 1,
 }
 
 local DispellFilter
@@ -218,7 +218,7 @@ local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTi
 		local c = DispellColor[debuffType] or DispellColor.none
 
 		if f.KKUI_Border then
-			f.KKUI_Border:SetBorderColor(c[1], c[2], c[3])
+			f.KKUI_Border:SetVertexColor(c[1], c[2], c[3])
 		else
 			f:SetBackdropBorderColor(c[1], c[2], c[3])
 		end
@@ -281,7 +281,7 @@ local function Update(self, event, unit)
 	end
 
 	if self.RaidDebuffs.forceShow then
-		_spellId = 47540
+		_spellId = 13555
 		_name, _, _icon = GetSpellInfo(_spellId)
 		_count, _dtype, _duration, _endTime, _stackThreshold = 5, 'Magic', 0, 60, 0
 	end

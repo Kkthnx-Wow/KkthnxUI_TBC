@@ -46,7 +46,6 @@ C["ActionBar"] = {
 C["Announcements"] = {
 	["HealthAlert"] = false,
 	["ItemAlert"] = false,
-	["KillingBlow"] = false,
 	["PullCountdown"] = true,
 	["PvPEmote"] = false,
 	["ResetInstance"] = true,
@@ -97,6 +96,7 @@ C["Inventory"] = {
 	["BankWidth"] = 14,
 	["DeleteButton"] = true,
 	["Enable"] = true,
+	["FilterMount"] = false,
 	["FilterAmmo"] = false,
 	["FilterCollection"] = true,
 	["FilterConsumable"] = true,
@@ -226,8 +226,6 @@ C["AuraWatch"] = {
 	["Enable"] = true,
 	["ClickThrough"] = false,
 	["IconScale"] = 1,
-	["DeprecatedAuras"] = false,
-	["QuakeRing"] = false,
 	["InternalCD"] = {},
 	["AuraList"] = {
 		["Switcher"] = {},
@@ -252,6 +250,7 @@ C["General"] = {
 		["Options"] = {
 			["KkthnxUI"] = "KkthnxUI",
 			["AzeriteUI"] = "AzeriteUI",
+			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
 		},
 		["Value"] = "KkthnxUI"
 	},
@@ -338,7 +337,6 @@ C["Misc"] = {
 
 C["Nameplate"] = {
 	["AuraSize"] = 26,
-	["ClassAuras"] = true,
 	["ClassIcon"] = false,
 	["ColoredTarget"] = true,
 	["CustomColor"] = {0, 0.8, 0.3},
@@ -364,7 +362,6 @@ C["Nameplate"] = {
 	["PPHeight"] = 5,
 	["PPHideOOC"] = true,
 	["PPIconSize"] = 32,
-	["PPOnFire"] = false,
 	["PPPHeight"] = 6,
 	["PPPowerText"] = true,
 	["PPWidth"] = 175,
@@ -499,7 +496,7 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["AdditionalPower"] = false,
+	-- ["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,
 	["CastReactionColor"] = false,
@@ -507,7 +504,7 @@ C["Unitframe"] = {
 	["ClassResources"] = true,
 	["CombatFade"] = false,
 	["CombatText"] = false,
-	["DebuffHighlight"] = true,
+	-- ["DebuffHighlight"] = true,
 	["Enable"] = true,
 	["FCTOverHealing"] = false,
 	["FocusFrameHeight"] = 40,
@@ -543,7 +540,6 @@ C["Unitframe"] = {
 	["ShowPlayerLevel"] = true,
 	["ShowPlayerName"] = false,
 	["Smooth"] = false,
-	["Stagger"] = true,
 	["Swingbar"] = false,
 	["SwingbarTimer"] = false,
 	["TargetBuffs"] = true,
@@ -650,23 +646,28 @@ C["Raid"] = {
 	["TargetHighlight"] = false,
 	["Width"] = 66,
 
-	["DebuffWatchScale"] = 1,
 	["DebuffWatch"] = true,
-	["DesaturateNonPlayerBuffs"] = false,
+	["DebuffWatchDefault"] = true,
+	["DesaturateBuffs"] = false,
+	["RaidBuffsStyle"] = {
+		["Options"] = {
+			["Aura Track"] = "Aura Track",
+			["Standard"] = "Standard",
+			["None"] = "None",
+		},
+		["Value"] = "Aura Track",
+	},
 	["RaidBuffs"] = {
 		["Options"] = {
-			["Hide"] = "Hide",
 			["Only my buffs"] = "Self",
 			["Only castable buffs"] = "Castable",
 			["All buffs"] = "All",
 		},
 		["Value"] = "Self",
 	},
-	["AuraTrack"] = true,
 	["AuraTrackIcons"] = true,
 	["AuraTrackSpellTextures"] = true,
 	["AuraTrackThickness"] = 5,
-
 
 	["HealthbarColor"] = {
 		["Options"] = {

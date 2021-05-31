@@ -24,4 +24,6 @@ C.themes["Blizzard_InspectUI"] = function()
 		highlight:SetBlendMode("ADD")
 		highlight:SetAllPoints()
 	end)
+
+	InspectModelFrame:HookScript("OnMouseWheel", Model_OnMouseWheel)
 end

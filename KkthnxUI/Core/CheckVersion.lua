@@ -22,9 +22,15 @@ local lastVCTime = 0
 function Module:VersionCheck_Compare(new, old)
 	local new1, new2 = string_split(".", new)
 	new1, new2 = tonumber(new1), tonumber(new2)
+	if new1 > 10 then
+		new1, new2 = 0, 0
+	end
 
 	local old1, old2 = string_split(".", old)
 	old1, old2 = tonumber(old1), tonumber(old2)
+	if old1 > 10 then
+		old1, old2 = 0, 0
+	end
 
 	if new1 > old1 or (new1 == old1 and new2 > old2) then
 		return "IsNew"

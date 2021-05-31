@@ -23,36 +23,19 @@ local StatusTrackingBarManager = _G.StatusTrackingBarManager
 local hooksecurefunc = _G.hooksecurefunc
 
 local scripts = {
-	"OnClick",
-	"OnEnter",
-	"OnEvent",
-	"OnHide",
-	"OnLeave",
-	"OnMouseDown",
-	"OnMouseUp",
-	"OnShow",
-	"OnUpdate",
-	"OnValueChanged",
+	"OnShow", "OnHide", "OnEvent", "OnEnter", "OnLeave", "OnUpdate", "OnValueChanged", "OnClick", "OnMouseDown", "OnMouseUp",
 }
 
 local framesToHide = {
-	MainMenuBar,
-	OverrideActionBar,
+	MainMenuBar, OverrideActionBar,
 }
 
 local framesToDisable = {
-	ActionBarDownButton,
-	ActionBarUpButton,
 	MainMenuBar,
-	MainMenuBarArtFrame,
-	MainMenuBarVehicleLeaveButton,
-	MicroButtonAndBagsBar,
+	MicroButtonAndBagsBar, MainMenuBarArtFrame, StatusTrackingBarManager,
+	ActionBarDownButton, ActionBarUpButton,
 	OverrideActionBar,
-	OverrideActionBarExpBar,
-	OverrideActionBarHealthBar,
-	OverrideActionBarPitchFrame,
-	OverrideActionBarPowerBar,
-	StatusTrackingBarManager,
+	OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
 }
 
 local function DisableAllScripts(frame)

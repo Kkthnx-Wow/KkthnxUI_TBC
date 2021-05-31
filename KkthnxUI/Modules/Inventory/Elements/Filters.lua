@@ -22,6 +22,112 @@ local CustomFilterList = {
 	[12460] = true,	-- Juju Might
 }
 
+local MountFilterList = {
+	-- Deluxe Edition Mount
+	[184865] = true,
+
+	-- Rams
+	[5864] = true,
+	[5872] = true,
+	[5873] = true,
+	[18785] = true,
+	[18786] = true,
+	[18787] = true,
+	[18244] = true,
+	[19030] = true,
+	[13328] = true,
+	[13329] = true,
+
+	-- Horses
+	[2411] = true,
+	[2414] = true,
+	[5655] = true,
+	[5656] = true,
+	[18778] = true,
+	[18776] = true,
+	[18777] = true,
+	[18241] = true,
+	[12353] = true,
+	[12354] = true,
+
+	-- Sabers
+	[8629] = true,
+	[8631] = true,
+	[8632] = true,
+	[18766] = true,
+	[18767] = true,
+	[18902] = true,
+	[18242] = true,
+	[13086] = true,
+	[19902] = true,
+	[12302] = true,
+	[12303] = true,
+	[8628] = true,
+	[12326] = true,
+
+	-- Mechanostriders
+	[8563] = true,
+	[8595] = true,
+	[13321] = true,
+	[13322] = true,
+	[18772] = true,
+	[18773] = true,
+	[18774] = true,
+	[18243] = true,
+	[13326] = true,
+	[13327] = true,
+
+	-- Kodos
+	[15277] = true,
+	[15290] = true,
+	[18793] = true,
+	[18794] = true,
+	[18795] = true,
+	[18247] = true,
+	[15292] = true,
+	[15293] = true,
+
+	-- Wolves
+	[1132] = true,
+	[5665] = true,
+	[5668] = true,
+	[18796] = true,
+	[18797] = true,
+	[18798] = true,
+	[18245] = true,
+	[12330] = true,
+	[12351] = true,
+
+	-- Raptors
+	[8588] = true,
+	[8591] = true,
+	[8592] = true,
+	[18788] = true,
+	[18789] = true,
+	[18790] = true,
+	[18246] = true,
+	[19872] = true,
+	[8586] = true,
+	[13317] = true,
+
+	-- Undead Horses
+	[13331] = true,
+	[13332] = true,
+	[13333] = true,
+	[13334] = true,
+	[18791] = true,
+	[18248] = true,
+	[13335] = true,
+
+	-- Qiraji Battle Tanks
+	[21218] = true,
+	[21321] = true,
+	[21323] = true,
+	[21324] = true,
+	[21176] = true
+}
+
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -95,6 +201,17 @@ local function isItemConsumable(item)
 	return isCustomFilter(item) or (item.classID and (item.classID == LE_ITEM_CLASS_CONSUMABLE or item.classID == LE_ITEM_CLASS_ITEM_ENHANCEMENT))
 end
 
+local function isItemMount(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+
+	if not C["Inventory"].FilterMount then
+		return
+	end
+
+	return MountFilterList[item.id]
+end
 local function isItemLegendary(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -176,6 +293,7 @@ function Module:GetFilters()
 	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end
 	filters.bagQuest = function(item) return isItemInBag(item) and isQuestItem(item) end
 	filters.bankQuest = function(item) return isItemInBank(item) and isQuestItem(item) end
+	filters.bagMount = function(item) return isItemInBag(item) and isItemMount(item) end
 
 	return filters
 end

@@ -38,11 +38,11 @@ function Module:CreateLeaveVehicle()
 	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KKUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_LeaveVehicleBar", UIParent)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
 
 	-- The Button
-	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
+	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate")
 	table_insert(buttonList, button) -- Add The Button Object To The List
 	button:SetSize(buttonSize, buttonSize)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)

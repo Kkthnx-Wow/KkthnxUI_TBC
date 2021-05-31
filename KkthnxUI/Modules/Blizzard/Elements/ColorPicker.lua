@@ -171,7 +171,7 @@ function Module:CreateColorPicker()
 	_G.ColorPickerFrame:SetClampedToScreen(true)
 	_G.ColorPickerFrame:CreateBorder()
 
-	_G.ColorPickerFrameHeader:StripTextures(true)
+	_G.ColorPickerFrameHeader:SetAlpha(0)
 	_G.ColorPickerFrameHeader:ClearAllPoints()
 	_G.ColorPickerFrameHeader:SetPoint('TOP', _G.ColorPickerFrame, 0, 8)
 

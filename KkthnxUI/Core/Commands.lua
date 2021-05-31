@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 
 local _G = _G
 local print = _G.print
@@ -24,6 +24,16 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
+
+-- SlashCmdList["KKUI_TRACKING"] = function()
+-- 	if (C.Unitframe.Enable) and (C.Raid.Enable) then
+-- 		K:GetModule("Unitframes").TrackingToggle()
+-- 	else
+-- 		K.Print("Sorry, our raid module is currently disabled")
+-- 	end
+-- end
+-- _G.SLASH_KKUI_TRACKING1 = "/kt"
+-- _G.SLASH_KKUI_TRACKING2 = "/tracking"
 
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()

@@ -111,7 +111,7 @@ function Module:CreateCustomBar()
 		return
 	end
 
-	Module:CreateCustomBar({"BOTTOM", UIParent, "BOTTOM", 0, 140})
+	Module:SetupCustomBar({"BOTTOM", UIParent, "BOTTOM", 0, 140})
 	if K.Class == "DRUID" then
 		UpdatePageBySpells()
 		K:RegisterEvent("LEARNED_SPELL_IN_TAB", UpdatePageBySpells)

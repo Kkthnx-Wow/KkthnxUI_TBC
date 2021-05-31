@@ -38,4 +38,6 @@ tinsert(C.defaultThemes, function()
 		icon:SetTexture(newResIcons[i])
 		icon:SetAlpha(.5)
 	end
+
+	CharacterModelFrame:HookScript("OnMouseWheel", Model_OnMouseWheel)
 end)

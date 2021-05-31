@@ -173,9 +173,15 @@ function Module:CreateParty()
 
 		self.Castbar.OnUpdate = Module.OnCastbarUpdate
 		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
+		self.Castbar.PostChannelStop = Module.PostChannelStop
+		self.Castbar.PostCastDelayed = Module.PostCastUpdate
+		self.Castbar.PostChannelUpdate = Module.PostCastUpdate
+		self.Castbar.PostCastFailed = Module.PostCastFailed
+		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))

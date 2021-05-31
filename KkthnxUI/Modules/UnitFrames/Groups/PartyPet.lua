@@ -8,20 +8,6 @@ local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
 local UnitThreatSituation = _G.UnitThreatSituation
 
-local function UpdatePartyPetThreat(self, _, unit)
-	if unit ~= self.unit then
-		return
-	end
-
-	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
-		local r, g, b = GetThreatStatusColor(situation)
-		self.KKUI_Border:SetVertexColor(r, g, b)
-	else
-		self.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
-end
-
 local function UpdatePartyPetPower(self, _, unit)
 	if self.unit ~= unit then
 		return
@@ -106,7 +92,7 @@ function Module:CreatePartyPet()
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
 
 	if C["Party"].TargetHighlight then
-		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay)
+		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.PartyPetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
 		self.PartyPetHighlight:SetPoint("TOPLEFT", self, -6, 6)
 		self.PartyPetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)

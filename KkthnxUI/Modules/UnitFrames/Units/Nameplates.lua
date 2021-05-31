@@ -167,6 +167,7 @@ function Module:UpdateColor(_, unit)
 	local isCustomUnit = customUnits[name] or customUnits[npcID]
 	local isPlayer = self.isPlayer
 	local isFriendly = self.isFriendly
+	local status = UnitThreatSituation("player", unit) or false -- just in case
 
 	local customColor = C["Nameplate"].CustomColor
 	local targetColor = C["Nameplate"].TargetColor
@@ -792,10 +793,15 @@ function Module:CreatePlates()
 
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostCastUpdate = Module.PostCastUpdate
+	self.Castbar.PostChannelStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostCastFail = Module.PostCastFailed
+	self.Castbar.PostChannelStop = Module.PostChannelStop
+	self.Castbar.PostCastDelayed = Module.PostCastUpdate
+	self.Castbar.PostChannelUpdate = Module.PostCastUpdate
+	self.Castbar.PostCastFailed = Module.PostCastFailed
+	self.Castbar.PostCastInterrupted = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
@@ -1060,11 +1066,11 @@ function Module:PlateVisibility(event)
 	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
 		UIFrameFadeIn(self.Health, 0.2, self.Health:GetAlpha(), 1)
 		UIFrameFadeIn(self.Power, 0.2, self.Power:GetAlpha(), 1)
-		UIFrameFadeIn(self.Auras, 0.2, self.Power:GetAlpha(), 1)
+		UIFrameFadeIn(self.Buffs, 0.2, self.Power:GetAlpha(), 1)
 	else
 		UIFrameFadeOut(self.Health, 0.2, self.Health:GetAlpha(), 0)
 		UIFrameFadeOut(self.Power, 0.2, self.Power:GetAlpha(), 0)
-		UIFrameFadeOut(self.Auras, 0.2, self.Power:GetAlpha(), 0)
+		UIFrameFadeOut(self.Buffs, 0.2, self.Power:GetAlpha(), 0)
 	end
 end
 
@@ -1100,22 +1106,30 @@ function Module:CreatePlayerPlate()
 
 	Module:CreateClassPower(self)
 
-	if K.Class == "MONK" then
-		self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
-		self.Stagger:SetPoint("TOPLEFT", self.Health, 0, 8)
-		self.Stagger:SetSize(self:GetWidth(), self:GetHeight())
-		self.Stagger:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-		self.Stagger:CreateShadow(true)
-
-		self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")
-		self.Stagger.Value:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
-		self:Tag(self.Stagger.Value, "[monkstagger]")
+	-- Aura tracking
+	self.Buffs = CreateFrame("Frame", nil, self)
+	self.Buffs:SetFrameLevel(self:GetFrameLevel() + 2)
+	self.Buffs.spacing = 4
+	self.Buffs.initdialAnchor = "BOTTOMLEFT"
+	self.Buffs["growth-y"] = "UP"
+	if C["Nameplate"].ShowPlayerPlate and not C["Nameplate"].NameplateClassPower then
+		self.Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
+	else
+		self.Buffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 5)
 	end
+	self.Buffs.numTotal = C["Nameplate"].MaxAuras
+	self.Buffs.size = C["Nameplate"].AuraSize
+	self.Buffs.gap = false
+	self.Buffs.disableMouse = true
 
-	if C["Nameplate"].ClassAuras then
-		K:GetModule("Auras"):CreateLumos(self)
-	end
+	local width = self:GetWidth()
+	local maxLines = 2
+	self.Buffs:SetWidth(width)
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * maxLines)
+
+	self.Buffs.CustomFilter = Module.CustomFilter
+	self.Buffs.PostCreateIcon = Module.PostCreateAura
+	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()
@@ -1144,15 +1158,11 @@ function Module:TogglePlateVisibility()
 	end
 
 	if C["Nameplate"].PPHideOOC then
-		plate:RegisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
-		plate:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
 		plate:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility, true)
 		plate:RegisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility, true)
 		plate:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility, true)
 		Module.PlateVisibility(plate)
 	else
-		plate:UnregisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
-		plate:UnregisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
 		plate:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility)
 		plate:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility)
 		plate:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility)

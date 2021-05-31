@@ -14,7 +14,6 @@ local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
 -- local GetSpecialization = _G.GetSpecialization
 local GetTime = _G.GetTime
-local GetActiveSpecGroup = _G.GetActiveSpecGroup
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
@@ -282,7 +281,7 @@ function Module:OnCastSent()
 end
 
 local function UpdateSpellTarget(self, unit)
-	if not unit then return end
+	if not self.spellTarget or not unit then return end
 	local unitTarget = unit.."target"
 	if UnitExists(unitTarget) then
 		local nameString
@@ -336,17 +335,15 @@ function Module:PostCastStart(unit)
 		end
 	elseif unit == "player" then
 		local safeZone = self.SafeZone
-		if not safeZone then
-			return
-		end
-
-		safeZone.timeDiff = 0
-		if safeZone.castSent then
-			safeZone.timeDiff = GetTime() - safeZone.sendTime
-			safeZone.timeDiff = safeZone.timeDiff > self.max and self.max or safeZone.timeDiff
-			safeZone:SetWidth(self:GetWidth() * (safeZone.timeDiff + .001) / self.max)
-			safeZone:Show()
-			safeZone.castSent = false
+		if safeZone then
+			safeZone.timeDiff = 0
+			if safeZone.castSent then
+				safeZone.timeDiff = GetTime() - safeZone.sendTime
+				safeZone.timeDiff = safeZone.timeDiff > self.max and self.max or safeZone.timeDiff
+				safeZone:SetWidth(self:GetWidth() * (safeZone.timeDiff + .001) / self.max)
+				safeZone:Show()
+				safeZone.castSent = nil
+			end
 		end
 
 		local numTicks = 0
@@ -356,6 +353,14 @@ function Module:PostCastStart(unit)
 		updateCastBarTicks(self, numTicks)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
 		self:SetStatusBarColor(unpack(K.Colors.castbar.notInterruptibleColor))
+	end
+
+	-- Fix for empty icon
+	if self.Icon then
+		local texture = self.Icon:GetTexture()
+		if not texture or texture == 136235 then
+			self.Icon:SetTexture(136243)
+		end
 	end
 
 	if self.__owner.mystyle == "nameplate" then
@@ -369,10 +374,6 @@ function Module:PostCastUpdate(unit)
 end
 
 function Module:PostUpdateInterruptible(unit)
-	if unit == "vehicle" or unit == "player" then
-		return
-	end
-
 	local colors = K.Colors.castbar
 	local r, g, b = unpack(self.casting and colors.CastingColor or colors.ChannelingColor)
 
@@ -401,13 +402,21 @@ function Module:PostCastStop()
 		self.fadeOut = true
 	end
 
+	self:SetValue(self.max or 1)
+	self:Show()
+	ResetSpellTarget(self)
+end
+
+function Module:PostChannelStop()
+	self.fadeOut = true
+	self:SetValue(0)
 	self:Show()
 	ResetSpellTarget(self)
 end
 
 function Module:PostCastFailed()
 	self:SetStatusBarColor(K.Colors.castbar.FailColor[1], K.Colors.castbar.FailColor[2], K.Colors.castbar.FailColor[3])
-	self:SetValue(self.max)
+	self:SetValue(self.max or 1)
 	self.fadeOut = true
 	self:Show()
 	ResetSpellTarget(self)
@@ -431,7 +440,7 @@ function Module.PostCreateAura(element, button)
 	button.icon:SetTexCoord(unpack(K.TexCoords))
 	button.cd:ClearAllPoints()
 
-	if element.__owner.mystyle == "nameplate" then
+	if element.__owner.mystyle == "nameplate" or element.__owner.mystyle == "PlayerPlate" then
 		button.cd:SetAllPoints()
 		button:CreateShadow(true)
 	else
@@ -457,7 +466,7 @@ local filteredStyle = {
 
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
-	if style == "nameplate" then
+	if style == "nameplate" or style == "PlayerPlate" then
 		button:SetSize(element.size, element.size - 4)
 	else
 		button:SetSize(element.size, element.size)
@@ -481,7 +490,7 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 			end
 		end
 	else
-		if style == "nameplate" and button.Shadow then
+		if style == "nameplate" or style == "PlayerPlate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		elseif C["General"].ColorTextures then
 			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
@@ -538,6 +547,12 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 		else
 			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
+		end
+	elseif style == "PlayerPlate" or style == "boss" or style == "arena" then
+		if C.PlayerNameplateWhiteList[spellID] then
+			return true
+		else
+			return false
 		end
 	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
 		return true
@@ -873,13 +888,13 @@ function Module:CreateUnits()
 			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
 			oUF:SetActiveStyle("PartyPet")
 
-			local partypetXOffset, partypetYOffset = 6, 25
+			local partypetXOffset, partypetYOffset = 6, 6
 			local partpetMoverWidth = 60
 			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
 
 			local partyPet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
 			"showPlayer", true,
-			"showSolo", false,
+			"showSolo", true,
 			"showParty", true,
 			"showRaid", false,
 			"xoffset", partypetXOffset,
@@ -892,7 +907,7 @@ function Module:CreateUnits()
 			self:SetAttribute("unitsuffix", "pet")
 			]]):format(60, 34))
 
-			local moverAnchor = {"TOPLEFT", partyMover, "TOPRIGHT", 6, -40}
+			local moverAnchor = {"TOPLEFT", partyMover, "BOTTOMLEFT", 0, -20}
 			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
 			partyPet:ClearAllPoints()
 			partyPet:SetPoint("TOPLEFT", petMover)
@@ -1044,18 +1059,21 @@ function Module:UpdateRaidDebuffIndicator()
 
 	if (ORD) then
 		local _, InstanceType = IsInInstance()
+
 		ORD:ResetDebuffData()
 
 		if (InstanceType == "party" or InstanceType == "raid") then
-			ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
-		elseif (InstanceType == "pvp") then
-			if (K.Class == "PRIEST") or (K.Class == "PALADIN" and GetActiveSpecGroup() == 1) or (K.Class == "SHAMAN" and GetActiveSpecGroup() == 3) or (K.Class == "DRUID" and GetActiveSpecGroup() == 4) or (K.Class == "MONK" and GetActiveSpecGroup() == 2) then
-				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
-			else
-				ORD:RegisterDebuffs(C.DebuffsTracking_CrowdControl.spells)
+			if C.Raid.DebuffWatchDefault then
+				ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
 			end
+
+			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
 		else
-			ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells) -- replace this one later with a new list
+			if C.Raid.DebuffWatchDefault then
+				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
+			end
+
+			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
 		end
 	end
 end
@@ -1127,5 +1145,7 @@ function Module:OnEnable()
 			ORD.FilterDispellableDebuff = true
 			ORD.MatchBySpellName = false
 		end
+
+		self:CreateTracking()
 	end
 end

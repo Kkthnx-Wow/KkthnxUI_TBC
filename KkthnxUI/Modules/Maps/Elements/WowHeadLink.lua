@@ -3,11 +3,8 @@ local Module = K:GetModule("WorldMap")
 
 local _G = _G
 
-local GetAchievementLink = _G.GetAchievementLink
 local GetLocale = _G.GetLocale
-local GetQuestLink = _G.GetQuestLink
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local QuestMapFrame_GetDetailQuestID = _G.QuestMapFrame_GetDetailQuestID
 local hooksecurefunc = _G.hooksecurefunc
 local setmetatable = _G.setmetatable
 

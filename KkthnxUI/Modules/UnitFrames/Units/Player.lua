@@ -229,9 +229,15 @@ function Module:CreatePlayer()
 
 		self.Castbar.OnUpdate = Module.OnCastbarUpdate
 		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
+		self.Castbar.PostChannelStop = Module.PostChannelStop
+		self.Castbar.PostCastDelayed = Module.PostCastUpdate
+		self.Castbar.PostChannelUpdate = Module.PostCastUpdate
+		self.Castbar.PostCastFailed = Module.PostCastFailed
+		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
@@ -289,18 +295,18 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerPowerPrediction then
-		-- local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", self.Power)
-		-- mainBar:SetReverseFill(true)
-		-- mainBar:SetPoint("TOP", 0, -1)
-		-- mainBar:SetPoint("BOTTOM", 0, 1)
-		-- mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT", -1, 0)
-		-- mainBar:SetStatusBarTexture(HealPredictionTexture)
-		-- mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
-		-- mainBar:SetWidth(playerWidth)
+		local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", self.Power)
+		mainBar:SetReverseFill(true)
+		mainBar:SetPoint("TOP", 0, -1)
+		mainBar:SetPoint("BOTTOM", 0, 1)
+		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT", -1, 0)
+		mainBar:SetStatusBarTexture(HealPredictionTexture)
+		mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
+		mainBar:SetWidth(playerWidth)
 
-		-- self.PowerPrediction = {
-			-- 	mainBar = mainBar
-		-- }
+		self.PowerPrediction = {
+				mainBar = mainBar
+		}
 	end
 
 	if C["Unitframe"].ShowPlayerName then
@@ -344,67 +350,52 @@ function Module:CreatePlayer()
 		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -8, 8)
 	end
 
-	if C["Unitframe"].Stagger then
-		if K.Class == "MONK" then
-			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
-			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.Stagger:SetSize(playerWidth - portraitSize, 14)
-			self.Stagger:SetStatusBarTexture(UnitframeTexture)
-			self.Stagger:CreateBorder()
-
-			self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")
-			self.Stagger.Value:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
-			self:Tag(self.Stagger.Value, "[monkstagger]")
-		end
-	end
-
 	if C["Unitframe"].AdditionalPower then
-		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
-		self.AdditionalPower:SetHeight(5)
-		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
-		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
-		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
-		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		self.AdditionalPower.frequentUpdates = true
+		-- self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
+		-- self.AdditionalPower:SetHeight(5)
+		-- self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
+		-- self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
+		-- self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+		-- self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
+		-- self.AdditionalPower.frequentUpdates = true
 
-		if C["Unitframe"].Smooth then
-			K:SmoothBar(self.AdditionalPower)
-		end
+		-- if C["Unitframe"].Smooth then
+		-- 	K:SmoothBar(self.AdditionalPower)
+		-- end
 
-		self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
-		self.AdditionalPower.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		self.AdditionalPower.Spark:SetAlpha(0.4)
-		self.AdditionalPower.Spark:SetHeight(5)
-		self.AdditionalPower.Spark:SetBlendMode("ADD")
-		self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
+		-- self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
+		-- self.AdditionalPower.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
+		-- self.AdditionalPower.Spark:SetAlpha(0.4)
+		-- self.AdditionalPower.Spark:SetHeight(5)
+		-- self.AdditionalPower.Spark:SetBlendMode("ADD")
+		-- self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-		self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
-		self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
-		self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
-		self.AdditionalPower.Background.multiplier = 0.3
+		-- self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
+		-- self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
+		-- self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
+		-- self.AdditionalPower.Background.multiplier = 0.3
 
-		self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
-		self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
-		self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
+		-- self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
+		-- self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		-- self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
+		-- self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
 
-		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
-		self.AdditionalPower.displayPairs = {
-			["DRUID"] = {
-				[1] = true,
-				[3] = true,
-				[8] = true,
-			},
+		-- self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+		-- self.AdditionalPower.displayPairs = {
+		-- 	["DRUID"] = {
+		-- 		[1] = true,
+		-- 		[3] = true,
+		-- 		[8] = true,
+		-- 	},
 
-			["SHAMAN"] = {
-				[11] = true,
-			},
+		-- 	["SHAMAN"] = {
+		-- 		[11] = true,
+		-- 	},
 
-			["PRIEST"] = {
-				[13] = true,
-			}
-		}
+		-- 	["PRIEST"] = {
+		-- 		[13] = true,
+		-- 	}
+		-- }
 	end
 
 	-- GCD spark
@@ -464,7 +455,11 @@ function Module:CreatePlayer()
 		local bar = CreateFrame("Frame", nil, self)
 		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
 		bar:SetSize(width, 12)
-		bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
+		if C["Unitframe"].PlayerCastbar then
+			bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
+		else
+			bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
+		end
 
 		local two = CreateFrame("StatusBar", nil, bar)
 		two:Hide()

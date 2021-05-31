@@ -11,13 +11,10 @@ local table_wipe = _G.table.wipe
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local DoEmote = _G.DoEmote
-local GetAchievementInfo = _G.GetAchievementInfo
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
-local PlaySoundFile = _G.PlaySoundFile
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitGUID = _G.UnitGUID
-local hooksecurefunc = _G.hooksecurefunc
 
 local pvpEmoteList = {
 	"ANGRY", "BARK", "BECKON", "BITE", "BONK", "BURP", "BYE", "CACKLE",
@@ -52,12 +49,7 @@ function Module:SetupKillingBlow()
 			end
 
 			if C["Announcements"].PvPEmote then
-				if select(4, GetAchievementInfo(247)) then
-					-- Fire off a random emote, to keep it interesting.
-					DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
-				else
-					DoEmote("HUG", TargetName)
-				end
+				DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
 			end
 		end
 	end

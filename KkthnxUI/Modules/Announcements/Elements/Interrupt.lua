@@ -6,13 +6,10 @@ local string_format = _G.string.format
 
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local IsPartyLFG = _G.IsPartyLFG
 local SendChatMessage = _G.SendChatMessage
 
 local function sendQuestMsg()
-	if IsPartyLFG() then
-		return "INSTANCE_CHAT"
-	elseif IsInRaid() then
+	if IsInRaid() then
 		return "RAID"
 	elseif IsInGroup() then
 		return "PARTY"
@@ -57,7 +54,7 @@ function Module:IsAllyPet(sourceFlags)
 end
 
 function Module:InterruptAlert_Update(...)
-	if C["Announcements"].AlertInInstance and (not IsInInstance() or IsPartyLFG()) then
+	if C["Announcements"].AlertInInstance and (not IsInInstance()) then
 		return
 	end
 

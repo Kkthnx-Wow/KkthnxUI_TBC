@@ -1,52 +1,33 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
-local _G = _G
-local string_find = _G.string.find
-local string_format = _G.string.format
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
-local table_insert = _G.table.insert
-
-local BNGetNumFriends = _G.BNGetNumFriends
-local BNet_GetClientEmbeddedTexture = _G.BNet_GetClientEmbeddedTexture
-local BNet_GetClientTexture = _G.BNet_GetClientTexture
-local BNet_GetValidatedCharacterName = _G.BNet_GetValidatedCharacterName
-local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
-local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
-local C_BattleNet_GetFriendNumGameAccounts = _G.C_BattleNet.GetFriendNumGameAccounts
-local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
-local C_FriendList_GetNumOnlineFriends = _G.C_FriendList.GetNumOnlineFriends
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetRealZoneText = _G.GetRealZoneText
-local InviteToGroup = _G.C_PartyInfo.InviteUnit
-local IsAltKeyDown = _G.IsAltKeyDown
-local UIParent = _G.UIParent
-
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
-local FRIENDS_TEXTURE_ONLINE = _G.FRIENDS_TEXTURE_ONLINE
-local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
-local FRIENDS_TEXTURE_DND = _G.FRIENDS_TEXTURE_DND
-local RAF_RECRUIT_FRIEND = _G.RAF_RECRUIT_FRIEND
-local RAF_RECRUITER_FRIEND = _G.RAF_RECRUITER_FRIEND
-local WOW_PROJECT_ID = _G.WOW_PROJECT_ID or 1
-local UNKNOWN = _G.UNKNOWN
-
-local CLIENT_WOW_CLASSIC = "WoV" -- for sorting
+local format, sort, wipe, unpack, tinsert = string.format, table.sort, table.wipe, unpack, table.insert
+local C_Timer_After = C_Timer.After
+local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
+local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
+local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
+local BNet_GetClientEmbeddedTexture, BNet_GetValidatedCharacterName, BNet_GetClientTexture = BNet_GetClientEmbeddedTexture, BNet_GetValidatedCharacterName, BNet_GetClientTexture
+local CanCooperateWithGameAccount, GetRealZoneText, GetQuestDifficultyColor = CanCooperateWithGameAccount, GetRealZoneText, GetQuestDifficultyColor
+local BNGetNumFriends, BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriendGameAccounts, BNGetFriendGameAccountInfo = BNGetNumFriends, BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriendGameAccounts, BNGetFriendGameAccountInfo
+local HybridScrollFrame_GetOffset, HybridScrollFrame_Update = HybridScrollFrame_GetOffset, HybridScrollFrame_Update
+local BNET_CLIENT_WOW, UNKNOWN, GUILD_ONLINE_LABEL, CHARACTER_FRIEND = BNET_CLIENT_WOW, UNKNOWN, GUILD_ONLINE_LABEL, CHARACTER_FRIEND
+local FRIENDS_TEXTURE_ONLINE, FRIENDS_TEXTURE_AFK, FRIENDS_TEXTURE_DND = FRIENDS_TEXTURE_ONLINE, FRIENDS_TEXTURE_AFK, FRIENDS_TEXTURE_DND
+local EXPANSION_NAME0 = EXPANSION_NAME0
+local WOW_PROJECT_ID = WOW_PROJECT_ID or 5
+local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
+local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE or 1
+local CLIENT_WOW_DIFF = "WoV"
 
 local r, g, b = K.r, K.g, K.b
-local friendsFrame, menuFrame, updateRequest
-local menuList, buttons, friendTable, bnetTable = {}, {}, {}, {}
+local infoFrame, updateRequest, prevTime
+local friendTable, bnetTable = {}, {}
 local activeZone, inactiveZone = "|cff4cff4c", K.GreyColor
 local noteString = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:16|t %s"
-local broadcastString = "|TInterface\\FriendsFrame\\BroadcastIcon:16|t %s (%s)"
-local onlineString = gsub(ERR_FRIEND_ONLINE_SS, ".+h", "")
-local offlineString = gsub(ERR_FRIEND_OFFLINE_S, "%%s", "")
+local broadcastString = "|TInterface\\FriendsFrame\\BroadcastIcon:12|t %s (%s)"
+
+local menuList = {
+	[1] = {text = "Join or Invite", isTitle = true, notCheckable = true}
+}
 
 local function sortFriends(a, b)
 	if a[1] and b[1] then
@@ -55,7 +36,7 @@ local function sortFriends(a, b)
 end
 
 local function buildFriendTable(num)
-	table_wipe(friendTable)
+	wipe(friendTable)
 
 	for i = 1, num do
 		local info = C_FriendList_GetFriendInfoByIndex(i)
@@ -67,11 +48,11 @@ local function buildFriendTable(num)
 				status = FRIENDS_TEXTURE_DND
 			end
 			local class = K.ClassList[info.className]
-			table_insert(friendTable, {info.name, info.level, class, info.area, status})
+			tinsert(friendTable, {info.name, info.level, class, info.area, status})
 		end
 	end
 
-	table_sort(friendTable, sortFriends)
+	sort(friendTable, sortFriends)
 end
 
 local function sortBNFriends(a, b)
@@ -80,93 +61,53 @@ local function sortBNFriends(a, b)
 	end
 end
 
-local function CanCooperateWithUnit(gameAccountInfo)
-	return gameAccountInfo.playerGuid and (gameAccountInfo.factionName == K.Faction) and (gameAccountInfo.realmID ~= 0)
-end
-
-local function GetOnlineInfoText(client, isMobile, rafLinkType, locationText)
-	if not locationText or locationText == "" then
-		return UNKNOWN
-	end
-
-	if isMobile then
-		return LOCATION_MOBILE_APP
-	end
-
-	if (client == BNET_CLIENT_WOW) and (rafLinkType ~= Enum.RafLinkType.None) and not isMobile then
-		if rafLinkType == Enum.RafLinkType.Recruit then
-			return string_format(RAF_RECRUIT_FRIEND, locationText)
-		else
-			return string_format(RAF_RECRUITER_FRIEND, locationText)
-		end
-	end
-
-	return locationText
-end
-
 local function buildBNetTable(num)
-	table_wipe(bnetTable)
+	wipe(bnetTable)
 
 	for i = 1, num do
-		local accountInfo = C_BattleNet_GetFriendAccountInfo(i)
-		if accountInfo then
-			local accountName = accountInfo.accountName
-			local battleTag = accountInfo.battleTag
-			local isAFK = accountInfo.isAFK
-			local isDND = accountInfo.isDND
-			local note = accountInfo.note
-			local broadcastText = accountInfo.customMessage
-			local broadcastTime = accountInfo.customMessageTime
-			local rafLinkType = accountInfo.rafLinkType
+		local _, accountName, battleTag, _, charName, gameID, _, isOnline, _, isAFK, isDND, broadcastText, note, _, broadcastTime = BNGetFriendInfo(i)
+		if isOnline then
+			local _, _, client, realmName, _, _, _, class, _, zoneName, level, gameText, _, _, _, _, _, isGameAFK, isGameBusy, _, wowProjectID = BNGetGameAccountInfo(gameID)
 
-			local gameAccountInfo = accountInfo.gameAccountInfo
-			local isOnline = gameAccountInfo.isOnline
-			local gameID = gameAccountInfo.gameAccountID
+			charName = BNet_GetValidatedCharacterName(charName, battleTag, client)
+			class = K.ClassList[class]
 
-			if isOnline and gameID then
-				local charName = gameAccountInfo.characterName
-				local client = gameAccountInfo.clientProgram
-				local class = gameAccountInfo.className or UNKNOWN
-				local zoneName = gameAccountInfo.areaName or UNKNOWN
-				local level = gameAccountInfo.characterLevel
-				local gameText = gameAccountInfo.richPresence or ""
-				local isGameAFK = gameAccountInfo.isGameAFK
-				local isGameBusy = gameAccountInfo.isGameBusy
-				local wowProjectID = gameAccountInfo.wowProjectID
-				local isMobile = gameAccountInfo.isWowMobile
-				local canCooperate = CanCooperateWithUnit(gameAccountInfo)
-
-				charName = BNet_GetValidatedCharacterName(charName, battleTag, client)
-				class = K.ClassList[class]
-
-				local status = FRIENDS_TEXTURE_ONLINE
-				if isAFK or isGameAFK then
-					status = FRIENDS_TEXTURE_AFK
-				elseif isDND or isGameBusy then
-					status = FRIENDS_TEXTURE_DND
-				end
-
-				local infoText = GetOnlineInfoText(client, isMobile, rafLinkType, gameText)
-				if client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID then
-					infoText = GetOnlineInfoText(client, isMobile, rafLinkType, zoneName)
-				end
-
-				if client == BNET_CLIENT_WOW and wowProjectID ~= WOW_PROJECT_ID then
-					client = CLIENT_WOW_CLASSIC
-				end
-
-				table_insert(bnetTable, {i, accountName, charName, canCooperate, client, status, class, level, infoText, note, broadcastText, broadcastTime})
+			local status, infoText
+			if isAFK or isGameAFK then
+				status = FRIENDS_TEXTURE_AFK
+			elseif isDND or isGameBusy then
+				status = FRIENDS_TEXTURE_DND
+			else
+				status = FRIENDS_TEXTURE_ONLINE
 			end
+			if client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID then
+				if not zoneName or zoneName == "" then
+					infoText = UNKNOWN
+				else
+					infoText = zoneName
+				end
+			else
+				if wowProjectID == WOW_PROJECT_MAINLINE then
+					infoText = CHARACTER_FRIEND
+				elseif wowProjectID == WOW_PROJECT_60 then
+					infoText = EXPANSION_NAME0
+				else
+					infoText = gameText
+				end
+			end
+			if client == BNET_CLIENT_WOW and wowProjectID ~= WOW_PROJECT_ID then client = CLIENT_WOW_DIFF end
+
+			tinsert(bnetTable, {i, accountName, charName, gameID, client, realmName, status, class, level, infoText, note, broadcastText, broadcastTime})
 		end
 	end
 
-	table_sort(bnetTable, sortBNFriends)
+	sort(bnetTable, sortBNFriends)
 end
 
-local function OnUpdate(self, elapsed)
+local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > 0.1 then
-		if not friendsFrame:IsMouseOver() then
+	if self.timer > .1 then
+		if not infoFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
 		end
@@ -175,57 +116,66 @@ local function OnUpdate(self, elapsed)
 	end
 end
 
-local function setupFriendsFrame()
-	if friendsFrame then
-		friendsFrame:Show()
+function Module:FriendsPanel_Init()
+	if infoFrame then
+		infoFrame:Show()
 		return
 	end
 
-	friendsFrame = CreateFrame("Frame", "KKUI_FriendsDataTextFrame", Module.FriendsDataTextFrame)
-	friendsFrame:SetSize(400, 486)
-	friendsFrame:SetPoint(K.GetAnchors(Module.FriendsDataTextFrame))
-	friendsFrame:SetClampedToScreen(true)
-	friendsFrame:SetFrameStrata("DIALOG")
-	friendsFrame:CreateBorder()
+	infoFrame = CreateFrame("Frame", "KKUI_FriendsFrame", Module.FriendsDataTextFrame)
+	infoFrame:SetSize(400, 495)
+	infoFrame:SetPoint("BOTTOMLEFT", Module.FriendsDataTextFrame, "TOPRIGHT", 2, 2)
+	infoFrame:SetClampedToScreen(true)
+	infoFrame:SetFrameStrata("DIALOG")
+	infoFrame:CreateBorder()
 
-	friendsFrame:SetScript("OnLeave", function(self)
-		self:SetScript("OnUpdate", OnUpdate)
+	infoFrame:SetScript("OnLeave", function(self)
+		self:SetScript("OnUpdate", isPanelCanHide)
 	end)
 
-	friendsFrame:SetScript("OnHide", function()
-		if menuFrame and menuFrame:IsShown() then
-			menuFrame:Hide()
+	infoFrame:SetScript("OnHide", function()
+		if K.EasyMenu:IsShown() then
+			K.EasyMenu:Hide()
 		end
 	end)
 
-	K.CreateFontString(friendsFrame, 14, "|cff0099ff"..FRIENDS_LIST, "", nil, "TOPLEFT", 15, -10)
-	friendsFrame.numFriends = K.CreateFontString(friendsFrame, 14, "-/-", "", nil, "TOPRIGHT", -15, -12)
-	friendsFrame.numFriends:SetTextColor(0, .6, 1)
+	K.CreateFontString(infoFrame, 14, "|cff0099ff"..FRIENDS_LIST, "", nil, "TOPLEFT", 15, -10)
+	infoFrame.friendCountText = K.CreateFontString(infoFrame, 13, "-/-", "", nil, "TOPRIGHT", -15, -12)
+	infoFrame.friendCountText:SetTextColor(0, .6, 1)
 
-	local scrollFrame = CreateFrame("ScrollFrame", nil, friendsFrame, "UIPanelScrollFrameTemplate")
-	scrollFrame:SetSize(380, 400)
-	scrollFrame:SetPoint("TOPLEFT", 10, -35)
-	Module.ReskinScrollBar(scrollFrame)
+	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
+	scrollFrame:SetSize(370, 400)
+	scrollFrame:SetPoint("TOPLEFT", 4, -35)
+	infoFrame.scrollFrame = scrollFrame
 
-	local roster = CreateFrame("Frame", nil, scrollFrame)
-	roster:SetSize(380, 1)
-	scrollFrame:SetScrollChild(roster)
-	friendsFrame.roster = roster
+	local scrollBar = CreateFrame("Slider", "$parentScrollBar", scrollFrame, "HybridScrollBarTemplate")
+	scrollBar.doNotHide = true
+	scrollBar:SkinScrollBar()
+	scrollFrame.scrollBar = scrollBar
 
-	local whspInfo = K.InfoColor.." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t "..L["Whisper"]
-	K.CreateFontString(friendsFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local invtInfo = K.InfoColor.."ALT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Invite"]
-	K.CreateFontString(friendsFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
-end
-
-local function createInviteMenu()
-	if menuFrame then
-		return
+	local scrollChild = scrollFrame.scrollChild
+	local numButtons = 20 + 1
+	local buttonHeight = 22
+	local buttons = {}
+	for i = 1, numButtons do
+		buttons[i] = Module:FriendsPanel_CreateButton(scrollChild, i)
 	end
 
-	menuFrame = CreateFrame("Frame", "FriendsInfobarMenu", friendsFrame, "UIDropDownMenuTemplate")
-	menuFrame:SetFrameStrata("TOOLTIP")
-	menuList[1] = {text = L["Join or Invite"], isTitle = true, notCheckable = true}
+	scrollFrame.buttons = buttons
+	scrollFrame.buttonHeight = buttonHeight
+	scrollFrame.update = Module.FriendsPanel_Update
+	scrollFrame:SetScript("OnMouseWheel", Module.FriendsPanel_OnMouseWheel)
+	scrollChild:SetSize(scrollFrame:GetWidth(), numButtons * buttonHeight)
+	scrollFrame:SetVerticalScroll(0)
+	scrollFrame:UpdateScrollChildRect()
+	scrollBar:SetMinMaxValues(0, numButtons * buttonHeight)
+	scrollBar:SetValue(0)
+
+	K.CreateFontString(infoFrame, 12, Module.LineString, "", false, "BOTTOMRIGHT", -12, 42)
+	local whspInfo = K.InfoColor..K.RightButton..L["Whisper"]
+	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
+	local invtInfo = K.InfoColor.."ALT +"..K.LeftButton..L["Invite"]
+	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
 end
 
 local function inviteFunc(_, bnetIDGameAccount, guid)
@@ -236,27 +186,24 @@ local function buttonOnClick(self, btn)
 	if btn == "LeftButton" then
 		if IsAltKeyDown() then
 			if self.isBNet then
-				createInviteMenu()
-
 				local index = 2
 				if #menuList > 1 then
-					for i = 2, #menuList do menuList[i] = nil end
+					for i = 2, #menuList do
+						table.wipe(menuList[i])
+					end
 				end
 
-				local numGameAccounts = C_BattleNet_GetFriendNumGameAccounts(self.data[1])
+				local numGameAccounts = BNGetNumFriendGameAccounts(self.data[1])
 				local lastGameAccountID, lastGameAccountGUID
 				if numGameAccounts > 0 then
 					for i = 1, numGameAccounts do
-						local gameAccountInfo = C_BattleNet_GetFriendGameAccountInfo(self.data[1], i)
-						local charName = gameAccountInfo.characterName
-						local client = gameAccountInfo.clientProgram
-						local class = gameAccountInfo.className or UNKNOWN
-						local bnetIDGameAccount = gameAccountInfo.gameAccountID
-						local guid = gameAccountInfo.playerGuid
-						local wowProjectID = gameAccountInfo.wowProjectID
-						if client == BNET_CLIENT_WOW and CanCooperateWithUnit(gameAccountInfo) and wowProjectID == WOW_PROJECT_ID then
-							if not menuList[index] then menuList[index] = {} end
-							menuList[index].text = K.RGBToHex(K.ColorClass(K.ClassList[class]))..charName
+						local _, charName, client, _, _, _, _, class, _, _, _, _, _, _, _, bnetIDGameAccount, _, _, _, guid = BNGetFriendGameAccountInfo(self.data[1], i)
+						if client == BNET_CLIENT_WOW and CanCooperateWithGameAccount(bnetIDGameAccount) then
+							if not menuList[index] then
+								menuList[index] = {}
+							end
+
+							menuList[index].text = K.RGBToHex(K.ClassColor(K.ClassList[class]))..charName
 							menuList[index].notCheckable = true
 							menuList[index].arg1 = bnetIDGameAccount
 							menuList[index].arg2 = guid
@@ -276,7 +223,7 @@ local function buttonOnClick(self, btn)
 				if index == 3 then
 					FriendsFrame_InviteOrRequestToJoin(lastGameAccountGUID, lastGameAccountID)
 				else
-					EasyMenu(menuList, menuFrame, self, 0, 0, "MENU", 1)
+					EasyMenu(menuList, K.EasyMenu, self, 0, 0, "MENU", 1)
 				end
 			else
 				InviteToGroup(self.data[1])
@@ -293,80 +240,80 @@ end
 
 local function buttonOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint("TOPLEFT", friendsFrame, "TOPRIGHT", 5, 2)
+	GameTooltip:SetPoint("TOPLEFT", infoFrame, "TOPRIGHT", 5, 2)
 	GameTooltip:ClearLines()
-
 	if self.isBNet then
 		GameTooltip:AddLine(L["BN"], 0,.6,1)
 		GameTooltip:AddLine(" ")
 
-		local index, accountName, _, _, _, _, _, _, _, note, broadcastText, broadcastTime = unpack(self.data)
-		local numGameAccounts = C_BattleNet_GetFriendNumGameAccounts(index)
+		local index, accountName, _, _, _, _, _, _, _, _, note, broadcastText, broadcastTime = unpack(self.data)
+		local numGameAccounts = BNGetNumFriendGameAccounts(index)
 		for i = 1, numGameAccounts do
-			local gameAccountInfo = C_BattleNet_GetFriendGameAccountInfo(index, i)
-			local charName = gameAccountInfo.characterName
-			local client = gameAccountInfo.clientProgram
-			local realmName = gameAccountInfo.realmName or ""
-			local faction = gameAccountInfo.factionName
-			local class = gameAccountInfo.className or UNKNOWN
-			local zoneName = gameAccountInfo.areaName or UNKNOWN
-			local level = gameAccountInfo.characterLevel
-			local gameText = gameAccountInfo.richPresence or ""
-			local wowProjectID = gameAccountInfo.wowProjectID
+			local _, charName, client, realmName, _, faction, _, class, _, zoneName, level, gameText, _, _, _, _, _, _, _, _, wowProjectID = BNGetFriendGameAccountInfo(index, i)
 			local clientString = BNet_GetClientEmbeddedTexture(client, 16)
 			if client == BNET_CLIENT_WOW then
-				if charName ~= "" then -- fix for weird account
-					realmName = (K.Realm == realmName or realmName == "") and "" or "-"..realmName
-					class = K.ClassList[class]
-					local classColor = K.RGBToHex(K.ColorClass(class))
-					if faction == "Horde" then
-						clientString = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:|t"
-					elseif faction == "Alliance" then
-						clientString = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:|t"
-					end
-					GameTooltip:AddLine(string_format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
+				realmName = (K.Realm == realmName or realmName == "") and "" or "-"..realmName
 
-					if wowProjectID ~= WOW_PROJECT_ID then
-						zoneName = "*"..zoneName
+				-- Get realm name from gameText
+				if wowProjectID == WOW_PROJECT_MAINLINE then
+					local zone, realm = string.match(gameText, "(.-)%s%-%s(.+)")
+					if realm then
+						gameText, realmName = zone, "-"..realm
 					end
-					GameTooltip:AddLine(string_format("%s%s", inactiveZone, zoneName))
+				elseif wowProjectID == WOW_PROJECT_60 then
+					gameText = zoneName
 				end
+
+				class = K.ClassList[class]
+				local classColor = K.RGBToHex(K.ColorClass(class))
+				if faction == "Horde" then
+					clientString = "|TInterface\\FriendsFrame\\PlusManz-Horde:16:|t"
+				elseif faction == "Alliance" then
+					clientString = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:|t"
+				end
+				GameTooltip:AddLine(format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
+
+				if wowProjectID ~= WOW_PROJECT_ID then
+					zoneName = "*"..gameText
+				end
+
+				GameTooltip:AddLine(format("%s%s", inactiveZone, zoneName))
 			else
-				GameTooltip:AddLine(string_format("|cffffffff%s%s", clientString, accountName))
+				GameTooltip:AddLine(format("|cffffffff%s%s", clientString, accountName))
 				if gameText ~= "" then
-					GameTooltip:AddLine(string_format("%s%s", inactiveZone, gameText))
+					GameTooltip:AddLine(format("%s%s", inactiveZone, gameText))
 				end
 			end
 		end
 
 		if note and note ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(noteString, note), 1,.8,0)
+			GameTooltip:AddLine(format(noteString, note), 1,.8,0)
 		end
 
 		if broadcastText and broadcastText ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.6, 0.8, 1)
+			GameTooltip:AddLine(format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), .3,.6,.8, 1)
 		end
 	else
-		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
+		GameTooltip:AddLine(L["WoW"], 1,.8,0)
 		GameTooltip:AddLine(" ")
 
 		local name, level, class, area = unpack(self.data)
-		local classColor = K.RGBToHex(K.ColorClass(class))
-		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
-		GameTooltip:AddLine(string_format("%s%s", inactiveZone, area))
+		local classColor = K.RGBToHex(K.ClassColor(class))
+		GameTooltip:AddLine(format("%s %s%s", level, classColor, name))
+		GameTooltip:AddLine(format("%s%s", inactiveZone, area))
 	end
 	GameTooltip:Show()
 end
 
-local function createRoster(parent, i)
+function Module:FriendsPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(380, 20)
+	button:SetSize(370, 20)
+	button:SetPoint("TOPLEFT", 0, - (index-1) *20)
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
 	button.HL:SetColorTexture(r, g, b, .2)
-	button.index = i
 
 	button.status = button:CreateTexture(nil, "ARTWORK")
 	button.status:SetPoint("LEFT", button, 5, 0)
@@ -384,15 +331,12 @@ local function createRoster(parent, i)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
+	button.gameIcon:SetTexCoord(.17, .83, .17, .83)
 
-	if not button.gameIcon.Border then
-		button.gameIcon.Border = CreateFrame("Frame", nil, button)
-		button.gameIcon.Border:SetFrameLevel(button:GetFrameLevel())
-		button.gameIcon.Border:SetAllPoints(button.gameIcon)
-		button.gameIcon.Border:CreateBorder(nil, nil, 10)
-		button.gameIcon.Border = true
-	end
+	button.gameIcon.border = CreateFrame("Frame", nil, button)
+	button.gameIcon.border:SetFrameLevel(button:GetFrameLevel())
+	button.gameIcon.border:SetAllPoints(button.gameIcon)
+	button.gameIcon.border:CreateBorder()
 
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", buttonOnClick)
@@ -402,96 +346,123 @@ local function createRoster(parent, i)
 	return button
 end
 
-local previous = 0
-local function updateAnchor()
-	for i = 1, previous do
-		if i == 1 then
-			buttons[i]:SetPoint("TOPLEFT")
-		else
-			buttons[i]:SetPoint("TOP", buttons[i-1], "BOTTOM")
-		end
-		buttons[i]:Show()
-	end
-end
+function Module:FriendsPanel_UpdateButton(button)
+	local index = button.index
+	local onlineFriends = Module.onlineFriends
 
-local function updateFriendsFrame()
-	local onlineFriends = C_FriendList_GetNumOnlineFriends()
-	local _, onlineBNet = BNGetNumFriends()
-	local totalOnline = onlineFriends + onlineBNet
-	if totalOnline ~= previous then
-		if totalOnline > previous then
-			for i = previous+1, totalOnline do
-				if not buttons[i] then
-					buttons[i] = createRoster(friendsFrame.roster, i)
-				end
-			end
-		elseif totalOnline < previous then
-			for i = totalOnline+1, previous do
-				buttons[i]:Hide()
-			end
-		end
-		previous = totalOnline
-
-		updateAnchor()
-	end
-
-	for i = 1, #friendTable do
-		local button = buttons[i]
-		local name, level, class, area, status = unpack(friendTable[i])
+	if index <= onlineFriends then
+		local name, level, class, area, status = unpack(friendTable[index])
 		button.status:SetTexture(status)
+
 		local zoneColor = GetRealZoneText() == area and activeZone or inactiveZone
 		local levelColor = K.RGBToHex(GetQuestDifficultyColor(level))
 		local classColor = K.ClassColors[class] or levelColor
-		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
-		button.zone:SetText(string_format("%s%s", zoneColor, area))
+		button.name:SetText(format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
+		button.zone:SetText(format("%s%s", zoneColor, area))
 		button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
-		button.data = friendTable[i]
-	end
-
-	for i = 1, #bnetTable do
-		local button = buttons[i+onlineFriends]
-		local _, accountName, charName, canCooperate, client, status, class, _, infoText = unpack(bnetTable[i])
+		button.data = friendTable[index]
+	else
+		local bnetIndex = index-onlineFriends
+		local _, accountName, charName, gameID, client, _, status, class, _, infoText = unpack(bnetTable[bnetIndex])
 
 		button.status:SetTexture(status)
 		local zoneColor = inactiveZone
 		local name = inactiveZone..charName
 		if client == BNET_CLIENT_WOW then
-			if canCooperate then
+			if CanCooperateWithGameAccount(gameID) then
 				local color = K.ClassColors[class] or GetQuestDifficultyColor(1)
 				name = K.RGBToHex(color)..charName
 			end
 			zoneColor = GetRealZoneText() == infoText and activeZone or inactiveZone
 		end
-		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
-		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
-		if client == CLIENT_WOW_CLASSIC then
+		button.name:SetText(format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
+		button.zone:SetText(format("%s%s", zoneColor, infoText))
+
+		if client == CLIENT_WOW_DIFF then
 			button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
-			button.gameIcon:SetVertexColor(0.3, 0.3, 0.3)
+			button.gameIcon:SetVertexColor(.3, .3, .3)
 		else
 			button.gameIcon:SetTexture(BNet_GetClientTexture(client))
 			button.gameIcon:SetVertexColor(1, 1, 1)
 		end
 
 		button.isBNet = true
-		button.data = bnetTable[i]
+		button.data = bnetTable[bnetIndex]
 	end
 end
 
-local function OnEnter()
-	local numFriends, onlineFriends = C_FriendList_GetNumFriends(), C_FriendList_GetNumOnlineFriends()
+function Module:FriendsPanel_Update()
+	local scrollFrame = KKUI_FriendsInfobarScrollFrame
+	local usedHeight = 0
+	local buttons = scrollFrame.buttons
+	local height = scrollFrame.buttonHeight
+	local numFriendButtons = Module.totalOnline
+	local offset = HybridScrollFrame_GetOffset(scrollFrame)
+
+	for i = 1, #buttons do
+		local button = buttons[i]
+		local index = offset + i
+		if index <= numFriendButtons then
+			button.index = index
+			Module:FriendsPanel_UpdateButton(button)
+			usedHeight = usedHeight + height
+			button:Show()
+		else
+			button.index = nil
+			button:Hide()
+		end
+	end
+
+	HybridScrollFrame_Update(scrollFrame, numFriendButtons*height, usedHeight)
+end
+
+function Module:FriendsPanel_OnMouseWheel(delta)
+	local scrollBar = self.scrollBar
+	local step = delta * self.buttonHeight
+	if IsShiftKeyDown() then
+		step = step * 19
+	end
+
+	scrollBar:SetValue(scrollBar:GetValue() - step)
+	Module:FriendsPanel_Update()
+end
+
+function Module:FriendsPanel_Refresh()
+	local numFriends = C_FriendList_GetNumFriends()
+	local onlineFriends = C_FriendList_GetNumOnlineFriends()
 	local numBNet, onlineBNet = BNGetNumFriends()
 	local totalOnline = onlineFriends + onlineBNet
 	local totalFriends = numFriends + numBNet
 
+	Module.numFriends = numFriends
+	Module.onlineFriends = onlineFriends
+	Module.numBNet = numBNet
+	Module.onlineBNet = onlineBNet
+	Module.totalOnline = totalOnline
+	Module.totalFriends = totalFriends
+end
+
+local function FriendsPanel_OnEnter()
+	local thisTime = GetTime()
+	if not prevTime or (thisTime - prevTime > 5) then
+		Module:FriendsPanel_Refresh()
+		prevTime = thisTime
+	end
+
+	local numFriends = Module.numFriends
+	local numBNet = Module.numBNet
+	local totalOnline = Module.totalOnline
+	local totalFriends = Module.totalFriends
+
 	if totalOnline == 0 then
 		GameTooltip:SetOwner(Module.FriendsDataTextFrame, "ANCHOR_NONE")
-		GameTooltip:SetPoint("BOTTOMLEFT", Module.FriendsDataTextFrame, "TOPRIGHT", 6, 10)
+		GameTooltip:SetPoint("BOTTOMRIGHT", Module.FriendsDataTextFrame, "TOPRIGHT", 5, 2)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0, 0.6, 1, 0, 0.6, 1)
+		GameTooltip:AddDoubleLine(FRIENDS_LIST, format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0,.6,1, 0,.6,1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("No Online", 1, 1, 1)
+		GameTooltip:AddLine(NONE, 1,1,1)
 		GameTooltip:Show()
 		return
 	end
@@ -508,69 +479,52 @@ local function OnEnter()
 		updateRequest = true
 	end
 
-	if KKUI_GuildDataTextFrame and KKUI_GuildDataTextFrame:IsShown() then
-		KKUI_GuildDataTextFrame:Hide()
+	if KKUI_GuildInfobar and KKUI_GuildInfobar:IsShown() then
+		KKUI_GuildInfobar:Hide()
 	end
 
-	setupFriendsFrame()
-	friendsFrame.numFriends:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
-	updateFriendsFrame()
+	Module:FriendsPanel_Init()
+	Module:FriendsPanel_Update()
+	infoFrame.friendCountText:SetText(format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
 end
 
-local function OnEvent(_, event, arg1)
-	if event == "CHAT_MSG_SYSTEM" then
-		if not string_find(arg1, onlineString) and not string_find(arg1, offlineString) then
-			return
-		end
-	end
-
-	local onlineFriends = C_FriendList_GetNumOnlineFriends()
-	local _, onlineBNet = BNGetNumFriends()
-	if C["DataText"].HideText then
-		Module.FriendsDataTextFrame.Text:SetText("")
-	else
-		Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, onlineFriends + onlineBNet))
-	end
+local function FriendsPanel_OnEvent()
+	Module:FriendsPanel_Refresh()
+	Module.FriendsDataTextFrame.Text:SetText(format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
 
 	updateRequest = false
-	if friendsFrame and friendsFrame:IsShown() then
-		OnEnter()
+	if infoFrame and infoFrame:IsShown() then
+		FriendsPanel_OnEnter()
 	end
 end
 
 local function delayLeave()
-	if MouseIsOver(friendsFrame) then
+	if MouseIsOver(infoFrame) then
 		return
 	end
 
-	friendsFrame:Hide()
+	infoFrame:Hide()
 end
 
-local function OnLeave()
+local function FriendsPanel_OnLeave()
 	GameTooltip:Hide()
-
-	if not friendsFrame then
+	if not infoFrame then
 		return
 	end
 
-	C_Timer_After(0.1, delayLeave)
+	C_Timer_After(.1, delayLeave)
 end
 
-local function OnMouseUp(_, button)
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+local function FriendsPanel_OnMouseUp(_, btn)
+	if btn ~= "LeftButton" then
 		return
 	end
 
-	if button ~= "LeftButton" then
-		return
+	if infoFrame then
+		infoFrame:Hide()
 	end
 
-	if friendsFrame then
-		friendsFrame:Hide()
-	end
-
-	ToggleFriendsFrame(1)
+	ToggleFrame(FriendsFrame)
 end
 
 function Module:CreateSocialDataText()
@@ -591,17 +545,16 @@ function Module:CreateSocialDataText()
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.FriendsDataTextFrame.Text:SetPoint("LEFT", Module.FriendsDataTextFrame.Texture, "RIGHT", 0, 0)
 
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("FRIENDLIST_UPDATE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("CHAT_MSG_SYSTEM", OnEvent)
+	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", FriendsPanel_OnEvent)
+	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", FriendsPanel_OnEvent)
+	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_INFO_CHANGED", FriendsPanel_OnEvent)
+	Module.FriendsDataTextFrame:RegisterEvent("FRIENDLIST_UPDATE", FriendsPanel_OnEvent)
+	Module.FriendsDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", FriendsPanel_OnEvent)
 
-	Module.FriendsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.FriendsDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.FriendsDataTextFrame:SetScript("OnLeave", OnLeave)
-	Module.FriendsDataTextFrame:SetScript("OnEvent", OnEvent)
+	Module.FriendsDataTextFrame:SetScript("OnMouseUp", FriendsPanel_OnMouseUp)
+	Module.FriendsDataTextFrame:SetScript("OnEnter", FriendsPanel_OnEnter)
+	Module.FriendsDataTextFrame:SetScript("OnLeave", FriendsPanel_OnLeave)
+	Module.FriendsDataTextFrame:SetScript("OnEvent", FriendsPanel_OnEvent)
 
 	K.Mover(Module.FriendsDataTextFrame, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
 end

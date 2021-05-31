@@ -1,18 +1,41 @@
------------------------------------------
 -- SortBags, shirsig
 -- https://github.com/shirsig/SortBags
------------------------------------------
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
-local _G = getfenv(0)
-local select, pairs, ipairs, tonumber = select, pairs, ipairs, tonumber
-local min, abs, mod, ceil = min, abs, mod, ceil
-local gsub, strfind, tinsert, sort, format = gsub, strfind, tinsert, sort, format
-local GetContainerItemLink, GetContainerItemInfo, GetContainerNumSlots, GetBagName, GetItemInfo = GetContainerItemLink, GetContainerItemInfo, GetContainerNumSlots, GetBagName, GetItemInfo
-local ClearCursor, PickupContainerItem, BankButtonIDToInvSlotID = ClearCursor, PickupContainerItem, BankButtonIDToInvSlotID
-local ITEM_SPELL_CHARGES, ITEM_SPELL_TRIGGER_ONUSE = ITEM_SPELL_CHARGES, ITEM_SPELL_TRIGGER_ONUSE
-local ITEM_SOULBOUND, ITEM_BIND_QUEST, ITEM_CONJURED = ITEM_SOULBOUND, ITEM_BIND_QUEST, ITEM_CONJURED
-local BANK_CONTAINER = BANK_CONTAINER or -1
+local _G = _G
+local gsub = _G.gsub
+local ipairs = _G.ipairs
+local math_abs = _G.math.abs
+local math_ceil = _G.math.ceil
+local math_min = _G.math.min
+local mod = _G.mod
+local pairs = _G.pairs
+local select = _G.select
+local string_find = _G.string.find
+local string_format = _G.string.format
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local table_sort = _G.table.sort
+local tonumber = _G.tonumber
+
+local BANK_CONTAINER = _G.BANK_CONTAINER or -1
+local BankButtonIDToInvSlotID = _G.BankButtonIDToInvSlotID
+local ClearCursor = _G.ClearCursor
+local GetBagName = _G.GetBagName
+local GetBagSlotFlag = _G.GetBagSlotFlag
+local GetBankBagSlotFlag = _G.GetBankBagSlotFlag
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetItemInfo = _G.GetItemInfo
+local GetTime = _G.GetTime
+local ITEM_BIND_QUEST = _G.ITEM_BIND_QUEST
+local ITEM_CONJURED = _G.ITEM_CONJURED
+local ITEM_SOULBOUND = _G.ITEM_SOULBOUND
+local ITEM_SPELL_CHARGES = _G.ITEM_SPELL_CHARGES
+local ITEM_SPELL_TRIGGER_ONUSE = _G.ITEM_SPELL_TRIGGER_ONUSE
+local InCombatLockdown = _G.InCombatLockdown
+local PickupContainerItem = _G.PickupContainerItem
 
 local Start, LT, Move, TooltipInfo, Sort, Stack, Initialize, ContainerClass, Item, itemCharges
 local CONTAINERS
@@ -21,9 +44,10 @@ function _G.SortBags()
 	CONTAINERS = {0, 1, 2, 3, 4}
 	for i = #CONTAINERS, 1, -1 do
 		if GetBagSlotFlag(i - 1, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP) then
-			tremove(CONTAINERS, i)
+			table_remove(CONTAINERS, i)
 		end
 	end
+
 	Start()
 end
 
@@ -31,9 +55,10 @@ function _G.SortBankBags()
 	CONTAINERS = {-1, 5, 6, 7, 8, 9, 10}
 	for i = #CONTAINERS, 1, -1 do
 		if GetBankBagSlotFlag(i - 1, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP) then
-			tremove(CONTAINERS, i)
+			table_remove(CONTAINERS, i)
 		end
 	end
+
 	Start()
 end
 
@@ -62,80 +87,131 @@ local function union(...)
 			t[k] = true
 		end
 	end
+
 	return t
 end
 
 local MOUNTS = set(
--- rams
-5864, 5872, 5873, 18785, 18786, 18787, 18244, 19030, 13328, 13329,
--- horses
-2411, 2414, 5655, 5656, 18778, 18776, 18777, 18241, 12353, 12354,
--- sabers
-8629, 8631, 8632, 18766, 18767, 18902, 18242, 13086, 19902, 12302, 12303, 8628, 12326,
--- mechanostriders
-8563, 8595, 13321, 13322, 18772, 18773, 18774, 18243, 13326, 13327,
--- kodos
-15277, 15290, 18793, 18794, 18795, 18247, 15292, 15293,
--- wolves
-1132, 5665, 5668, 18796, 18797, 18798, 18245, 12330, 12351,
--- raptors
-8588, 8591, 8592, 18788, 18789, 18790, 18246, 19872, 8586, 13317,
--- undead horses
-13331, 13332, 13333, 13334, 18791, 18248, 13335,
--- qiraji battle tanks
-21218, 21321, 21323, 21324, 21176
+	-- rams
+	5864, 5872, 5873, 18785, 18786, 18787, 18244, 19030, 13328, 13329,
+
+	-- horses
+	2411, 2414, 5655, 5656, 18778, 18776, 18777, 18241, 12353, 12354,
+
+	-- sabers
+	8629, 8631, 8632, 18766, 18767, 18902, 18242, 13086, 19902, 12302, 12303, 8628, 12326,
+
+	-- mechanostriders
+	8563, 8595, 13321, 13322, 18772, 18773, 18774, 18243, 13326, 13327,
+
+	-- kodos
+	15277, 15290, 18793, 18794, 18795, 18247, 15292, 15293,
+
+	-- wolves
+	1132, 5665, 5668, 18796, 18797, 18798, 18245, 12330, 12351,
+
+	-- raptors
+	8588, 8591, 8592, 18788, 18789, 18790, 18246, 19872, 8586, 13317,
+
+	-- undead horses
+	13331, 13332, 13333, 13334, 18791, 18248, 13335,
+
+	-- qiraji battle tanks
+	21218, 21321, 21323, 21324, 21176
 )
 
-local SPECIAL = set(5462, 17696, 17117, 13347, 13289, 11511)
+local SPECIAL = set(
+	5462, 17696, 17117, 13347, 13289, 11511
+)
 
-local KEYS = set(9240, 17191, 13544, 12324, 16309, 12384, 20402)
+local KEYS = set(
+	9240, 17191, 13544, 12324, 16309, 12384, 20402
+)
 
-local TOOLS = set(7005, 12709, 19727, 5956, 2901, 6219, 10498, 6218, 6339, 11130, 11145, 16207, 9149, 15846, 6256, 6365, 6367)
+local TOOLS = set(
+	7005, 12709, 19727, 5956, 2901, 6219, 10498, 6218, 6339, 11130, 11145, 16207, 9149, 15846, 6256, 6365, 6367
+)
 
 local ENCHANTING_MATERIALS = set(
--- dust
-10940, 11083, 11137, 11176, 16204,
--- essence
-10938, 10939, 10998, 11082, 11134, 11135, 11174, 11175, 16202, 16203,
--- shard
-10978, 11084, 11138, 11139, 11177, 11178, 14343, 14344,
--- crystal
-20725
+	-- dust
+	10940, 11083, 11137, 11176, 16204,
+
+	-- essence
+	10938, 10939, 10998, 11082, 11134, 11135, 11174, 11175, 16202, 16203,
+
+	-- shard
+	10978, 11084, 11138, 11139, 11177, 11178, 14343, 14344,
+
+	-- crystal
+	20725
 )
 
-local HERBS = set(765, 785, 2447, 2449, 2450, 2452, 2453, 3355, 3356, 3357, 3358, 3369, 3818, 3819, 3820, 3821, 4625, 8153, 8831, 8836, 8838, 8839, 8845, 8846, 13463, 13464, 13465, 13466, 13467, 13468)
+local HERBS = set(
+	765, 785, 2447, 2449, 2450, 2452, 2453, 3355, 3356, 3357, 3358, 3369, 3818, 3819, 3820, 3821, 4625, 8153, 8831, 8836, 8838, 8839, 8845, 8846, 13463, 13464, 13465, 13466, 13467, 13468
+)
 
-local SEEDS = set(17034, 17035, 17036, 17037, 17038)
+local SEEDS = set(
+	17034, 17035, 17036, 17037, 17038
+)
 
 local CLASSES = {
 	-- arrow
 	{
-		containers = {2101, 5439, 7278, 11362, 3573, 3605, 7371, 8217, 2662, 19319, 18714},
-		items = set(2512, 2515, 3030, 3464, 9399, 11285, 12654, 18042, 19316),
+		containers = {
+			2101, 7278, 5439, 11362, 3573, 3605, 7371, 8217, 2662, 19319, 34100, 34105, 18714, 29144, 29143
+		},
+
+		items = set(
+			2512, 2515, 3030, 3464, 9399, 10579, 11285, 19316, 18042, 12654, 28053, 24417, 30611, 31949, 24412, 28056, 33803, 34581, 31737, 30319
+		),
 	},
+
 	-- bullet
 	{
-		containers = {2102, 5441, 7279, 11363, 3574, 3604, 7372, 8218, 2663, 19320},
-		items = set(2516, 2519, 3033, 3465, 4960, 5568, 8067, 8068, 8069, 10512, 10513, 11284, 11630, 13377, 15997, 19317),
+		containers = {
+			2102, 7279, 5441, 11363, 3574, 3604, 7372, 8218, 2663, 19320, 34099, 34106, 29118
+		},
+
+		items = set(
+			2516, 4960, 8067, 2519, 5568, 8068, 3033, 8069, 3465, 10512, 11284, 10513, 11630, 19317, 15997, 13377, 28060, 23772, 30612, 32883, 32882, 28061, 23773, 34582, 31735
+		),
 	},
+
 	-- soul
 	{
-		containers = {22243, 22244, 21340, 21341, 21342},
-		items = set(6265),
+		containers = {
+			22243, 22244, 21340, 21341, 21342
+		},
+
+		items = set(
+			6265
+		),
 	},
+
 	-- ench
 	{
-		containers = {22246, 22248, 22249},
+		containers = {
+			22246, 22248, 22249
+		},
+
 		items = union(
 		ENCHANTING_MATERIALS,
 		-- rods
-		set(6218, 6339, 11130, 11145, 16207)
+		set(
+			6218, 6339, 11130, 11145, 16207)
 		),
 	},
+
 	-- herb
 	{
-		containers = {22250, 22251, 22252},
-		items = union(HERBS, SEEDS)
+		containers = {
+			22250, 22251, 22252
+		},
+
+		items = union(
+			HERBS,
+			SEEDS
+		)
 	},
 }
 
@@ -148,7 +224,10 @@ do
 	local timeout
 
 	function Start()
-		if f:IsShown() then return end
+		if f:IsShown() then
+			return
+		end
+
 		Initialize()
 		timeout = GetTime() + 7
 		f:Show()
@@ -162,12 +241,13 @@ do
 		end
 		delay = delay - arg1
 		if delay <= 0 then
-			delay = .2
+			delay = 0.2
 			local complete = Sort()
 			if complete then
 				f:Hide()
 				return
 			end
+
 			Stack()
 		end
 	end)
@@ -183,6 +263,7 @@ function LT(a, b)
 		elseif not b[i] then
 			return false
 		end
+
 		i = i + 1
 	end
 end
@@ -197,7 +278,7 @@ function Move(src, dst)
 		PickupContainerItem(dst.container, dst.position)
 
 		if src.item == dst.item then
-			local count = min(src.count, itemStacks[dst.item] - dst.count)
+			local count = math_min(src.count, itemStacks[dst.item] - dst.count)
 			src.count = src.count - count
 			dst.count = dst.count + count
 			if src.count == 0 then
@@ -215,12 +296,13 @@ end
 do
 	local patterns = {}
 	for i = 1, 10 do
-		local text = gsub(format(ITEM_SPELL_CHARGES, i), '(-?%d+)(.-)|4([^;]-);', function(numberString, gap, numberForms)
-			local _, _, singular, dual, plural = strfind(numberForms, "(.+):(.+):(.+)");
+		local text = gsub(string_format(ITEM_SPELL_CHARGES, i), "(-?%d+)(.-)|4([^;]-);", function(numberString, gap, numberForms)
+			local _, _, singular, dual, plural = string_find(numberForms, "(.+):(.+):(.+)")
 			if not singular then
-				_, _, singular, plural = strfind(numberForms, "(.+):(.+)")
+				_, _, singular, plural = string_find(numberForms, "(.+):(.+)")
 			end
-			local i = abs(tonumber(numberString))
+
+			local i = math_abs(tonumber(numberString))
 			local numberForm
 			if i == 1 then
 				numberForm = singular
@@ -231,6 +313,7 @@ do
 			end
 			return numberString..gap..numberForm
 		end)
+
 		patterns[text] = i
 	end
 
@@ -252,11 +335,11 @@ function TooltipInfo(container, position)
 	local charges, usable, soulbound, quest, conjured
 	for i = 1, K.ScanTooltip:NumLines() do
 		local text = _G["KKUI_ScanTooltipTextLeft"..i]:GetText()
-
 		local extractedCharges = itemCharges(text)
+
 		if extractedCharges then
 			charges = extractedCharges
-		elseif strfind(text, "^"..ITEM_SPELL_TRIGGER_ONUSE) then
+		elseif string_find(text, "^"..ITEM_SPELL_TRIGGER_ONUSE) then
 			usable = true
 		elseif text == ITEM_SOULBOUND then
 			soulbound = true
@@ -272,25 +355,21 @@ end
 
 function Sort()
 	local complete = true
-
 	for _, dst in ipairs(model) do
 		if dst.targetItem and (dst.item ~= dst.targetItem or dst.count < dst.targetCount) then
 			complete = false
 
 			local sources, rank = {}, {}
-
 			for _, src in ipairs(model) do
-				if src.item == dst.targetItem
-				and src ~= dst
-				and not (dst.item and src.class and src.class ~= itemClasses[dst.item])
-				and not (src.targetItem and src.item == src.targetItem and src.count <= src.targetCount)
-				then
-					rank[src] = abs(src.count - dst.targetCount + (dst.item == dst.targetItem and dst.count or 0))
-					tinsert(sources, src)
+				if src.item == dst.targetItem and src ~= dst and not (dst.item and src.class and src.class ~= itemClasses[dst.item]) and not (src.targetItem and src.item == src.targetItem and src.count <= src.targetCount) then
+					rank[src] = math_abs(src.count - dst.targetCount + (dst.item == dst.targetItem and dst.count or 0))
+					table_insert(sources, src)
 				end
 			end
 
-			sort(sources, function(a, b) return rank[a] < rank[b] end)
+			table_sort(sources, function(a, b)
+				return rank[a] < rank[b]
+			end)
 
 			for _, src in ipairs(sources) do
 				if Move(src, dst) then
@@ -317,12 +396,11 @@ end
 
 do
 	local counts
-
 	local function insert(t, v)
 		if SortBagsRightToLeft then
-			tinsert(t, v)
+			table_insert(t, v)
 		else
-			tinsert(t, 1, v)
+			table_insert(t, 1, v)
 		end
 	end
 
@@ -332,8 +410,9 @@ do
 			if SortBagsRightToLeft and mod(counts[item], itemStacks[item]) ~= 0 then
 				count = mod(counts[item], itemStacks[item])
 			else
-				count = min(counts[item], itemStacks[item])
+				count = math_min(counts[item], itemStacks[item])
 			end
+
 			slot.targetItem = item
 			slot.targetCount = count
 			counts[item] = counts[item] - count
@@ -343,11 +422,10 @@ do
 
 	function Initialize()
 		model, counts, itemStacks, itemClasses, itemSortKeys = {}, {}, {}, {}, {}
-
 		for _, container in ipairs(CONTAINERS) do
 			local class = ContainerClass(container)
 			for position = 1, GetContainerNumSlots(container) do
-				local slot = {container=container, position=position, class=class}
+				local slot = {container = container, position = position, class = class}
 				local item = Item(container, position)
 				if item then
 					local _, count = GetContainerItemInfo(container, position)
@@ -355,18 +433,20 @@ do
 					slot.count = count
 					counts[item] = (counts[item] or 0) + count
 				end
+
 				insert(model, slot)
 			end
 		end
 
 		local free = {}
 		for item, count in pairs(counts) do
-			local stacks = ceil(count / itemStacks[item])
+			local stacks = math_ceil(count / itemStacks[item])
 			free[item] = stacks
 			if itemClasses[item] then
 				free[itemClasses[item]] = (free[itemClasses[item]] or 0) + stacks
 			end
 		end
+
 		for _, slot in ipairs(model) do
 			if slot.class and free[slot.class] then
 				free[slot.class] = free[slot.class] - 1
@@ -375,9 +455,12 @@ do
 
 		local items = {}
 		for item in pairs(counts) do
-			tinsert(items, item)
+			table_insert(items, item)
 		end
-		sort(items, function(a, b) return LT(itemSortKeys[a], itemSortKeys[b]) end)
+
+		table_sort(items, function(a, b)
+			return LT(itemSortKeys[a], itemSortKeys[b])
+		end)
 
 		for _, slot in ipairs(model) do
 			if slot.class then
@@ -418,7 +501,7 @@ end
 function Item(container, position)
 	local link = GetContainerItemLink(container, position)
 	if link then
-		local _, _, itemID, enchantID, suffixID, uniqueID = strfind(link, "item:(%d+):(%d*):(%d*):(%d*)")
+		local _, _, itemID, enchantID, suffixID, uniqueID = string_find(link, "item:(%d+):(%d*):(%d*):(%d*)")
 		itemID = tonumber(itemID)
 		local _, _, quality, _, _, _, _, stack, slot, _, sellPrice, classId, subClassId = GetItemInfo("item:" .. itemID)
 		local charges, usable, soulbound, quest, conjured = TooltipInfo(container, position)
@@ -426,83 +509,83 @@ function Item(container, position)
 		local sortKey = {}
 
 		-- hearthstone
-		if itemID == 6948 then
-			tinsert(sortKey, 1)
+		if itemID == 6948 or itemID == 184871 then
+			table_insert(sortKey, 1)
 
 			-- mounts
 		elseif MOUNTS[itemID] then
-			tinsert(sortKey, 2)
+			table_insert(sortKey, 2)
 
 			-- special items
 		elseif SPECIAL[itemID] then
-			tinsert(sortKey, 3)
+			table_insert(sortKey, 3)
 
 			-- key items
 		elseif KEYS[itemID] then
-			tinsert(sortKey, 4)
+			table_insert(sortKey, 4)
 
 			-- tools
 		elseif TOOLS[itemID] then
-			tinsert(sortKey, 5)
+			table_insert(sortKey, 5)
 
 			-- soul shards
 		elseif itemID == 6265 then
-			tinsert(sortKey, 14)
+			table_insert(sortKey, 14)
 
 			-- conjured items
 		elseif conjured then
-			tinsert(sortKey, 15)
+			table_insert(sortKey, 15)
 
 			-- soulbound items
 		elseif soulbound then
-			tinsert(sortKey, 6)
+			table_insert(sortKey, 6)
 
 			-- reagents
 		elseif classId == 9 then
-			tinsert(sortKey, 7)
+			table_insert(sortKey, 7)
 
 			-- quest items
 		elseif quest then
-			tinsert(sortKey, 9)
+			table_insert(sortKey, 9)
 
 			-- consumables
 		elseif usable and classId ~= 1 and classId ~= 2 and classId ~= 8 or classId == 4 then
-			tinsert(sortKey, 8)
+			table_insert(sortKey, 8)
 
 			-- enchanting materials
 		elseif ENCHANTING_MATERIALS[itemID] then
-			tinsert(sortKey, 11)
+			table_insert(sortKey, 11)
 
 			-- herbs
 		elseif HERBS[itemID] then
-			tinsert(sortKey, 12)
+			table_insert(sortKey, 12)
 
 			-- higher quality
 		elseif quality and quality > 1 then
-			tinsert(sortKey, 10)
+			table_insert(sortKey, 10)
 
 			-- common quality
 		elseif quality == 1 then
-			tinsert(sortKey, 13)
-			tinsert(sortKey, -sellPrice)
+			table_insert(sortKey, 13)
+			table_insert(sortKey, -sellPrice)
 
 			-- junk
 		elseif quality == 0 then
-			tinsert(sortKey, 14)
-			tinsert(sortKey, sellPrice)
+			table_insert(sortKey, 14)
+			table_insert(sortKey, sellPrice)
 		end
 
-		tinsert(sortKey, classId)
-		tinsert(sortKey, slot)
-		tinsert(sortKey, subClassId)
-		tinsert(sortKey, -quality)
-		tinsert(sortKey, itemID)
-		tinsert(sortKey, (SortBagsRightToLeft and 1 or -1) * charges)
-		tinsert(sortKey, suffixID)
-		tinsert(sortKey, enchantID)
-		tinsert(sortKey, uniqueID)
+		table_insert(sortKey, classId)
+		table_insert(sortKey, slot)
+		table_insert(sortKey, subClassId)
+		table_insert(sortKey, -quality)
+		table_insert(sortKey, itemID)
+		table_insert(sortKey, (SortBagsRightToLeft and 1 or -1) * charges)
+		table_insert(sortKey, suffixID)
+		table_insert(sortKey, enchantID)
+		table_insert(sortKey, uniqueID)
 
-		local key = format("%s:%s:%s:%s:%s:%s", itemID, enchantID, suffixID, uniqueID, charges, (soulbound and 1 or 0))
+		local key = string_format("%s:%s:%s:%s:%s:%s", itemID, enchantID, suffixID, uniqueID, charges, (soulbound and 1 or 0))
 
 		itemStacks[key] = stack
 		itemSortKeys[key] = sortKey

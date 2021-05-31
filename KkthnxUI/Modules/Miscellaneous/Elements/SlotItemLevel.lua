@@ -5,20 +5,11 @@ local _G = _G
 local next = _G.next
 local pairs = _G.pairs
 local select = _G.select
-local type = _G.type
 
-local C_Timer_After = _G.C_Timer.After
-local EquipmentManager_GetItemInfoByLocation = _G.EquipmentManager_GetItemInfoByLocation
-local EquipmentManager_UnpackLocation = _G.EquipmentManager_UnpackLocation
-local GetContainerItemLink = _G.GetContainerItemLink
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetItemInfo = _G.GetItemInfo
-local GetSpellInfo = _G.GetSpellInfo
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
-local hooksecurefunc = _G.hooksecurefunc
-local GetTradePlayerItemLink = _G.GetTradePlayerItemLink
-local GetTradeTargetItemLink = _G.GetTradeTargetItemLink
 
 local inspectSlots = {
 	"Head",
@@ -224,19 +215,19 @@ function Module:ItemLevel_UpdatePlayer()
 	Module:ItemLevel_SetupLevel(CharacterFrame, "Character", "player")
 end
 
-local anchored
-local function AnchorInspectRotate()
-	if anchored then return end
-	InspectModelFrameRotateRightButton:ClearAllPoints()
-	InspectModelFrameRotateRightButton:SetPoint("BOTTOM", InspectModelFrame, "TOP")
-	anchored = true
+local isHidden
+local function HideInspectRotate()
+	if isHidden then return end
+	InspectModelFrameRotateRightButton:Hide()
+	InspectModelFrameRotateLeftButton:Hide()
+	isHidden = true
 end
 
 function Module:ItemLevel_UpdateInspect(...)
 	local guid = ...
 	if InspectFrame and InspectFrame.unit and UnitGUID(InspectFrame.unit) == guid then
 		Module:ItemLevel_SetupLevel(InspectFrame, "Inspect", InspectFrame.unit)
-		AnchorInspectRotate()
+		HideInspectRotate()
 	end
 end
 
@@ -248,8 +239,8 @@ function Module:CreateSlotItemLevel()
 	-- iLvl on CharacterFrame
 	CharacterFrame:HookScript("OnShow", Module.ItemLevel_UpdatePlayer)
 	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.ItemLevel_UpdatePlayer)
-	CharacterModelFrameRotateRightButton:ClearAllPoints()
-	CharacterModelFrameRotateRightButton:SetPoint("BOTTOMLEFT", CharacterFrameTab1, "TOPLEFT", 0, 2)
+	CharacterModelFrameRotateRightButton:Hide()
+	CharacterModelFrameRotateLeftButton:Hide()
 
 	-- iLvl on InspectFrame
 	K:RegisterEvent("INSPECT_READY", Module.ItemLevel_UpdateInspect)

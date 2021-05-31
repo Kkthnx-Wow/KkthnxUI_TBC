@@ -227,6 +227,22 @@ function Module:HookHotKey(button)
 	end
 end
 
+function Module:UpdateEquipItemColor()
+	if not self.KKUI_Border then
+		return
+	end
+
+	if IsEquippedAction(self.action) then
+		self.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
+	else
+		if C["General"].ColorTextures then
+			self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			self.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
+	end
+end
+
 function Module:StyleActionButton(button, cfg)
 	if not button then
 		return
@@ -252,7 +268,7 @@ function Module:StyleActionButton(button, cfg)
 	local highlightTexture = button:GetHighlightTexture()
 
 	-- Normal buttons do not have a checked texture, but checkbuttons do and normal actionbuttons are checkbuttons
-	local checkedTexture = nil
+	local checkedTexture
 	if button.GetCheckedTexture then
 		checkedTexture = button:GetCheckedTexture()
 	end
@@ -280,7 +296,10 @@ function Module:StyleActionButton(button, cfg)
 	SetupTexture(normalTexture, cfg.normalTexture, "SetNormalTexture", button)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
-	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
+
+	if checkedTexture then
+		SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
+	end
 
 	-- Cooldown
 	SetupCooldown(cooldown, cfg.cooldown)
@@ -313,60 +332,6 @@ function Module:StyleActionButton(button, cfg)
 		end
 	end
 
-	button.__styled = true
-end
-
-function Module:StyleExtraActionButton(cfg)
-	local button = ExtraActionButton1
-	if button.__styled then
-		return
-	end
-
-	local buttonName = button:GetName()
-	local icon = _G[buttonName.."Icon"]
-	local hotkey = _G[buttonName.."HotKey"]
-	local count = _G[buttonName.."Count"]
-	local buttonstyle = button.style -- Artwork around the button
-	local cooldown = _G[buttonName.."Cooldown"]
-
-	local normalTexture = button:GetNormalTexture()
-	local pushedTexture = button:GetPushedTexture()
-	local highlightTexture = button:GetHighlightTexture()
-	local checkedTexture = button:GetCheckedTexture()
-
-	-- Border
-	button:CreateBorder()
-	button:StyleButton()
-
-	-- Textures
-	SetupTexture(icon, cfg.icon, "SetTexture", icon)
-	SetupTexture(buttonstyle, cfg.buttonstyle, "SetTexture", buttonstyle)
-	SetupTexture(normalTexture, cfg.normalTexture, "SetNormalTexture", button)
-	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
-	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
-	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
-
-	-- Cooldown
-	SetupCooldown(cooldown, cfg.cooldown)
-
-	-- Hotkey & Count
-	local overlay = CreateFrame("Frame", nil, button)
-	overlay:SetAllPoints()
-
-	local hotcountFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
-	hotkey:SetParent(overlay)
-	Module:HookHotKey(button)
-	cfg.hotkey.font = hotcountFont
-	SetupFontString(hotkey, cfg.hotkey)
-
-	if C["ActionBar"].Count then
-		count:SetParent(overlay)
-		cfg.count.font = hotcountFont
-		SetupFontString(count, cfg.count)
-	else
-		count:Hide()
-	end
-	
 	button.__styled = true
 end
 
@@ -403,25 +368,6 @@ function Module:StyleAllActionButtons(cfg)
 
 	-- Leave Vehicle
 	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"], cfg)
-
-	-- Extra action button
-	-- Module:StyleExtraActionButton(cfg)
-
-	-- Spell flyout
-	-- SpellFlyoutBackgroundEnd:SetTexture(nil)
-	-- SpellFlyoutHorizontalBackground:SetTexture(nil)
-	-- SpellFlyoutVerticalBackground:SetTexture(nil)
-	-- local function checkForFlyoutButtons()
-	-- 	local i = 1
-	-- 	local button = _G["SpellFlyoutButton"..i]
-	-- 	while button and button:IsShown() do
-	-- 		Module:StyleActionButton(button, cfg)
-	-- 		i = i + 1
-	-- 		button = _G["SpellFlyoutButton"..i]
-	-- 	end
-	-- end
-
-	-- SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
 end
 
 function Module:CreateBarSkin()
@@ -504,4 +450,6 @@ function Module:CreateBarSkin()
 	hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
 	Module:UpdateStanceHotKey()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
+	-- Equip item
+	hooksecurefunc("ActionButton_Update", Module.UpdateEquipItemColor)
 end

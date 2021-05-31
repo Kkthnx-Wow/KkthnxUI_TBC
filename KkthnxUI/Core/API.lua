@@ -528,8 +528,8 @@ local function addapi(object)
 	end
 end
 
-local handled = {Frame = true}
-local object = CreateFrame('Frame')
+local handled = {["Frame"] = true}
+local object = CreateFrame("Frame")
 addapi(object)
 addapi(object:CreateTexture())
 addapi(object:CreateFontString())
@@ -537,13 +537,11 @@ addapi(object:CreateMaskTexture())
 
 object = EnumerateFrames()
 while object do
-	if not object:IsForbidden() and not handled[object:GetObjectType()] then
+	local objectType = object.GetObjectType and object:GetObjectType()
+	if objectType and not handled[objectType] and not object:IsForbidden() then
 		addapi(object)
-		handled[object:GetObjectType()] = true
+		handled[objectType] = true
 	end
 
 	object = EnumerateFrames(object)
 end
-
-addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame('ScrollFrame')) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

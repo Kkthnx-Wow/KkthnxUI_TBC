@@ -159,6 +159,12 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover = {}
 	end
 
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking then
+		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = {}
+		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP = {}
+		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE = {}
+	end
+
 	if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == nil then
 		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = false
 	end
