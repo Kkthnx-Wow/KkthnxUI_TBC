@@ -38,13 +38,13 @@ function Module:GetSlotAnchor(index)
 	end
 
 	if index <= 5 or index == 9 or index == 15 then
-		return "BOTTOMLEFT", 40, 20
+		return "BOTTOMLEFT", 46, 20
 	elseif index == 16 then
-		return "BOTTOMRIGHT", -40, 2
+		return "BOTTOMRIGHT", -46, 2
 	elseif index == 17 then
-		return "BOTTOMLEFT", 40, 2
+		return "BOTTOMLEFT", 46, 2
 	else
-		return "BOTTOMRIGHT", -40, 20
+		return "BOTTOMRIGHT", -46, 20
 	end
 end
 
@@ -127,7 +127,6 @@ function Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
 				local gem = info.gems and info.gems[gemStep]
 				if gem then
 					texture:SetTexture(gem)
-					bg:SetBackdropBorderColor(1, 1, 1)
 					bg:Show()
 
 					gemStep = gemStep + 1

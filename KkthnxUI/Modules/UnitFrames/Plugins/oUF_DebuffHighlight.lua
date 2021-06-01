@@ -89,7 +89,7 @@ local function Enable(object)
 	end
 
 	-- Make sure aura scanning is active for this object
-	object:RegisterEvent("CHARACTER_POINTS_CHANGED", Update)
+	object:RegisterEvent("UNIT_AURA", Update)
 
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
 		local r, g, b, a = object:GetBackdropColor()
@@ -106,9 +106,10 @@ end
 
 local function Disable(object)
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
-		object:UnregisterEvent("CHARACTER_POINTS_CHANGED", Update)
+		object:UnregisterEvent("UNIT_AURA", Update)
 	end
 end
+
 
 oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
 

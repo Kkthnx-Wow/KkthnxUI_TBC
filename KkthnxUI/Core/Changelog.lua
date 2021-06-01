@@ -17,7 +17,15 @@ local CLOSE = _G.CLOSE
 local changelogData = {
 	"Added helm/cloak toggles in character frame",
 	"Added zone level infomation",
-	"Fixed toc for BCC"
+	"Fixed arena frames",
+	"Fixed debuff highlight wrong event",
+	"Fixed gem slot error when items have gem slots",
+	"Fixed heal prediction on player/target and focus",
+	"Fixed quest announcement module",
+	"Fixed toc for BCC",
+	"Removed boss frame code",
+	"Various checks added for addon conflicts",
+	"Various statusbar textures improved",
 }
 
 local changelogFrame

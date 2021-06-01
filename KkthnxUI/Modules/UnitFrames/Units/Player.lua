@@ -270,7 +270,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].ShowHealPrediction then
 		local myBar = CreateFrame("StatusBar", nil, self)
-		myBar:SetWidth(self:GetWidth())
+		myBar:SetWidth(playerWidth)
 		myBar:SetPoint("TOP", self.Health, "TOP")
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
@@ -279,7 +279,7 @@ function Module:CreatePlayer()
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
-		otherBar:SetWidth(self:GetWidth())
+		otherBar:SetWidth(playerWidth)
 		otherBar:SetPoint("TOP", self.Health, "TOP")
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
