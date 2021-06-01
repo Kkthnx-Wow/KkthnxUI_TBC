@@ -368,7 +368,7 @@ function Module:CreateGuildDataText()
 	end
 
 	Module.GuildDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -240)
+	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
 	Module.GuildDataTextFrame:SetSize(32, 32)
 
 	Module.GuildDataTextFrame.Texture = Module.GuildDataTextFrame:CreateTexture(nil, "BACKGROUND")
@@ -389,5 +389,5 @@ function Module:CreateGuildDataText()
 	Module.GuildDataTextFrame:SetScript("OnLeave", GuildPanel_OnLeave)
 	Module.GuildDataTextFrame:SetScript("OnEvent", GuildPanel_OnEvent)
 
-	K.Mover(Module.GuildDataTextFrame, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 4, -240})
+	K.Mover(Module.GuildDataTextFrame, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 0, -240})
 end

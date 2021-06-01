@@ -44,26 +44,19 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
-	["HealthAlert"] = false,
-	["ItemAlert"] = false,
-	["PullCountdown"] = true,
-	["PvPEmote"] = false,
-	["ResetInstance"] = true,
-	["SaySapped"] = false,
-	["Interrupt"] = false,
-	["OwnInterrupt"] = true,
 	["AlertInInstance"] = true,
 	["BrokenSpell"] = false,
-
-	-- ["Daily"] = false,
-	-- ["IncludeDetails"] = true,
-	-- ["Level"] = false,
-	-- ["LevelHideOnMax"] = true,
-	-- ["Paused"] = false,
-	-- ["QuestNotifier"] = false,
-	-- ["SuggestedGroup"] = true,
-	-- ["Tag"] = true,
-	-- ["Weekly"] = false,
+	["HealthAlert"] = false,
+	["Interrupt"] = false,
+	["ItemAlert"] = false,
+	["OnlyCompleteRing"] = false,
+	["OwnInterrupt"] = true,
+	["PullCountdown"] = true,
+	["PvPEmote"] = false,
+	["QuestNotification"] = false,
+	["QuestProgress"] = false,
+	["ResetInstance"] = true,
+	["SaySapped"] = false,
 }
 
 -- Automation
@@ -316,6 +309,7 @@ C["Misc"] = {
 	["EasyMarking"] = false,
 	["EnhancedFriends"] = false,
 	["GemEnchantInfo"] = false,
+	["HelmCloakToggle"] = false,
 	["HideBossEmote"] = false,
 	["ItemLevel"] = false,
 	["MouseTrail"] = false,
@@ -458,6 +452,7 @@ C["Tooltip"] = {
 	["Icons"] = true,
 	["ShowIDs"] = false,
 	["TargetBy"] = true,
+	["VendorPrice"] = true,
 }
 
 -- Fonts
@@ -586,20 +581,6 @@ C["Party"] = {
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
-	["HealthbarColor"] = {
-		["Options"] = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		["Value"] = "Class"
-	},
-}
-
-C["Boss"] = {
-	["Castbars"] = true,
-	["Enable"] = true,
-	["Smooth"] = false,
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",

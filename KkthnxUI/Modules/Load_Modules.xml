@@ -86,7 +86,6 @@
    <Script file="UnitFrames\Units\Pet.lua" />
    <Script file="UnitFrames\Units\Focus.lua" />
    <Script file="UnitFrames\Units\FocusTarget.lua" />
-   <Script file="UnitFrames\Units\Boss.lua" />
    <Script file="UnitFrames\Units\Arena.lua" />
    <Script file="UnitFrames\Units\Nameplates.lua" />
    <Script file="UnitFrames\Groups\Party.lua" />
@@ -99,11 +98,13 @@
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
+   <Script file="Tooltip\Elements\VendorPrice.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
    <Script file="Miscellaneous\Elements\CharacterStatPanel.lua" />
+   <Script file="Miscellaneous\Elements\HelmCloakToggle.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MouseTrail.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
@@ -122,7 +123,7 @@
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
    <Script file="Announcements\Elements\KillingBlow.lua" />
-   <!-- <Script file="Announcements\Elements\QuestNotifier.lua" /> -->
+   <Script file="Announcements\Elements\QuestNotifier.lua" />
    <Script file="Announcements\Elements\ResetInstance.lua" />
    <Script file="Announcements\Elements\Sapped.lua" />
    <!-- Automation -->

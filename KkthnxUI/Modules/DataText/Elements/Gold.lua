@@ -194,7 +194,7 @@ function Module:CreateGoldDataText()
 
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
+		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
 		Module.GoldDataTextFrame:SetSize(32, 32)
 
 		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
@@ -220,6 +220,6 @@ function Module:CreateGoldDataText()
 		Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
 		Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
 
-		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
+		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
 	end
 end

@@ -533,7 +533,7 @@ function Module:CreateSocialDataText()
 	end
 
 	Module.FriendsDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -270)
+	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
 	Module.FriendsDataTextFrame:SetSize(32, 32)
 
 	Module.FriendsDataTextFrame.Texture = Module.FriendsDataTextFrame:CreateTexture(nil, "BACKGROUND")
@@ -556,5 +556,5 @@ function Module:CreateSocialDataText()
 	Module.FriendsDataTextFrame:SetScript("OnLeave", FriendsPanel_OnLeave)
 	Module.FriendsDataTextFrame:SetScript("OnEvent", FriendsPanel_OnEvent)
 
-	K.Mover(Module.FriendsDataTextFrame, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
+	K.Mover(Module.FriendsDataTextFrame, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 0, -270})
 end

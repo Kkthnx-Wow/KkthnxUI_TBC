@@ -14,7 +14,6 @@ local AFK = _G.AFK
 local BOSS = _G.BOSS
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local DAMAGE = _G.DAMAGE
 local DEAD = _G.DEAD
 local DND = _G.DND
 local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
@@ -25,12 +24,10 @@ local GetGuildInfo = _G.GetGuildInfo
 local GetItemInfo = _G.GetItemInfo
 local GetMouseFocus = _G.GetMouseFocus
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
-local HEALER = _G.HEALER
 local ICON_LIST = _G.ICON_LIST
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LEVEL = _G.LEVEL
@@ -38,29 +35,22 @@ local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local PVP = _G.PVP
-local TANK = _G.TANK
 local TARGET = _G.TARGET
 local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 local UIParent = _G.UIParent
-local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
-local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDND = _G.UnitIsDND
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
-local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitPVPName = _G.UnitPVPName
@@ -545,6 +535,7 @@ function Module:OnEnable()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
+	self:CreateVendorPrice()
 end
 
 -- Tooltip Skin Registration

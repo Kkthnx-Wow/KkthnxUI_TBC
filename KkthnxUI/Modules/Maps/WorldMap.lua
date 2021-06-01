@@ -27,6 +27,21 @@ local function CoordsFormat(owner, none)
 	return owner..K.MyClassColor..text
 end
 
+local function GetQuestDifficultyColor(level, playerLevel)
+	level = level - (playerLevel or UnitLevel("player"))
+	if (level > 4) then
+		return K.RGBToHex(K.oUF.colors.reaction[2])
+	elseif (level > 2) then
+		return K.RGBToHex(K.oUF.colors.reaction[4])
+	elseif (level >= -2) then
+		return K.RGBToHex(K.oUF.colors.selection[3])
+	elseif (level >= -GetQuestGreenRange()) then
+		return K.RGBToHex(K.oUF.colors.reaction[5])
+	else
+		return K.RGBToHex(K.oUF.colors.selection[5])
+	end
+end
+
 local function UpdateCoords(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
@@ -153,6 +168,80 @@ local function CreateMapPartyDots()
 	WorldMapUnitPin:SynchronizePinSizes()
 end
 
+local function SetupMapAreaLabel(self)
+	self:ClearLabel(MAP_AREA_LABEL_TYPE.AREA_NAME)
+	local map = self.dataProvider:GetMap()
+	if (map:IsCanvasMouseFocus()) then
+		local name, description
+		local uiMapID = map:GetMapID()
+		local normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition()
+		local positionMapInfo = C_Map.GetMapInfoAtPosition(uiMapID, normalizedCursorX, normalizedCursorY)
+		if (positionMapInfo and (positionMapInfo.mapID ~= uiMapID)) then
+			name = positionMapInfo.name
+			local playerMinLevel, playerMaxLevel, playerFaction, playerMinFishing
+			if (C.MapZoneData[positionMapInfo.mapID]) then
+				playerMinLevel = C.MapZoneData[positionMapInfo.mapID].minLevel
+				playerMaxLevel = C.MapZoneData[positionMapInfo.mapID].maxLevel
+				playerFaction = C.MapZoneData[positionMapInfo.mapID].faction
+				playerMinFishing = C.MapZoneData[positionMapInfo.mapID].minFish
+			end
+
+			if (playerFaction) then
+				local englishFaction = UnitFactionGroup("player")
+				if (playerFaction == "Alliance") then
+					description = string.format(FACTION_CONTROLLED_TERRITORY, FACTION_ALLIANCE)
+				elseif (playerFaction == "Horde") then
+					description = string.format(FACTION_CONTROLLED_TERRITORY, FACTION_HORDE)
+				end
+
+				if (englishFaction == playerFaction) then
+					description = K.RGBToHex(K.oUF.colors.reaction[5])..description..FONT_COLOR_CODE_CLOSE
+				else
+					description = K.RGBToHex(K.oUF.colors.reaction[2])..description..FONT_COLOR_CODE_CLOSE
+				end
+			end
+
+			if (name and playerMinLevel and playerMaxLevel and (playerMinLevel > 0) and (playerMaxLevel > 0)) then
+				local playerLevel = UnitLevel("player")
+				local color
+				if (playerLevel < playerMinLevel) then
+					color = GetQuestDifficultyColor(playerMinLevel, playerLevel)
+				elseif (playerLevel > playerMaxLevel) then
+					-- subtract 2 from the maxLevel so zones entirely below the player's level won't be yellow
+					color = GetQuestDifficultyColor(playerMaxLevel - 2, playerLevel)
+				else
+					color = K.RGBToHex(K.oUF.colors.reaction[4])
+				end
+
+				if (playerMinLevel ~= playerMaxLevel) then
+					name = name..color.." ("..playerMinLevel.."-"..playerMaxLevel..")"..FONT_COLOR_CODE_CLOSE
+				else
+					name = name..color.." ("..playerMaxLevel..")"..FONT_COLOR_CODE_CLOSE
+				end
+			end
+
+			if playerMinFishing then
+				description = "Fishing"..": "..playerMinFishing
+			end
+		else
+			name = MapUtil.FindBestAreaNameAtMouse(uiMapID, normalizedCursorX, normalizedCursorY)
+		end
+		if name then
+			self:SetLabel(MAP_AREA_LABEL_TYPE.AREA_NAME, name, description)
+		end
+	end
+
+	self:EvaluateLabels()
+end
+
+local function CreateZoneLevels()
+	for provider in next, WorldMapFrame.dataProviders do
+		if provider.setAreaLabelCallback then
+			provider.Label:SetScript("OnUpdate", SetupMapAreaLabel)
+		end
+	end
+end
+
 function Module:OnEnable()
 	if not C["WorldMap"].SmallWorldMap then
 		return
@@ -212,6 +301,7 @@ function Module:OnEnable()
 	CreateMapPartyDots()
 	CreateMapCoords()
 	CreateMapFader()
+	CreateZoneLevels()
 
 	self:CreateWorldMapReveal()
 	self:CreateWowHeadLinks()

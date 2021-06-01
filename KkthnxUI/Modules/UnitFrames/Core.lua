@@ -12,11 +12,9 @@ local unpack = _G.unpack
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
--- local GetSpecialization = _G.GetSpecialization
 local GetTime = _G.GetTime
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
@@ -459,7 +457,6 @@ end
 
 local filteredStyle = {
 	["arena"] = true,
-	["boss"] = true,
 	["nameplate"] = true,
 	["target"] = true,
 }
@@ -535,7 +532,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			element.bolsterIndex = button
 			return true
 		end
-	elseif style == "nameplate" or style == "boss" or style == "arena" then
+	elseif style == "nameplate" or style == "arena" then
 		if element.__owner.isNameOnly then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
@@ -548,7 +545,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
 		end
-	elseif style == "PlayerPlate" or style == "boss" or style == "arena" then
+	elseif style == "PlayerPlate" or style == "arena" then
 		if C.PlayerNameplateWhiteList[spellID] then
 			return true
 		else
@@ -805,22 +802,6 @@ function Module:CreateUnits()
 		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
 		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
 		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
-	end
-
-	oUF:RegisterStyle("Boss", Module.CreateBoss)
-	oUF:SetActiveStyle("Boss")
-
-	local Boss = {}
-	for i = 1, MAX_BOSS_FRAMES do
-		Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
-		Boss[i]:SetSize(164, 34)
-
-		local moverWidth, moverHeight = Boss[i]:GetWidth(), Boss[i]:GetHeight() + 8
-		if i == 1 then
-			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, moverWidth, moverHeight)
-		else
-			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -66}, moverWidth, moverHeight)
-		end
 	end
 
 	if C["Arena"].Enable then
