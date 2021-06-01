@@ -75,34 +75,28 @@ local DispellPriority = {
 local DispellFilter
 do
 	local dispellClasses = {
-		['PRIEST'] = {
-			['Magic'] = true,
-			['Disease'] = true,
+		["DRUID"] = {
+			["Curse"] = true,
+			["Poison"] = true,
 		},
-		['SHAMAN'] = {
-			['Magic'] = false,
-			['Curse'] = oUF.Retail and true or false,
-			['Poison'] = true,
-			['Disease'] = true,
+		["PALADIN"] = {
+			["Magic"] = true,
+			["Poison"] = true,
+			["Disease"] = true,
 		},
-		['PALADIN'] = {
-			['Poison'] = true,
-			['Magic'] = true,
-			['Disease'] = true,
+		["PRIEST"] = {
+			["Magic"] = true,
+			["Disease"] = true,
 		},
-		['DRUID'] = {
-			['Magic'] = false,
-			['Curse'] = true,
-			['Poison'] = true,
-			['Disease'] = false,
+		["SHAMAN"] = {
+			["Poison"] = true,
+			["Disease"] = true,
 		},
-		['MAGE'] = {
-			['Curse'] = true,
+		["MAGE"] = {
+			["Curse"] = true,
 		},
-		['MONK'] = {
-			['Magic'] = false,
-			['Disease'] = true,
-			['Poison'] = true,
+		["WARLOCK"] = {
+			["Magic"] = true,
 		},
 	}
 

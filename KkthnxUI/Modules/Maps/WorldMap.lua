@@ -183,7 +183,6 @@ local function SetupMapAreaLabel(self)
 				playerMinLevel = C.MapZoneData[positionMapInfo.mapID].minLevel
 				playerMaxLevel = C.MapZoneData[positionMapInfo.mapID].maxLevel
 				playerFaction = C.MapZoneData[positionMapInfo.mapID].faction
-				playerMinFishing = C.MapZoneData[positionMapInfo.mapID].minFish
 			end
 
 			if (playerFaction) then
@@ -194,7 +193,7 @@ local function SetupMapAreaLabel(self)
 					description = string.format(FACTION_CONTROLLED_TERRITORY, FACTION_HORDE)
 				end
 
-				if (englishFaction == playerFaction) then
+				if (englishFaction == playerFaction) and playerMinFishing then
 					description = K.RGBToHex(K.oUF.colors.reaction[5])..description..FONT_COLOR_CODE_CLOSE
 				else
 					description = K.RGBToHex(K.oUF.colors.reaction[2])..description..FONT_COLOR_CODE_CLOSE
@@ -218,10 +217,6 @@ local function SetupMapAreaLabel(self)
 				else
 					name = name..color.." ("..playerMaxLevel..")"..FONT_COLOR_CODE_CLOSE
 				end
-			end
-
-			if playerMinFishing then
-				description = "Fishing"..": "..playerMinFishing
 			end
 		else
 			name = MapUtil.FindBestAreaNameAtMouse(uiMapID, normalizedCursorX, normalizedCursorY)

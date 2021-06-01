@@ -99,35 +99,6 @@ local tagStrings = {
 		end
 	end]],
 
-	['arcanecharges'] = [[function()
-		if(GetSpecialization() == SPEC_MAGE_ARCANE) then
-			local num = UnitPower('player', Enum.PowerType.ArcaneCharges)
-			if(num > 0) then
-				return num
-			end
-		end
-	end]],
-
-	['arenaspec'] = [[function(u)
-		local id = u:match('arena(%d)$')
-		if(id) then
-			local specID = GetArenaOpponentSpec(tonumber(id))
-			if(specID and specID > 0) then
-				local _, specName = GetSpecializationInfoByID(specID)
-				return specName
-			end
-		end
-	end]],
-
-	['chi'] = [[function()
-		if(GetSpecialization() == SPEC_MONK_WINDWALKER) then
-			local num = UnitPower('player', Enum.PowerType.Chi)
-			if(num > 0) then
-				return num
-			end
-		end
-	end]],
-
 	['classification'] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == 'rare') then
@@ -193,15 +164,6 @@ local tagStrings = {
 			local raidName, _, group = GetRaidRosterInfo(i)
 			if( raidName == name ) then
 				return group
-			end
-		end
-	end]],
-
-	['holypower'] = [[function()
-		if(GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
-			local num = UnitPower('player', Enum.PowerType.HolyPower)
-			if(num > 0) then
-				return num
 			end
 		end
 	end]],

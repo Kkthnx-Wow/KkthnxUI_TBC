@@ -68,7 +68,6 @@ button.isPlayer - indicates if the aura caster is the player or their vehicle (b
 --]]
 
 local _, ns = ...
-local B, C, L, DB = unpack(ns)
 local oUF = ns.oUF
 
 local VISIBLE = 1

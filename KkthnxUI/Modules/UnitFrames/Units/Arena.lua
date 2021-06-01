@@ -77,7 +77,7 @@ function Module:CreateArena()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
-	self.Power.displayAltPower = true
+	-- self.Power.displayAltPower = true
 
 	if C["Arena"].Smooth then
 		K:SmoothBar(self.Power)
@@ -95,9 +95,9 @@ function Module:CreateArena()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Arena"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[arenaspec] [name]")
+		self:Tag(self.Name, "[name]")
 	else
-		self:Tag(self.Name, "[arenaspec] [color][name]")
+		self:Tag(self.Name, "[color][name]")
 	end
 
 	local portraitSize
@@ -229,9 +229,9 @@ function Module:CreateArena()
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 	end
 
-	self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
-	self.PvPClassificationIndicator:SetSize(20, 20)
-	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 4, 0)
+	-- self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
+	-- self.PvPClassificationIndicator:SetSize(20, 20)
+	-- self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 4, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
@@ -246,8 +246,8 @@ function Module:CreateArena()
 	end
 	self.Trinket:CreateBorder()
 
-	local altPower = K.CreateFontString(self, 10, "")
-	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
-	self:Tag(altPower, "[altpower]")
-	altPower:Show()
+	-- local altPower = K.CreateFontString(self, 10, "")
+	-- altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
+	-- self:Tag(altPower, "[altpower]")
+	-- altPower:Show()
 end

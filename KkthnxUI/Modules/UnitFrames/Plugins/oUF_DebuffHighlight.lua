@@ -3,12 +3,12 @@ local _, ns = ...
 local oUF = ns.oUF or K.oUF
 
 local CanDispel = {
-	DRUID = {Magic = false, Curse = true, Poison = true},
-	MAGE = {Curse = true},
-	MONK = {Magic = false, Poison = true, Disease = true},
-	PALADIN = {Magic = false, Poison = true, Disease = true},
-	PRIEST = {Magic = false, Disease = true},
-	SHAMAN = {Magic = false, Curse = true}
+	PRIEST = { Magic = true, Disease = true },
+	SHAMAN = { Poison = true, Disease = true },
+	PALADIN	= { Magic = true, Poison = true, Disease = true },
+	MAGE = { Curse = true },
+	DRUID = { Curse = true, Poison = true },
+	WARLOCK	= { Magic = true },
 }
 
 local dispellist = CanDispel[K.Class] or {}
@@ -32,42 +32,6 @@ local function GetDebuffType(unit, filter)
 		end
 
 		i = i + 1
-	end
-end
-
-local function CheckSpec()
-	local spec = GetSpecialization()
-
-	if K.Class == "DRUID" then
-		if spec == 4 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
-	elseif K.Class == "MONK" then
-		if spec == 2 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
-	elseif K.Class == "PALADIN" then
-		if spec == 1 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
-	elseif K.Class == "PRIEST" then
-		if spec == 3 then
-			dispellist.Magic = false
-		else
-			dispellist.Magic = true
-		end
-	elseif K.Class == "SHAMAN" then
-		if spec == 3 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
 	end
 end
 
@@ -126,8 +90,6 @@ local function Enable(object)
 
 	-- Make sure aura scanning is active for this object
 	object:RegisterEvent("CHARACTER_POINTS_CHANGED", Update)
-	object:RegisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec, true)
-	CheckSpec()
 
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
 		local r, g, b, a = object:GetBackdropColor()
@@ -145,7 +107,6 @@ end
 local function Disable(object)
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
 		object:UnregisterEvent("CHARACTER_POINTS_CHANGED", Update)
-		object:UnregisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec)
 	end
 end
 

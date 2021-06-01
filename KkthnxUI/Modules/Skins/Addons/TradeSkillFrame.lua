@@ -19,7 +19,9 @@ function S:TradeSkill_OnEvent(addon)
 end
 
 function S:CreateTradeSkillSkin()
-	-- if not C.db["Skins"]["TradeSkills"] then return end
+	if IsAddOnLoaded("Leatrix_Plus") then
+        return
+    end
 
 	K:RegisterEvent("ADDON_LOADED", S.TradeSkill_OnEvent)
 end

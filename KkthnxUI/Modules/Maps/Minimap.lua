@@ -138,33 +138,35 @@ end
 
 function Module:ReskinRegions()
 	-- QueueStatus Button
-	if QueueStatusMinimapButton then
-		QueueStatusMinimapButton:ClearAllPoints()
-		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-		QueueStatusMinimapButtonBorder:Hide()
-		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
+	if MiniMapBattlefieldFrame then
+		MiniMapBattlefieldFrame:ClearAllPoints()
+		MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -2)
+		MiniMapBattlefieldBorder:Hide()
+		MiniMapBattlefieldIcon:SetAlpha(0)
+		BattlegroundShine:SetTexture(nil)
 
 		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
-		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
+		queueIcon:SetPoint("CENTER", MiniMapBattlefieldFrame)
 		queueIcon:SetSize(50, 50)
 		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
 
 		local queueIconAnimation = queueIcon:CreateAnimationGroup()
 		queueIconAnimation:SetLooping("REPEAT")
 		queueIconAnimation.rotation = queueIconAnimation:CreateAnimation("Rotation")
-		queueIconAnimation.rotation:SetDuration(2)
+		queueIconAnimation.rotation:SetDuration(6)
 		queueIconAnimation.rotation:SetDegrees(360)
 
-		hooksecurefunc("QueueStatusFrame_Update", function()
-			queueIcon:SetShown(QueueStatusMinimapButton:IsShown())
-		end)
+		hooksecurefunc("BattlefieldFrame_UpdateStatus", function()
+			queueIcon:SetShown(MiniMapBattlefieldFrame:IsShown())
 
-		hooksecurefunc("EyeTemplate_StartAnimating", function()
 			queueIconAnimation:Play()
-		end)
-
-		hooksecurefunc("EyeTemplate_StopAnimating", function()
-			queueIconAnimation:Stop()
+			for i = 1, MAX_BATTLEFIELD_QUEUES do
+				local status = GetBattlefieldStatus(i)
+				if status == "confirm" then
+					queueIconAnimation:Stop()
+					break
+				end
+			end
 		end)
 	end
 
@@ -272,7 +274,8 @@ end
 
 function Module:HideMinimapClock()
 	if TimeManagerClockButton then
-		TimeManagerClockButton:Hide()
+		TimeManagerClockButton:SetParent(K.UIFrameHider)
+		TimeManagerClockButton:UnregisterAllEvents()
 	end
 end
 
