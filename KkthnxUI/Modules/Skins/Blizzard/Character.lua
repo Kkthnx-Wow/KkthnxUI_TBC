@@ -4,6 +4,12 @@ local _G = _G
 
 local hooksecurefunc = _G.hooksecurefunc
 
+local function replaceBlueColor(bar, r, g, b)
+	if r == 0 and g == 0 and b > .99 then
+		bar:SetStatusBarColor(0, .6, 1, .5)
+	end
+end
+
 tinsert(C.defaultThemes, function()
 	for _, slot in pairs({PaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType('Button') then
@@ -40,4 +46,27 @@ tinsert(C.defaultThemes, function()
 	end
 
 	CharacterModelFrame:HookScript("OnMouseWheel", Model_OnMouseWheel)
+
+	local function UpdateFactionSkins()
+		for i = 1, GetNumFactions() do
+			local bar = _G["ReputationBar"..i]
+			if bar and not bar.styled then
+				bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+				bar.styled = true
+			end
+		end
+	end
+
+	ReputationFrame:HookScript("OnShow", UpdateFactionSkins)
+	ReputationFrame:HookScript("OnEvent", UpdateFactionSkins)
+
+	SkillDetailStatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+	hooksecurefunc(SkillDetailStatusBar, "SetStatusBarColor", replaceBlueColor)
+
+	for i = 1, 12 do
+		local name = "SkillRankFrame"..i
+		local bar = _G[name]
+		bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+		hooksecurefunc(bar, "SetStatusBarColor", replaceBlueColor)
+	end
 end)
