@@ -23,6 +23,10 @@ function S:CreateTradeSkillSkin()
         return
     end
 
+    if not C["Skins"].EnhancedTradeSkill then
+        return
+    end
+
 	K:RegisterEvent("ADDON_LOADED", S.TradeSkill_OnEvent)
 end
 

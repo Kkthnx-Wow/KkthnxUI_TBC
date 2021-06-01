@@ -71,6 +71,13 @@ end
 local frame
 
 function S:EnhancedQuestLog()
+	if IsAddOnLoaded("Leatrix_Plus") then
+        return
+    end
+
+	if not C["Skins"].EnhancedQuestLog then
+		return
+	end
 	-- Make the quest log frame double-wide
 	UIPanelWindows["QuestLogFrame"] = {area = "override", pushable = 0, xoffset = -16, yoffset = 12, bottomClampOverride = 140 + 12, width = 714, height = 487, whileDead = 1}
 
@@ -186,6 +193,14 @@ function S:EnhancedQuestLog()
 end
 
 function S:QuestLogLevel()
+	if IsAddOnLoaded("Leatrix_Plus") then
+        return
+    end
+
+	if not C["Skins"].EnhancedQuestLog then
+		return
+	end
+
 	local numEntries = GetNumQuestLogEntries()
 
 	for i = 1, QUESTS_DISPLAYED, 1 do

@@ -149,6 +149,7 @@ function Module:ReskinRegions()
 		queueIcon:SetPoint("CENTER", MiniMapBattlefieldFrame)
 		queueIcon:SetSize(50, 50)
 		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
+		queueIcon:Hide()
 
 		local queueIconAnimation = queueIcon:CreateAnimationGroup()
 		queueIconAnimation:SetLooping("REPEAT")
