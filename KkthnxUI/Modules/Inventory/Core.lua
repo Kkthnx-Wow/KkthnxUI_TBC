@@ -281,8 +281,8 @@ function Module:CreateSortButton(name)
 	sortButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\SortIcon")
 
 	sortButton:SetScript("OnClick", function()
-		if C["Inventory"].BagSortMode == 3 then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["BagSortDisabled"])
+		if C["Inventory"].BagSortMode.Value == 3 then
+			UIErrorsFrame:AddMessage(K.InfoColor.."BagSort has been disabled in GUI.")
 			return
 		end
 
@@ -754,8 +754,7 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
 		AddNewContainer("Bag", 6, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 7, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 8, "BagMount", filters.bagMount)
-		AddNewContainer("Bag", 9, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 8, "Junk", filters.bagsJunk)
 
 		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
@@ -767,12 +766,12 @@ function Module:OnEnable()
 		keyring:Hide()
 		f.main.keyring = keyring
 
-		AddNewContainer("Bank", 4, "BankFavourite", filters.bankFavourite)
 		AddNewContainer("Bank", 1, "bankAmmoItem", filters.bankAmmo)
-		AddNewContainer("Bank", 3, "BankLegendary", filters.bankLegendary)
 		AddNewContainer("Bank", 2, "BankEquipment", filters.bankEquipment)
-		AddNewContainer("Bank", 6, "BankConsumable", filters.bankConsumable)
+		AddNewContainer("Bank", 3, "BankLegendary", filters.bankLegendary)
+		AddNewContainer("Bank", 4, "BankFavourite", filters.bankFavourite)
 		AddNewContainer("Bank", 5, "BankGoods", filters.bankGoods)
+		AddNewContainer("Bank", 6, "BankConsumable", filters.bankConsumable)
 		AddNewContainer("Bank", 7, "BankQuest", filters.bankQuest)
 
 		f.bank = MyContainer:New("Bank", {Columns = bankWidth, Bags = "bank"})
@@ -1091,11 +1090,9 @@ function Module:OnEnable()
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
-		elseif string_match(name, "Mount") then
+		elseif string_match(name, MOUNT) then
 			label = MOUNTS
 		end
-
-		-- AddNewContainer("Bag", 8, "BagMount", filters.bagMount)
 
 		if label then
 			self.label = K.CreateFontString(self, 13, label, "OUTLINE", true, "TOPLEFT", 5, -8)
@@ -1188,7 +1185,7 @@ function Module:OnEnable()
 	end
 
 	-- Sort order
-	SetSortBagsRightToLeft(not C["Inventory"].BagSortMode == 1)
+	SetSortBagsRightToLeft(C["Inventory"].BagSortMode.Value == 1)
 	SetInsertItemsLeftToRight(false)
 
 	-- Init

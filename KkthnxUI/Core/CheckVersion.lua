@@ -5,7 +5,7 @@ local Module = K:NewModule("VersionCheck")
 -- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
-local string_format = _G.string.format
+-- local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local string_split = _G.string.split
 
@@ -15,9 +15,6 @@ local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
 local GetTime = _G.GetTime
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
-
-local isVCInit
-local lastVCTime = 0
 
 function Module:VersionCheck_Compare(new, old)
 	local new1, new2 = string_split(".", new)
@@ -30,7 +27,7 @@ function Module:VersionCheck_Compare(new, old)
 	old1, old2 = tonumber(old1), tonumber(old2)
 	if old1 > 10 then
 		old1, old2 = 0, 0
-	end
+ 	end
 
 	if new1 > old1 or (new1 == old1 and new2 > old2) then
 		return "IsNew"
@@ -39,43 +36,23 @@ function Module:VersionCheck_Compare(new, old)
 	end
 end
 
-function Module:VersionCheck_Create(text)
-	if not C["General"].VersionCheck then
-		return
-	end
-
-	HelpTip:Show(ChatFrame1, {
-		text = text,
-		buttonStyle = HelpTip.ButtonStyle.Okay,
-		targetPoint = HelpTip.Point.TopEdgeCenter,
-		offsetY = 10,
-	})
-end
-
-function Module:VersionCheck_Init()
-	if not isVCInit then
-		local status = Module:VersionCheck_Compare(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, K.Version)
-		if status == "IsNew" then
+local hasChecked
+function Module:VersionCheck_Initial()
+	if not hasChecked then
+		if Module:VersionCheck_Compare(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, K.Version) == "IsNew" then
 			local release = string_gsub(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
-			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
-		elseif status == "IsOld" then
-			KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = K.Version
+			-- K.ShowHelpTip(ChatFrame1, string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release), "TOP", 0, 70, nil, "Version")
+			K.Print("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release)
 		end
 
-		isVCInit = true
+		hasChecked = true
 	end
 end
 
-function Module:VersionCheck_Send(channel)
-	if GetTime() - lastVCTime >= 10 then
-		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, channel)
-		lastVCTime = GetTime()
-	end
-end
-
+local lastTime = 0
 function Module:VersionCheck_Update(...)
 	local prefix, msg, distType, author = ...
-	if prefix ~= "KKUIVersionCheck" then
+	if prefix ~= "KKUI_VersionCheck" then
 		return
 	end
 
@@ -87,30 +64,36 @@ function Module:VersionCheck_Update(...)
 	if status == "IsNew" then
 		KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = msg
 	elseif status == "IsOld" then
-		Module:VersionCheck_Send(distType)
+		if GetTime() - lastTime > 10 then
+			C_ChatInfo_SendAddonMessage("KKUI_VersionCheck", KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, distType)
+			lastTime = GetTime()
+		end
 	end
 
-	Module:VersionCheck_Init()
+	Module:VersionCheck_Initial()
 end
 
+local prevTime = 0
 function Module:VersionCheck_UpdateGroup()
-	if not IsInGroup() then
+	if not IsInGroup() or (GetTime() - prevTime < 30) then
 		return
 	end
 
-	Module:VersionCheck_Send(K.CheckChat())
+	prevTime = GetTime()
+	C_ChatInfo_SendAddonMessage("KKUI_VersionCheck", K.Version, IsInRaid() and "RAID" or "PARTY")
 end
 
 function Module:OnEnable()
-	Module:VersionCheck_Init()
-	C_ChatInfo_RegisterAddonMessagePrefix("KKUIVersionCheck")
-	K:RegisterEvent("CHAT_MSG_ADDON", Module.VersionCheck_Update)
+	hasChecked = not C["General"].VersionCheck
 
+	K:RegisterEvent("CHAT_MSG_ADDON", self.VersionCheck_Update)
+
+	Module:VersionCheck_Initial()
+	C_ChatInfo_RegisterAddonMessagePrefix("KKUI_VersionCheck")
 	if IsInGuild() then
-		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", K.Version, "GUILD")
-		lastVCTime = GetTime()
+		C_ChatInfo_SendAddonMessage("KKUI_VersionCheck", K.Version, "GUILD")
 	end
 
-	Module:VersionCheck_UpdateGroup()
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
+	self:VersionCheck_UpdateGroup()
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.VersionCheck_UpdateGroup)
 end

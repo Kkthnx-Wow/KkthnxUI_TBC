@@ -15,17 +15,13 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added helm/cloak toggles in character frame",
-	"Added zone level infomation",
-	"Fixed arena frames",
-	"Fixed debuff highlight wrong event",
-	"Fixed gem slot error when items have gem slots",
-	"Fixed heal prediction on player/target and focus",
-	"Fixed quest announcement module",
-	"Fixed toc for BCC",
-	"Removed boss frame code",
-	"Various checks added for addon conflicts",
-	"Various statusbar textures improved",
+	"Added Neon Purple Arrow for nameplates",
+	"Added color/sparks to swingbar",
+	"Fixed auto invite accept error",
+	"Fixed check version module code",
+	"Fixed mount filter being labeled twice in bags",
+	"Updated BagSortMode not working properly",
+	"Updated SortBags code",
 }
 
 local changelogFrame

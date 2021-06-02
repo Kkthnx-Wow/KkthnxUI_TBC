@@ -3,14 +3,12 @@ local GUI = K["GUI"]
 
 local _G = _G
 
-local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
-
 local enableTextColor = "|cff00cc4c"
 local newFeatureIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:12:12:-1:0|t"
 local emojiExample = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 
 local function UpdateBagSortOrder()
-	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	SetSortBagsRightToLeft(C["Inventory"].BagSortMode.Value == 1)
 end
 
 local function UpdateBagStatus()
@@ -252,10 +250,10 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
-	Window:CreateSwitch("Inventory", "ReverseSort", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "SpecialBagsColor", "Show Special Bags Color")
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
+	Window:CreateDropdown("Inventory", "BagSortMode", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateDropdown("Inventory", "AutoRepair", L["Auto Repair Gear"])
 
 	Window:CreateSection("Inventory Filters")

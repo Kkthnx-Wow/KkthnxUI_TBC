@@ -19,7 +19,6 @@ local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsInRaid = _G.IsInRaid
-local IsPartyLFG = _G.IsPartyLFG
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local SetCVar = _G.SetCVar
 local hooksecurefunc = _G.hooksecurefunc
@@ -118,6 +117,8 @@ end
 function Module:TabSetAlpha(alpha)
 	if self.glow:IsShown() and alpha ~= 1 then
 		self:SetAlpha(1)
+	elseif alpha < 0 then
+		self:SetAlpha(0)
 	end
 end
 
@@ -239,7 +240,7 @@ function Module:SkinChat()
 		Module.SetChatFont(self)
 	end
 
-	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
+	-- Security for font, in case if revert back to WoW default we restore instantly the kkthnxui font default.
 	hooksecurefunc(self, "SetFont", Module.SetChatFont)
 
 	self.styled = true
@@ -266,10 +267,6 @@ local cycles = {
 
 	{chatType = "RAID", use = function()
 			return IsInRaid()
-	end},
-
-	{chatType = "INSTANCE_CHAT", use = function()
-			return IsPartyLFG()
 	end},
 
 	{chatType = "GUILD", use = function()

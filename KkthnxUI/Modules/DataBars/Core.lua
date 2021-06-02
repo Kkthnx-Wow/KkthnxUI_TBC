@@ -11,15 +11,11 @@ local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
-local HONOR = _G.HONOR
 local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
 local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
-local UnitHonor = _G.UnitHonor
-local UnitHonorLevel = _G.UnitHonorLevel
-local UnitHonorMax = _G.UnitHonorMax
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
@@ -31,10 +27,6 @@ local backupColor = _G.FACTION_BAR_COLORS[1]
 
 function Module:ExperienceBar_ShouldBeVisible()
 	return K.Level ~= _G.MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-end
-
-function Module:PetExperienceBar_ShouldBeVisible()
-	return UnitLevel("pet") ~= MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
 end
 
 function Module:SetupExperience()

@@ -17,9 +17,9 @@ local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
 
 local function acceptText(link, daily)
 	if daily then
-		return string_format("%s: [%s]%s", "Accept Quest", DAILY, link)
+		return string_format("%s: [%s]%s", "Accepted Quest", DAILY, link)
 	else
-		return string_format("%s: %s", "Accept Quest", link)
+		return string_format("%s: %s", "Accepted Quest", link)
 	end
 end
 

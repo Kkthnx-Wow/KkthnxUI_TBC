@@ -134,18 +134,19 @@ function Module:CreatePet()
 	self:Tag(self.Level, "[fulllevel]")
 	self.Level:SetShown(not C["Unitframe"].HidePetLevel)
 
-	-- self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	-- self.Debuffs:SetWidth(82)
-	-- self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	-- self.Debuffs.num = 4 * 4
-	-- self.Debuffs.spacing = 6
-	-- self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-	-- self.Debuffs:SetHeight(self.Debuffs.size * 4)
-	-- self.Debuffs.initialAnchor = "TOPLEFT"
-	-- self.Debuffs["growth-y"] = "DOWN"
-	-- self.Debuffs["growth-x"] = "RIGHT"
-	-- self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	-- self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	-- self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+	-- self.Buffs:SetWidth(82)
+	-- self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
+	-- self.Buffs.num = 4 * 2
+	-- self.Buffs.spacing = 6
+	-- self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 2 - 1))) / self.Buffs.num)) * 2)
+	-- self.Buffs:SetHeight(self.Buffs.size * 2)
+	-- self.Buffs.initialAnchor = "TOPLEFT"
+	-- self.Buffs["growth-y"] = "DOWN"
+	-- self.Buffs["growth-x"] = "RIGHT"
+	-- self.Buffs.CustomFilter = Module.CustomFilter
+	-- self.Buffs.PostCreateIcon = Module.PostCreateAura
+	-- self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then

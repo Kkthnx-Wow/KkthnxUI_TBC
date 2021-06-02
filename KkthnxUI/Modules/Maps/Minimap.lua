@@ -177,6 +177,7 @@ function Module:ReskinRegions()
 		MiniMapTracking:ClearAllPoints()
 		MiniMapTracking:SetPoint("BOTTOMRIGHT", Minimap, -4, 4)
 		MiniMapTracking:SetFrameLevel(Minimap:GetFrameLevel() + 4)
+		MiniMapTrackingIcon:SetTexCoord(unpack(K.TexCoords))
 		MiniMapTrackingBorder:Hide()
 		MiniMapTrackingBackground:Hide()
 	end
