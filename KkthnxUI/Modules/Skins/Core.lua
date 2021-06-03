@@ -5,6 +5,7 @@ local _G = _G
 local table_wipe = _G.table.wipe
 
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local LE_ITEM_QUALITY_COMMON, BAG_ITEM_QUALITY_COLORS = _G.LE_ITEM_QUALITY_COMMON, _G.BAG_ITEM_QUALITY_COLORS
 
 C.defaultThemes = {}
 C.themes = {}

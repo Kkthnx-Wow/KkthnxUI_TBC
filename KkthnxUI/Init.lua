@@ -210,6 +210,9 @@ function K.SetupUIScale(init)
 		local ratio = 768 / K.ScreenHeight
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
 	elseif not InCombatLockdown() then
+		if scale >= 0.64 then
+			SetCVar("UIscale", scale) -- Fix blizzard chatframe offset
+		end
 		UIParent:SetScale(scale)
 	end
 end

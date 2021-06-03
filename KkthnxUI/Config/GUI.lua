@@ -253,7 +253,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "SpecialBagsColor", "Show Special Bags Color")
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
-	Window:CreateDropdown("Inventory", "BagSortMode", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
+	Window:CreateDropdown("Inventory", "BagSortMode", L["Umm Reverse The Sorting"], nil, nil, UpdateBagSortOrder)
 	Window:CreateDropdown("Inventory", "AutoRepair", L["Auto Repair Gear"])
 
 	Window:CreateSection("Inventory Filters")
