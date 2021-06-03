@@ -6,6 +6,7 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreatePet()
+	self.mystyle = "pet"
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -134,19 +135,19 @@ function Module:CreatePet()
 	self:Tag(self.Level, "[fulllevel]")
 	self.Level:SetShown(not C["Unitframe"].HidePetLevel)
 
-	-- self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-	-- self.Buffs:SetWidth(82)
-	-- self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
-	-- self.Buffs.num = 4 * 2
-	-- self.Buffs.spacing = 6
-	-- self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 2 - 1))) / self.Buffs.num)) * 2)
-	-- self.Buffs:SetHeight(self.Buffs.size * 2)
-	-- self.Buffs.initialAnchor = "TOPLEFT"
-	-- self.Buffs["growth-y"] = "DOWN"
-	-- self.Buffs["growth-x"] = "RIGHT"
-	-- self.Buffs.CustomFilter = Module.CustomFilter
-	-- self.Buffs.PostCreateIcon = Module.PostCreateAura
-	-- self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+	self.Buffs:SetWidth(82)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
+	self.Buffs.num = 4 * 2
+	self.Buffs.spacing = 6
+	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 2 - 1))) / self.Buffs.num)) * 2)
+	self.Buffs:SetHeight(self.Buffs.size * 2)
+	self.Buffs.initialAnchor = "TOPLEFT"
+	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs.CustomFilter = Module.CustomFilter
+	self.Buffs.PostCreateIcon = Module.PostCreateAura
+	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then

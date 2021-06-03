@@ -9,27 +9,19 @@ local CreateFrame = _G.CreateFrame
 
 local playerWidth = C["Unitframe"].PlayerFrameWidth
 
-function Module.PostUpdateAddPower(element, cur, max)
-	if element.Text and max > 0 then
+function Module.PostUpdateAddPower(element, _, cur, max)
+	-- if element.Text and max > 0 then
+	if max > 0 then
 		local perc = cur / max * 100
 		if perc == 100 then
-			perc = ""
+			--perc = ""
 			element:SetAlpha(0)
 		else
-			perc = string_format("%d%%", perc)
+			--perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
 		end
 
-		element.Text:SetText(perc)
-	end
-end
-
-local function updatePartySync(self)
-	local hasJoined = C_QuestSession.HasJoined()
-	if(hasJoined) then
-		self.QuestSyncIndicator:Show()
-	else
-		self.QuestSyncIndicator:Hide()
+		-- element.Text:SetText(perc)
 	end
 end
 
@@ -163,8 +155,6 @@ function Module:CreatePlayer()
 		self.Debuffs.CustomFilter = Module.CustomFilter
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-
-		-- self.Debuffs:CreateBorder()
 	end
 
 	if C["Unitframe"].PlayerBuffs then
@@ -351,51 +341,35 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		-- self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
-		-- self.AdditionalPower:SetHeight(5)
-		-- self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
-		-- self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
-		-- self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
-		-- self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		-- self.AdditionalPower.frequentUpdates = true
+		if K.Class ~= "DRUID" then
+			return
+		end
 
-		-- if C["Unitframe"].Smooth then
-		-- 	K:SmoothBar(self.AdditionalPower)
-		-- end
+		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
+		self.AdditionalPower:SetWidth(12)
+		self.AdditionalPower:SetOrientation("VERTICAL")
+		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+			self.AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
+			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
+		else
+			self.AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
+			self.AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
+		end
+		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
+		self.AdditionalPower:CreateBorder()
+		self.AdditionalPower.frequentUpdates = true
 
-		-- self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
-		-- self.AdditionalPower.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		-- self.AdditionalPower.Spark:SetAlpha(0.4)
-		-- self.AdditionalPower.Spark:SetHeight(5)
-		-- self.AdditionalPower.Spark:SetBlendMode("ADD")
-		-- self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		-- self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
-		-- self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
-		-- self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
-		-- self.AdditionalPower.Background.multiplier = 0.3
+		if C["Unitframe"].Smooth then
+			K:SmoothBar(self.AdditionalPower)
+		end
 
 		-- self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
 		-- self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
 		-- self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
 		-- self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
 
-		-- self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
-		-- self.AdditionalPower.displayPairs = {
-		-- 	["DRUID"] = {
-		-- 		[1] = true,
-		-- 		[3] = true,
-		-- 		[8] = true,
-		-- 	},
-
-		-- 	["SHAMAN"] = {
-		-- 		[11] = true,
-		-- 	},
-
-		-- 	["PRIEST"] = {
-		-- 		[13] = true,
-		-- 	}
-		-- }
+		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 	end
 
 	-- GCD spark
@@ -454,7 +428,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].Swingbar then
 		local bar = CreateFrame("Frame", nil, self)
 		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
-		bar:SetSize(width, 12)
+		bar:SetSize(width, 13)
 		if C["Unitframe"].PlayerCastbar then
 			bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
 		else
@@ -520,88 +494,6 @@ function Module:CreatePlayer()
 		self.Swing.bg = bg
 		self.Swing.hideOoc = true
 
-		-- local swingWidth = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
-
-		-- self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
-		-- self.Swing:SetSize(swingWidth, 14)
-		-- -- self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
-		-- self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
-
-		-- self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
-		-- self.Swing.Twohand:SetPoint("TOPLEFT")
-		-- self.Swing.Twohand:SetPoint("BOTTOMRIGHT")
-		-- self.Swing.Twohand:SetStatusBarTexture(UnitframeTexture)
-		-- self.Swing.Twohand:SetStatusBarColor(0.8, 0.3, 0.3)
-		-- self.Swing.Twohand:SetFrameLevel(20)
-		-- self.Swing.Twohand:SetFrameStrata("LOW")
-		-- self.Swing.Twohand:Hide()
-		-- self.Swing.Twohand:CreateBorder()
-
-		-- if C["Unitframe"].SwingbarTimer then
-		-- 	self.Swing.Twohand.Text = self.Swing.Twohand:CreateFontString(nil, "OVERLAY")
-		-- 	self.Swing.Twohand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		-- 	self.Swing.Twohand.Text:SetPoint("LEFT", self.Swing.Twohand, 3, 0)
-		-- 	self.Swing.Twohand.Text:SetSize(260 * 0.7, 14)
-		-- 	self.Swing.Twohand.Text:SetJustifyH("LEFT")
-		-- end
-
-		-- self.Swing.Twohand.Spark = self.Swing.Twohand:CreateTexture(nil, "OVERLAY")
-		-- self.Swing.Twohand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		-- self.Swing.Twohand.Spark:SetHeight(self.Swing:GetHeight())
-		-- self.Swing.Twohand.Spark:SetBlendMode("ADD")
-		-- self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		-- self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
-		-- -- self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
-		-- self.Swing.Mainhand:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
-		-- self.Swing.Mainhand:SetSize(swingWidth, 14)
-		-- self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
-		-- self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
-		-- self.Swing.Mainhand:SetFrameLevel(20)
-		-- self.Swing.Mainhand:SetFrameStrata("LOW")
-		-- self.Swing.Mainhand:Hide()
-		-- self.Swing.Mainhand:CreateBorder()
-
-		-- if C["Unitframe"].SwingbarTimer then
-		-- 	self.Swing.Mainhand.Text = self.Swing.Mainhand:CreateFontString(nil, "OVERLAY")
-		-- 	self.Swing.Mainhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		-- 	self.Swing.Mainhand.Text:SetPoint("LEFT", self.Swing.Mainhand, 3, 0)
-		-- 	self.Swing.Mainhand.Text:SetSize(260 * 0.7, 12)
-		-- 	self.Swing.Mainhand.Text:SetJustifyH("LEFT")
-		-- end
-
-		-- self.Swing.Mainhand.Spark = self.Swing.Mainhand:CreateTexture(nil, "OVERLAY")
-		-- self.Swing.Mainhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		-- self.Swing.Mainhand.Spark:SetHeight(self.Swing:GetHeight())
-		-- self.Swing.Mainhand.Spark:SetBlendMode("ADD")
-		-- self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		-- self.Swing.Offhand = CreateFrame("Statusbar", nil, self.Swing)
-		-- self.Swing.Offhand:SetPoint("BOTTOM", self.Swing.Mainhand, "TOP", 0, 6)
-		-- self.Swing.Offhand:SetSize(swingWidth, 14)
-		-- self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
-		-- self.Swing.Offhand:SetStatusBarColor(0.8, 0.3, 0.3)
-		-- self.Swing.Offhand:SetFrameLevel(20)
-		-- self.Swing.Offhand:SetFrameStrata("LOW")
-		-- self.Swing.Offhand:Hide()
-		-- self.Swing.Offhand:CreateBorder()
-
-		-- if C["Unitframe"].SwingbarTimer then
-		-- 	self.Swing.Offhand.Text = self.Swing.Offhand:CreateFontString(nil, "OVERLAY")
-		-- 	self.Swing.Offhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		-- 	self.Swing.Offhand.Text:SetPoint("LEFT", self.Swing.Offhand, 3, 0)
-		-- 	self.Swing.Offhand.Text:SetSize(260 * 0.7, 12)
-		-- 	self.Swing.Offhand.Text:SetJustifyH("LEFT")
-		-- end
-
-		-- self.Swing.Offhand.Spark = self.Swing.Offhand:CreateTexture(nil, "OVERLAY")
-		-- self.Swing.Offhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		-- self.Swing.Offhand.Spark:SetHeight(self.Swing:GetHeight())
-		-- self.Swing.Offhand.Spark:SetBlendMode("ADD")
-		-- self.Swing.Offhand.Spark:SetPoint("CENTER", self.Swing.Offhand:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		-- self.Swing.hideOoc = true
-
 		-- K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
 
@@ -647,20 +539,6 @@ function Module:CreatePlayer()
 	self.RestingIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.RestingIndicator:SetPoint("RIGHT", -2, 2)
 	self.RestingIndicator:SetSize(22, 22)
-
-	self.QuestSyncIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		self.QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)
-	else
-		self.QuestSyncIndicator:SetPoint("BOTTOM", self.Health, "BOTTOM", 0, -13)
-	end
-	self.QuestSyncIndicator:SetSize(26, 26)
-	self.QuestSyncIndicator:SetAtlas("QuestSharing-DialogIcon")
-	self.QuestSyncIndicator:Hide()
-
-	self:RegisterEvent("QUEST_SESSION_LEFT", updatePartySync, true)
-	self:RegisterEvent("QUEST_SESSION_JOINED", updatePartySync, true)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePartySync, true)
 
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")

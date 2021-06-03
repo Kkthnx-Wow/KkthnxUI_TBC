@@ -23,7 +23,6 @@ local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitInVehicle = _G.UnitInVehicle
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsEnemy = _G.UnitIsEnemy
@@ -526,13 +525,13 @@ end
 
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
-	if name and spellID == 209859 then
-		element.bolster = element.bolster + 1
-		if not element.bolsterIndex then
-			element.bolsterIndex = button
-			return true
-		end
-	elseif style == "nameplate" or style == "arena" then
+	-- if style == "pet" then
+	-- 	if spellID == 13543 or spellID == 1539 or spellID == 34456 or spellID == 19615 then
+	-- 		return true
+	-- 	else
+	-- 		return false
+	-- 	end
+	if style == "nameplate" or style == "arena" then
 		if element.__owner.isNameOnly then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then

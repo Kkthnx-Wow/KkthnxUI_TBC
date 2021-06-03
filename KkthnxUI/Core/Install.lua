@@ -103,70 +103,89 @@ end
 
 function Module:ForceChatSettings()
 	if KkthnxUIDB.Settings[K.Realm][K.Name].Chat then
-		KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width = 392
-		KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height = 150
+		if KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width ~= C["Chat"].Width then
+			KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width = C["Chat"].Width
+		end
+
+		if KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height ~= C["Chat"].Height then
+			KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height = C["Chat"].Height
+		end
 	end
 
 	K:GetModule("Chat"):UpdateChatSize()
 
-	-- Create our custom chatframes
+	-- General
 	FCF_ResetChatWindows()
-
 	FCF_SetLocked(ChatFrame1, 1)
+	FCF_SetWindowName(ChatFrame1, "General")
+	ChatFrame1:Show()
+
+	-- Combat Log
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
+	FCF_SetWindowName(ChatFrame2, "Log")
+	ChatFrame2:Show()
 
-	FCF_OpenNewWindow(TRADE)
+	-- Whispers
+	FCF_OpenNewWindow("Whisper")
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
+	ChatFrame3:Show()
 
-	FCF_OpenNewWindow(LOOT)
+	-- Trade
+	FCF_OpenNewWindow("Trade")
 	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
+	ChatFrame4:Show()
 
-	FCF_OpenNewWindow(WHISPER)
+	-- Loot
+	FCF_OpenNewWindow("Loot")
 	FCF_SetLocked(ChatFrame5, 1)
 	FCF_DockFrame(ChatFrame5)
+	ChatFrame5:Show()
 
-	FCF_SetChatWindowFontSize(nil, ChatFrame1, 12)
-	FCF_SetChatWindowFontSize(nil, ChatFrame2, 12)
-	FCF_SetChatWindowFontSize(nil, ChatFrame3, 12)
-	FCF_SetChatWindowFontSize(nil, ChatFrame4, 12)
-	FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
+	for _, name in ipairs(_G.CHAT_FRAMES) do
+		local frame = _G[name]
+		FCF_SetChatWindowFontSize(nil, frame, 12)
+	end
 
-	FCF_SetWindowName(ChatFrame1, GENERAL)
-	FCF_SetWindowName(ChatFrame2, GUILD_EVENT_LOG)
-
-	local ChatGroups = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT"}
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
-	for _, v in ipairs(ChatGroups) do
+	-- ChatFrame1
+	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
+	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
+	local chatGroup = {"SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT", "MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT"}
+	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
-	ChatGroups = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame4)
-	for _, v in ipairs(ChatGroups) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
+	-- ChatFrame3
+	chatGroup = {"WHISPER", "BN_WHISPER", "BN_CONVERSATION"}
+	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	for _, v in ipairs(chatGroup) do
+		ChatFrame_AddMessageGroup(_G.ChatFrame3, v)
 	end
 
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
+	-- ChatFrame4
+	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
+	ChatFrame_AddChannel(ChatFrame4, TRADE)
+	ChatFrame_AddChannel(ChatFrame4, GENERAL)
+	ChatFrame_AddChannel(ChatFrame4, "LookingForGroup")
 
-	ChatGroups = {"WHISPER", "BN_WHISPER"}
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
-	for _, v in ipairs(ChatGroups) do
+	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "MONEY", "SKILL"}
+	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
+	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
 	end
 
-	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
-	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
-
-	ChatGroups = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
+	-- set the chat groups names in class color to enabled for all chat groups which players names appear
+	chatGroup = {"SAY", "YELL", "GUILD", "OFFICER", "WHISPER", "WHISPER_INFORM", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "EMOTE", "CHANNEL1", "CHANNEL2", "CHANNEL3", "CHANNEL4", "CHANNEL5", "CHANNEL6", "CHANNEL7", "CHANNEL8", "CHANNEL9", "CHANNEL10", "CHANNEL11", "CHANNEL12", "CHANNEL13", "CHANNEL14", "CHANNEL15", "CHANNEL16", "CHANNEL17", "CHANNEL18", "CHANNEL19", "CHANNEL20"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
-		table.insert(ChatGroups, "CHANNEL"..i)
+		table.insert(chatGroup, 'CHANNEL'..i)
 	end
 
-	for _, v in ipairs(ChatGroups) do
+	for _, v in ipairs(chatGroup) do
 		ToggleChatColorNamesByClassGroup(true, v)
 	end
 
@@ -174,10 +193,6 @@ function Module:ForceChatSettings()
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
-
-	FCF_SavePositionAndDimensions(ChatFrame1)
-
-	C["Chat"].Lock = true
 end
 
 local function ForceHekiliOptions()

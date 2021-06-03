@@ -8,7 +8,6 @@ local string_find = _G.string.find
 local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX or 10
 local DEAD = _G.DEAD
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
-local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local LEVEL = _G.LEVEL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local UnitClass = _G.UnitClass
@@ -130,7 +129,7 @@ oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
 	if UnitIsFeignDeath(unit) then
-		return "|cff99ccff"..GetFeignDeathTag().."|r"
+		return "|cffffffff"..GetFeignDeathTag().."|r"
 	elseif UnitIsDead(unit) then
 		return "|cffCFCFCF"..DEAD.."|r"
 	elseif UnitIsGhost(unit) then

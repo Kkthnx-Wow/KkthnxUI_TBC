@@ -140,14 +140,29 @@ end
 tagEvents["currencies"] = tagEvents["currency"]
 
 tagPool["money"] = function(self)
-	local money = GetMoney() or 0
-	local str
+	local moneyamount = GetMoney() or 0
+	local coppername = "|cffeda55fc|r"
+	local silvername = "|cffc7c7cfs|r"
+	local goldname = "|cffffd700g|r"
 
-	local g,s,c = floor(money/1e4), floor(money/100) % 100, money % 100
+	local value = math.abs(moneyamount)
+	local gold = math.floor(value / 10000)
+	local silver = math.floor(mod(value / 100, 100))
+	local copper = math.floor(mod(value, 100))
 
-	if(g > 0) then str = (str and str.." " or "") .. g .. createIcon("Interface\\MoneyFrame\\UI-GoldIcon", self.iconValues) end
-	if(s > 0) then str = (str and str.." " or "") .. s .. createIcon("Interface\\MoneyFrame\\UI-SilverIcon", self.iconValues) end
-	if(c >= 0) then str = (str and str.." " or "") .. c .. createIcon("Interface\\MoneyFrame\\UI-CopperIcon", self.iconValues) end
+	local str = ""
+	if gold > 0 then
+		str = format("%d%s%s", gold, goldname, (silver > 0 or copper > 0) and " " or "")
+	end
+
+	if silver > 0 then
+		str = format("%s%d%s%s", str, silver, silvername, copper > 0 and " " or "")
+	end
+
+	if copper > 0 or value == 0 then
+		str = format("%s%d%s", str, copper, coppername)
+	end
+
 	return str
 end
 tagEvents["money"] = { "PLAYER_MONEY" }

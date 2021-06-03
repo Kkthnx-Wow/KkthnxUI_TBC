@@ -216,14 +216,10 @@ C["DataText"] = {
 }
 
 C["AuraWatch"] = {
-	["Enable"] = true,
 	["ClickThrough"] = false,
+	["Enable"] = true,
 	["IconScale"] = 1,
-	["InternalCD"] = {},
-	["AuraList"] = {
-		["Switcher"] = {},
-		["IgnoreSpells"] = {},
-	},
+	["WatchSpellRank"] = false,
 }
 
 -- General
@@ -493,7 +489,7 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	-- ["AdditionalPower"] = false,
+	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,
 	["CastReactionColor"] = false,

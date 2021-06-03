@@ -47,11 +47,9 @@ function Module:OnEnable()
 	-- Add Skins
 	self:CreateQuestTracker()
 	self:CreateTradeSkillSkin()
-	-- self:ReskinBartender4()
+	self:ReskinBugSack()
 	self:ReskinDeadlyBossMods()
 	self:ReskinDominos()
-	-- self:ReskinRareScanner()
-	-- self:ReskinSimulationcraft()
 	self:ReskinPawn()
 end
 

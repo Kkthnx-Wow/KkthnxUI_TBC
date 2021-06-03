@@ -223,6 +223,7 @@ local Automation = function(self)
 	local Window = self:CreateWindow(L["Automation"])
 
 	Window:CreateSection("Automation Toggles")
+	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 	Window:CreateSwitch("Automation", "AutoBlockStrangerInvites", L["Blocks Invites From Strangers"])
 	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
@@ -237,7 +238,6 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "AutoTabBinder", L["Only Tab Target Enemy Players"])
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
-	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 end
 
 local Inventory = function(self)
@@ -304,6 +304,7 @@ local AuraWatch = function(self)
 	Window:CreateButton(L["AuraWatch GUI"], nil, nil, SetupAuraWatch)
 	Window:CreateSwitch("AuraWatch", "Enable", enableTextColor..L["Enable AuraWatch"])
 	Window:CreateSwitch("AuraWatch", "ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.")
+	Window:CreateSwitch("AuraWatch", "WatchSpellRank", "Track All Spell Ranks")
 	Window:CreateSlider("AuraWatch", "IconScale", L["AuraWatch IconScale"], 0.8, 2, 0.1)
 end
 
@@ -635,7 +636,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "PetCombatText", L["Pet's Healing/Damage"])
 
 	Window:CreateSection("Unitframe Player")
-	-- Window:CreateSwitch("Unitframe", "AdditionalPower", L["Show Additional Mana Power (|CFFFF7D0ADruid|r, |CFFFFFFFFPriest|r, |CFF0070DEShaman|r)"])
+	Window:CreateSwitch("Unitframe", "AdditionalPower", L["Show Additional Mana Power (|CFFFF7D0ADruid|r)"])
 	Window:CreateSwitch("Unitframe", "CastbarLatency", L["Show Castbar Latency"])
 	Window:CreateSwitch("Unitframe", "GlobalCooldown", "Show Global Cooldown Spark")
 	Window:CreateSwitch("Unitframe", "PlayerBuffs", L["Show Player Frame Buffs"])

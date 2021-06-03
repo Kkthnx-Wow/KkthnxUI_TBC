@@ -168,6 +168,7 @@
    <Include file="Skins\Blizzard\LossControl.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" /> -->
    <!-- Skins AddOns -->
+   <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\Dominos.lua" />
@@ -181,7 +182,6 @@
 
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\BigWigs.lua" />
-   <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\ChocolateBar.lua" />
    <Include file="Skins\Addons\Immersion.lua" />
    <Include file="Skins\Addons\OPie.lua" />

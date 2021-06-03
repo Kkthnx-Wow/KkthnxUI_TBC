@@ -111,6 +111,28 @@ local function BuildAuraList()
 	wipe(C.AuraWatchList)
 end
 
+local auraListByName = {}
+local function BuildNamesForSpellRank()
+	if not C["AuraWatch"].WatchSpellRank then
+		return
+	end
+
+	for KEY, VALUE in pairs(AuraList) do
+		for spellID, value in pairs(VALUE.List) do
+			local name = GetSpellInfo(spellID)
+			if value.AuraID and name then
+				if not auraListByName[KEY] then
+					auraListByName[KEY] = {}
+				end
+
+				if not auraListByName[KEY][name] then
+					auraListByName[KEY][name] = value
+				end
+			end
+		end
+	end
+end
+
 local function BuildUnitIDTable()
 	for _, VALUE in pairs(AuraList) do
 		for _, value in pairs(VALUE.List) do
@@ -323,6 +345,7 @@ end
 local function InitSetup()
 	ConvertTable()
 	BuildAuraList()
+	BuildNamesForSpellRank()
 	BuildUnitIDTable()
 	BuildCooldownTable()
 	K:RegisterEvent("SPELLS_CHANGED", BuildCooldownTable)

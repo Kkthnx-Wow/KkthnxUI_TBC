@@ -204,6 +204,7 @@ function Module:SkinChat()
 	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", 25, 50)
 	eb:StripTextures(2)
 	eb:CreateBorder()
+	eb:Hide()
 	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
 
 	local lang = _G[name.."EditBoxLanguage"]
@@ -218,6 +219,11 @@ function Module:SkinChat()
 	tab.Text.SetFont = K.Noop
 	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
+
+	-- Hide editbox every time we click on a tab
+	tab:HookScript("OnClick", function()
+		eb:Hide()
+	end)
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
@@ -468,7 +474,7 @@ function Module:OnEnable()
 	if CHAT_OPTIONS then -- only flash whisper
 		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
 	end
-	-- SetCVar("chatStyle", "classic")
+	SetCVar("chatStyle", "classic")
 	SetCVar("chatClassColorOverride", 0)
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
