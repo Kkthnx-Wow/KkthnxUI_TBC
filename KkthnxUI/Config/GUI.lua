@@ -205,18 +205,17 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
 	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateSwitch("Announcements", "HealthAlert", L["Announce When Low On Health"])
-	--Window:CreateDropdown("Announcements", "Interrupt", L["Announce Interrupts"])
 
 	Window:CreateSection("Announcement Interrupt")
-	Window:CreateSwitch("Announcements", "Interrupt", "Interrupt/Stolen/Dispell Alert in group")
-	Window:CreateSwitch("Announcements", "AlertInInstance", "Only in non-LFG instance")
-	Window:CreateSwitch("Announcements", "BrokenSpell", "Brokenspell Alert")
-	Window:CreateSwitch("Announcements", "OwnInterrupt", "Only player and pets (Beside break)")
+	Window:CreateSwitch("Announcements", "Interrupt", L["Interrupt/Stolen/Dispell Alert in group"])
+	Window:CreateSwitch("Announcements", "AlertInInstance", L["Only in non-LFG instance"])
+	Window:CreateSwitch("Announcements", "BrokenSpell", L["Brokenspell Alert"])
+	Window:CreateSwitch("Announcements", "OwnInterrupt", L["Only player and pets (Beside break)"])
 
 	Window:CreateSection("QuestNotifier Toggles")
 	Window:CreateSwitch("Announcements", "QuestNotifier", enableTextColor..L["Enable QuestNotifier"])
-	Window:CreateSwitch("Announcements", "QuestProgress", "Alert on QuestProgress")
-	Window:CreateSwitch("Announcements", "OnlyCompleteRing", "Only Play Complete Sound")
+	Window:CreateSwitch("Announcements", "QuestProgress", L["Alert QuestProgress In Chat"])
+	Window:CreateSwitch("Announcements", "OnlyCompleteRing", L["Only Play Complete Quest Sound"])
 end
 
 local Automation = function(self)
@@ -359,7 +358,6 @@ local DataBars = function(self)
 
 	Window:CreateSection("DataBar Colors")
 	Window:CreateColorSelection("DataBars", "ExperienceColor", L["Experience Bar Color"])
-	Window:CreateColorSelection("DataBars", "HonorColor", L["Honor Bar Color"])
 	Window:CreateColorSelection("DataBars", "RestedColor", L["Rested Bar Color"])
 end
 
@@ -374,10 +372,10 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
-	Window:CreateSwitch("DataText", "Coords", "Enable Positon Coords")
+	Window:CreateSwitch("DataText", "Coords", "Enable Positon Coords") -- Needs Locale
 
 	Window:CreateSection("DataText Text")
-	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")
+	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")  -- Needs Locale
 end
 
 local General = function(self)
@@ -421,12 +419,12 @@ local Minimap = function(self)
 
 	Window:CreateSection("Minimap Toggles")
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor..L["Enable Minimap"])
-	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
+	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures) -- Blips are broken in TBC
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
 
 	Window:CreateSection("Minimap RecycleBin")
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
-	Window:CreateDropdown("Minimap", "RecycleBinPosition", "Set RecycleBin Positon")
+	Window:CreateDropdown("Minimap", "RecycleBinPosition", "Set RecycleBin Positon") -- Needs Locale
 
 	Window:CreateSection("Minimap Sizes")
 	Window:CreateSlider("Minimap", "Size", L["Minimap Size"], 120, 300, 1)
@@ -441,10 +439,10 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
 	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
 	Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
-	Window:CreateSwitch("Misc", "HelmCloakToggle", newFeatureIcon.."Add Helm/Cloak Toggle Buttons To Character Frame")
-	Window:CreateSwitch("Misc", "HideBossEmote", "Hide Boss Emotes")
+	Window:CreateSwitch("Misc", "HelmCloakToggle", newFeatureIcon.."Add Helm/Cloak Toggle Buttons To Character Frame") -- Needs Locale
+	Window:CreateSwitch("Misc", "HideBossEmote", "Hide Boss Emotes") -- Needs Locale
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
-	Window:CreateSwitch("Misc", "MuteSounds", "Mute Various Annoying Sounds In-Game")
+	Window:CreateSwitch("Misc", "MuteSounds", "Mute Various Annoying Sounds In-Game") -- Needs Locale
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
@@ -461,7 +459,7 @@ local Nameplate = function(self)
 	Window:CreateSection("Nameplate Toggles")
 	Window:CreateSwitch("Nameplate", "Enable", enableTextColor..L["Enable Nameplates"])
 	Window:CreateSwitch("Nameplate", "ClassIcon", L["Show Enemy Class Icons"])
-	Window:CreateSwitch("Nameplate", "ColoredTarget", "Colored Target Something Thing")
+	Window:CreateSwitch("Nameplate", "ColoredTarget", "Colored Target Something Thing") -- Needs Locale
 	Window:CreateSwitch("Nameplate", "CustomUnitColor", L["Colored Custom Units"])
 	Window:CreateSwitch("Nameplate", "FriendlyCC", L["Show Friendly ClassColor"])
 	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"])
@@ -474,7 +472,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
 	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"])
 	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"])
-	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture")
+	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture") -- Needs Locale
 	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], updateCustomUnitList)
 	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], updatePowerUnitList)
 
@@ -507,7 +505,7 @@ local Nameplate = function(self)
 	Window:CreateColorSelection("Nameplate", "InsecureColor", L["Insecure Color"])
 	Window:CreateColorSelection("Nameplate", "OffTankColor", L["Off-Tank Color"])
 	Window:CreateColorSelection("Nameplate", "SecureColor", L["Secure Color"])
-	Window:CreateColorSelection("Nameplate", "TargetColor", "Selected Target Coloring")
+	Window:CreateColorSelection("Nameplate", "TargetColor", "Selected Target Coloring") -- Needs Locale
 	Window:CreateColorSelection("Nameplate", "TargetIndicatorColor", L["TargetIndicator Color"])
 	Window:CreateColorSelection("Nameplate", "TransColor", L["Transition Color"])
 end
@@ -571,7 +569,7 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "Icons", L["Item Icons"])
 	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
-	Window:CreateSwitch("Tooltip", "VendorPrice", newFeatureIcon.."Show Item Sell Price Value")
+	Window:CreateSwitch("Tooltip", "VendorPrice", newFeatureIcon.."Show Item Sell Price Value") -- Needs Locale
 end
 
 local UIFonts = function(self)
@@ -638,7 +636,7 @@ local Unitframe = function(self)
 	Window:CreateSection("Unitframe Player")
 	Window:CreateSwitch("Unitframe", "AdditionalPower", L["Show Additional Mana Power (|CFFFF7D0ADruid|r)"])
 	Window:CreateSwitch("Unitframe", "CastbarLatency", L["Show Castbar Latency"])
-	Window:CreateSwitch("Unitframe", "GlobalCooldown", "Show Global Cooldown Spark")
+	Window:CreateSwitch("Unitframe", "GlobalCooldown", "Show Global Cooldown Spark") -- Needs Locale.. Though broken atm
 	Window:CreateSwitch("Unitframe", "PlayerBuffs", L["Show Player Frame Buffs"])
 	Window:CreateSwitch("Unitframe", "PlayerCastbar", L["Enable Player CastBar"])
 	Window:CreateSwitch("Unitframe", "PlayerDeBuffs", L["Show Player Frame Debuffs"])
@@ -697,7 +695,7 @@ local Unitframe = function(self)
 
 	Window:CreateSection("Unitframe Misc")
 	Window:CreateDropdown("Unitframe", "HealthbarColor", L["Health Color Format"])
-	Window:CreateDropdown("Unitframe", "PortraitStyle", L["Unitframe Portrait Style"], nil, "It is highly recommanded to NOT use 3D portraits as you could see a drop in FPS")
+	Window:CreateDropdown("Unitframe", "PortraitStyle", L["Unitframe Portrait Style"], nil, "It is highly recommanded to NOT use 3D portraits as you could see a drop in FPS") -- Needs Locale
 end
 
 local Party = function(self)
@@ -708,7 +706,7 @@ local Party = function(self)
 	Window:CreateSwitch("Party", "Castbars", L["Show Castbars"])
 	Window:CreateSwitch("Party", "ShowBuffs", L["Show Party Buffs"])
 	Window:CreateSwitch("Party", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
-	Window:CreateSwitch("Party", "ShowPartySolo", "Show Party Frames While Solo")
+	Window:CreateSwitch("Party", "ShowPartySolo", "Show Party Frames While Solo") -- Needs Locale
 	Window:CreateSwitch("Party", "ShowPet", L["Show Party Pets"])
 	Window:CreateSwitch("Party", "ShowPlayer", L["Show Player In Party"])
 	Window:CreateSwitch("Party", "Smooth", L["Smooth Bar Transition"])
@@ -742,7 +740,7 @@ local Raid = function(self)
 	Window:CreateSwitch("Raid", "ReverseRaid", L["Reverse Raid Frame Growth"])
 	Window:CreateSwitch("Raid", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Raid", "ShowNotHereTimer", L["Show Away/DND Status"])
-	Window:CreateSwitch("Raid", "ShowRaidSolo", "Show Raid Frames While Solo")
+	Window:CreateSwitch("Raid", "ShowRaidSolo", "Show Raid Frames While Solo") -- Needs Locale
 	Window:CreateSwitch("Raid", "ShowTeamIndex", L["Show Group Number Team Index"])
 	Window:CreateSwitch("Raid", "Smooth", L["Smooth Bar Transition"])
 	-- Window:CreateSwitch("Raid", "SpecRaidPos", L["Save Raid Positions Based On Specs"])
@@ -758,21 +756,21 @@ local Raid = function(self)
 	Window:CreateDropdown("Raid", "HealthFormat", L["Health Format"])
 
 	Window:CreateSection("Raid Buffs")
-	Window:CreateDropdown("Raid", "RaidBuffsStyle", "Select the buff style you want to use")
+	Window:CreateDropdown("Raid", "RaidBuffsStyle", "Select the buff style you want to use") -- Needs Locale
 
 	if C["Raid"].RaidBuffsStyle.Value == "Standard" then
-		Window:CreateDropdown("Raid", "RaidBuffs", "Enable buffs display & filtering")
-		Window:CreateSwitch("Raid", "DesaturateBuffs", "Desaturate buffs that are not by me")
+		Window:CreateDropdown("Raid", "RaidBuffs", "Enable buffs display & filtering") -- Needs Locale
+		Window:CreateSwitch("Raid", "DesaturateBuffs", "Desaturate buffs that are not by me") -- Needs Locale
 	elseif C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
-		Window:CreateSwitch("Raid", "AuraTrack", "Enable auras tracking module for healer (replace buffs)")
-		Window:CreateSwitch("Raid", "AuraTrackIcons", "Use squared icons instead of status bars")
-		Window:CreateSwitch("Raid", "AuraTrackSpellTextures", "Display icons texture on aura squares instead of colored squares")
-		Window:CreateSlider("Raid", "AuraTrackThickness", "Thickness size of status bars in pixel", 2, 10, 1)
+		Window:CreateSwitch("Raid", "AuraTrack", "Enable auras tracking module for healer (replace buffs)") -- Needs Locale
+		Window:CreateSwitch("Raid", "AuraTrackIcons", "Use squared icons instead of status bars") -- Needs Locale
+		Window:CreateSwitch("Raid", "AuraTrackSpellTextures", "Display icons texture on aura squares instead of colored squares") -- Needs Locale
+		Window:CreateSlider("Raid", "AuraTrackThickness", "Thickness size of status bars in pixel", 2, 10, 1) -- Needs Locale
 	end
 
 	Window:CreateSection("Raid Debuffs")
-	Window:CreateSwitch("Raid", "DebuffWatch", "Enable debuffs tracking (filtered auto by current gameplay (pvp or pve)")
-	Window:CreateSwitch("Raid", "DebuffWatchDefault", "We have already a debuff tracking list for pve and pvp, use it?")
+	Window:CreateSwitch("Raid", "DebuffWatch", "Enable debuffs tracking (filtered auto by current gameplay (pvp or pve)") -- Needs Locale
+	Window:CreateSwitch("Raid", "DebuffWatchDefault", "We have already a debuff tracking list for pve and pvp, use it?") -- Needs Locale
 end
 
 local WorldMap = function(self)

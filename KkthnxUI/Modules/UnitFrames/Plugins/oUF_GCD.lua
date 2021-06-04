@@ -5,6 +5,18 @@ local oUF = ns.oUF
 local starttime, duration, usingspell
 local GetTime = GetTime
 
+local spells = {
+	["DRUID"] = 1126,
+	["HUNTER"] = 1978,
+	["MAGE"] = 168,
+	["PALADIN"] = 20154,
+	["PRIEST"] = 1243,
+	["ROGUE"] = 1752,
+	["SHAMAN"] = 403,
+	["WARLOCK"] = 687,
+	["WARRIOR"] = 6673,
+}
+
 local Enable = function(self)
 	if not self.GCD then
 		return
@@ -43,7 +55,8 @@ local Enable = function(self)
 	end
 
 	local function UpdateGCD()
-		local start, dur = GetSpellCooldown(61304)
+		-- local start, dur = GetSpellCooldown(61304)
+		local start, dur = IsSpellKnown(spells[select(2, UnitClass("player"))])
 		if dur and dur > 0 and dur <= 2 then
 			usingspell = 1
 			starttime = start

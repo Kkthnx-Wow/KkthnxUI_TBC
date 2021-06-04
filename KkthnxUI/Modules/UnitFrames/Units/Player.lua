@@ -374,15 +374,15 @@ function Module:CreatePlayer()
 
 	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
-		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		self.GCD:SetWidth(playerWidth - portraitSize)
-		self.GCD:SetHeight(self.Health:GetHeight())
-		self.GCD:SetFrameStrata("HIGH")
-		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+		-- self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
+		-- self.GCD:SetWidth(playerWidth - portraitSize)
+		-- self.GCD:SetHeight(self.Health:GetHeight())
+		-- self.GCD:SetFrameStrata("HIGH")
+		-- self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 
-		self.GCD.Color = {1, 1, 1}
-		self.GCD.Height = 26
-		self.GCD.Width = 128
+		-- self.GCD.Color = {1, 1, 1}
+		-- self.GCD.Height = 26
+		-- self.GCD.Width = 128
 	end
 
 	-- if C["Unitframe"].EnergyTick then
@@ -419,8 +419,14 @@ function Module:CreatePlayer()
 		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
 
-		-- Default CombatText
+		-- Turn off Blizzard's default combat text.
 		SetCVar("enableFloatingCombatText", 0)
+		SetCVar("floatingCombatTextCombatHealing", 0)
+		SetCVar("floatingCombatTextCombatDamage", 0)
+		SHOW_COMBAT_TEXT = "0"
+		if (CombatText_UpdateDisplayedMessages) then
+			CombatText_UpdateDisplayedMessages()
+		end
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 

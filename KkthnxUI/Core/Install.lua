@@ -19,17 +19,14 @@ local DEFAULT = _G.DEFAULT
 local FCF_DockFrame = _G.FCF_DockFrame
 local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
 local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
-local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
 local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GENERAL = _G.GENERAL
-local GUILD_EVENT_LOG = _G.GUILD_EVENT_LOG
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local PlaySound = _G.PlaySound
 local SETTINGS = _G.SETTINGS
-local SOUNDKIT = _G.SOUNDKIT
 local SetCVar = _G.SetCVar
 local TRADE = _G.TRADE
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
@@ -117,23 +114,23 @@ function Module:ForceChatSettings()
 	-- General
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
-	FCF_SetWindowName(ChatFrame1, "General")
+	FCF_SetWindowName(ChatFrame1, L["General"])
 	ChatFrame1:Show()
 
 	-- Combat Log
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-	FCF_SetWindowName(ChatFrame2, "Log")
+	FCF_SetWindowName(ChatFrame2, L["CombatLog"])
 	ChatFrame2:Show()
 
 	-- Whispers
-	FCF_OpenNewWindow("Whisper")
+	FCF_OpenNewWindow(L["Whisper"])
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
 	ChatFrame3:Show()
 
 	-- Trade
-	FCF_OpenNewWindow("Trade")
+	FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
 	ChatFrame4:Show()
