@@ -136,6 +136,7 @@
    <Script file="Automation\Elements\Disenchant.lua" />
    <Script file="Automation\Elements\Invite.lua" />
    <Script file="Automation\Elements\Quest.lua" />
+   <Script file="Automation\Elements\RefillAmmo.lua" />
    <Script file="Automation\Elements\Release.lua" />
    <Script file="Automation\Elements\Resurrect.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />

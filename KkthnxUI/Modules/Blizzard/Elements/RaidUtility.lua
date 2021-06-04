@@ -69,14 +69,23 @@ end
 
 function Module:RaidTool_Header()
 	local frame = CreateFrame("Button", nil, UIParent)
-	frame:SetSize(126, 28)
+	frame:SetSize(120, 24)
 	frame:SetFrameLevel(2)
 	frame:SkinButton()
+	K.CreateFontString(frame, 13, "Raid Tool", "", true)
 	K.Mover(frame, "Raid Tool", "RaidManager", {"TOP", UIParent, "TOP", 0, -4})
+
+	-- Fake icon
+	local left = CreateFrame("Button", nil, frame)
+	left:SetPoint("RIGHT", frame, "LEFT", -6, 0)
+	left:SetSize(24, 24)
+	left:SkinButton()
+	local leftString = K.CreateFontString(left, 13, GetNumGroupMembers(), "", true)
 
 	Module:RaidTool_Visibility(frame)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
 		Module:RaidTool_Visibility(frame)
+		leftString:SetText(GetNumGroupMembers())
 	end)
 
 	frame:RegisterForClicks("AnyUp")
@@ -99,7 +108,7 @@ function Module:RaidTool_Header()
 	end)
 
 	frame:SetScript("OnDoubleClick", function(_, btn)
-		if btn == "RightButton" and (IsPartyLFG() and IsLFGComplete() or not IsInInstance()) then
+		if btn == "RightButton" and not IsInInstance() then
 			LeaveParty()
 		end
 	end)
@@ -334,7 +343,7 @@ function Module:RaidTool_Marker(parent)
 		markerButton:ClearAllPoints()
 		markerButton:SetPoint("RIGHT", parent, "LEFT", -6, 0)
 		markerButton:SetParent(parent)
-		markerButton:SetSize(28, 28)
+		markerButton:SetSize(24, 24)
 		markerButton:SkinButton()
 		markerButton:SetNormalTexture("Interface\\RaidFrame\\Raid-WorldPing")
 		markerButton:GetNormalTexture():SetVertexColor(K.r, K.g, K.b)
@@ -350,8 +359,8 @@ end
 function Module:RaidTool_BuffChecker(parent)
 	local frame = CreateFrame("Button", nil, parent)
 	frame:SetPoint("LEFT", parent, "RIGHT", 6, 0)
-	frame:SetSize(28, 28)
-	K.CreateFontString(frame, 16, "!", "", true)
+	frame:SetSize(24, 24)
+	K.CreateFontString(frame, 15, "!", "", true)
 	frame:SkinButton()
 
 	local BuffName = {L["Flask"], L["Food"], SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES}
@@ -363,7 +372,7 @@ function Module:RaidTool_BuffChecker(parent)
 		if debugMode then
 			print(text)
 		else
-			SendChatMessage(text, IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY")
+			SendChatMessage(text, IsInRaid() and "RAID" or "PARTY")
 		end
 	end
 
@@ -578,29 +587,17 @@ function Module:RaidTool_CreateMenu(parent)
 		end},
 
 		{CONVERT_TO_RAID, function()
-				if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
+				if UnitIsGroupLeader("player") and GetNumGroupMembers() <= 5 then
 					if IsInRaid() then
-						C_PartyInfo.ConvertToParty()
+						ConvertToParty()
 					else
-						C_PartyInfo.ConvertToRaid()
+						ConvertToRaid()
 					end
 					frame:Hide()
 					frame:SetScript("OnUpdate", nil)
 				else
 					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
 				end
-		end},
-
-		{ROLE_POLL, function()
-				if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
-					_G.InitiateRolePoll()
-				else
-					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
-				end
-		end},
-
-		{RAID_CONTROL, function()
-				_G.ToggleFriendsFrame(3)
 		end},
 	}
 
@@ -746,10 +743,10 @@ function Module:CreateRaidUtility()
 	end
 
 	local frame = Module:RaidTool_Header()
-	Module:RaidTool_RoleCount(frame)
-	Module:RaidTool_CombatRes(frame)
+	-- Module:RaidTool_RoleCount(frame)
+	-- Module:RaidTool_CombatRes(frame)
 	Module:RaidTool_ReadyCheck(frame)
-	Module:RaidTool_Marker(frame)
+	-- Module:RaidTool_Marker(frame)
 	Module:RaidTool_BuffChecker(frame)
 	Module:RaidTool_CreateMenu(frame)
 

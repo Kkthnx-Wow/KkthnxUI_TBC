@@ -76,6 +76,7 @@ C["Automation"] = {
 	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
 	["NoBadBuffs"] = false,
+	["RefillAmmo"] = false,
 	["WhisperInvite"] = "inv+",
 }
 

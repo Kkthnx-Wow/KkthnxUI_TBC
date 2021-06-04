@@ -12,5 +12,6 @@ function Module:OnEnable()
 	self:CreateAutoResurrect()
 	self:CreateAutoTabBinder()
 	self:CreateAutoWhisperInvite()
+	self:CreateRefillAmmo()
 	self:CreateSkipCinematic()
 end

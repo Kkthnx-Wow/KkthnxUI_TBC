@@ -76,7 +76,7 @@ function Module:ForceDefaultCVars()
 
 	if K.isDeveloper then
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 55)
+		SetCVar("SpellQueueWindow", 17)
 	end
 end
 
@@ -136,7 +136,7 @@ function Module:ForceChatSettings()
 	ChatFrame4:Show()
 
 	-- Loot
-	FCF_OpenNewWindow("Loot")
+	FCF_OpenNewWindow(L["Loot"])
 	FCF_SetLocked(ChatFrame5, 1)
 	FCF_DockFrame(ChatFrame5)
 	ChatFrame5:Show()

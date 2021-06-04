@@ -822,7 +822,7 @@ function Module:CreateUnits()
 
 			local partypetXOffset, partypetYOffset = 6, 6
 			local partpetMoverWidth = 60
-			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
+			local partpetMoverHeight = 34 * 5 + partypetYOffset
 
 			local partyPet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
 			"showPlayer", true,
