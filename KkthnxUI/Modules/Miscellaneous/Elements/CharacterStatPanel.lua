@@ -289,7 +289,7 @@ function M:CharacterStatePanel()
 
 	-- Expand button
 	local bu = CreateFrame("Button", nil, PaperDollFrame)
-	bu:SetPoint("BOTTOM", CharacterHandsSlot, "TOP", 0, 12)
+	bu:SetPoint("RIGHT", CharacterFrameCloseButton, "LEFT", 2, 0)
 	K.ReskinArrow(bu, "right")
 
 	bu:SetScript("OnClick", function(self)

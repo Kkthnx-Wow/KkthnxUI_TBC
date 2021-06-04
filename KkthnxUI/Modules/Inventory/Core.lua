@@ -704,6 +704,7 @@ function Module:OnEnable()
 	end
 
 	-- Settings
+	local bagsScale = C["Inventory"].BagsScale
 	local bagsWidth = C["Inventory"].BagsWidth
 	local bankWidth = C["Inventory"].BankWidth
 	local iconSize = C["Inventory"].IconSize
@@ -716,6 +717,7 @@ function Module:OnEnable()
 	-- Init
 	local Backpack = cargBags:NewImplementation("KKUI_Backpack")
 	Backpack:RegisterBlizzard()
+	Backpack:SetScale(bagsScale)
 
 	Backpack:HookScript("OnShow", function()
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)

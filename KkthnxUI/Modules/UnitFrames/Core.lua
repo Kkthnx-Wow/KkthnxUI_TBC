@@ -555,42 +555,6 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 	end
 end
 
--- Post Update Runes
-local function OnUpdateRunes(self, elapsed)
-	local duration = self.duration + elapsed
-	self.duration = duration
-	self:SetValue(duration)
-
-	if self.timer then
-		local remain = self.runeDuration - duration
-		if remain > 0 then
-			self.timer:SetText(K.FormatTime(remain))
-		else
-			self.timer:SetText(nil)
-		end
-	end
-end
-
-function Module.PostUpdateRunes(element, runemap)
-	for index, runeID in next, runemap do
-		local rune = element[index]
-		local start, duration, runeReady = GetRuneCooldown(runeID)
-		if rune:IsShown() then
-			if runeReady then
-				rune:SetAlpha(1)
-				rune:SetScript("OnUpdate", nil)
-				if rune.timer then
-					rune.timer:SetText(nil)
-				end
-			elseif start then
-				rune:SetAlpha(0.6)
-				rune.runeDuration = duration
-				rune:SetScript("OnUpdate", OnUpdateRunes)
-			end
-		end
-	end
-end
-
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedIndex)
 	if not cur or cur == 0 then
 		element.prevColor = nil
@@ -656,28 +620,16 @@ function Module:CreateClassPower(self)
 		else
 			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
-
-		if K.Class == "DEATHKNIGHT" then
-			bars[i].timer = K.CreateFontString(bars[i], 10, "")
-		end
 	end
 
-	if K.Class == "DEATHKNIGHT" then
-		bars.colorSpec = true
-		bars.sortOrder = "asc"
-		bars.PostUpdate = Module.PostUpdateRunes
-		bars.__max = 6
-		self.Runes = bars
-	else
-		local chargeStar = bar:CreateTexture()
-		chargeStar:SetAtlas("VignetteKill")
-		chargeStar:SetSize(24, 24)
-		chargeStar:Hide()
-		bars.chargeStar = chargeStar
+	local chargeStar = bar:CreateTexture()
+	chargeStar:SetAtlas("VignetteKill")
+	chargeStar:SetSize(24, 24)
+	chargeStar:Hide()
+	bars.chargeStar = chargeStar
 
-		bars.PostUpdate = Module.PostUpdateClassPower
-		self.ClassPower = bars
-	end
+	bars.PostUpdate = Module.PostUpdateClassPower
+	self.ClassPower = bars
 end
 
 function Module:CreateUnits()
@@ -874,7 +826,7 @@ function Module:CreateUnits()
 
 			local partyPet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
 			"showPlayer", true,
-			"showSolo", true,
+			"showSolo", C["Party"].ShowPartySolo,
 			"showParty", true,
 			"showRaid", false,
 			"xoffset", partypetXOffset,

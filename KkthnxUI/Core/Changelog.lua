@@ -15,13 +15,16 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added Neon Purple Arrow for nameplates",
-	"Added color/sparks to swingbar",
-	"Fixed auto invite accept error",
-	"Fixed check version module code",
-	"Fixed mount filter being labeled twice in bags",
-	"Updated BagSortMode not working properly",
-	"Updated SortBags code",
+	"Added fix for blizzard chatframe offset bug",
+	"Added merchant item quality color for name",
+	"Added option to scale bags",
+	"Added pet buffs for feeding and mend",
+	"Added |CFFFF7C0ADruid|r mana when in cat form and such",
+	"Fixed party pets showing without being in party",
+	"Updated TopCenterContainerHolder position",
+	"Updated character stat panel button to not conflict with other addons",
+	"Updated sortbags code",
+	"Various monk/dk code cleaned up",
 }
 
 local changelogFrame

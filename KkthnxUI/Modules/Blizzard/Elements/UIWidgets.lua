@@ -30,15 +30,15 @@ function Module:CreateUIWidgets()
 	local belowMiniMapcontainer = _G.UIWidgetBelowMinimapContainerFrame
 
 	local topCenterHolder = CreateFrame("Frame", "TopCenterContainerHolder", UIParent)
-	topCenterHolder:SetPoint("TOP", UIParent, "TOP", 0, -94)
+	topCenterHolder:SetPoint("TOP", UIParent, "TOP", 0, -34)
 	topCenterHolder:SetSize(160, 30)
 
 	local belowMiniMapHolder = CreateFrame("Frame", "BelowMinimapContainerHolder", UIParent)
-	belowMiniMapHolder:SetPoint("TOP", UIParent, "TOP", 0, -100)
+	belowMiniMapHolder:SetPoint("TOP", UIParent, "TOP", 0, -70)
 	belowMiniMapHolder:SetSize(160, 30)
 
-	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -94}, 160, 30)
-	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOP", UIParent, "TOP", 0, -100}, 160, 30)
+	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -34}, 160, 30)
+	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOP", UIParent, "TOP", 0, -70}, 160, 30)
 
 	topCenterContainer:ClearAllPoints()
 	topCenterContainer:SetPoint("CENTER", topCenterHolder)

@@ -12,7 +12,6 @@ local LEVEL = _G.LEVEL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsAFK = _G.UnitIsAFK
@@ -30,7 +29,8 @@ local UnitLevel = _G.UnitLevel
 local UnitPower = _G.UnitPower
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
-local UnitStagger = _G.UnitStagger
+local GetSpellInfo = _G.GetSpellInfo
+local UnitIsFeignDeath = _G.UnitIsFeignDeath
 
 local FEIGN_DEATH
 local function GetFeignDeathTag()
@@ -78,7 +78,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 	else
 		local per = GetUnitHealthPerc(unit) or 0
 		local cur = UnitHealth(unit)
-		if (unit == "player") or unit == "target" or unit == "focus" or string.find(unit, "party") then
+		if unit == "player" or unit == "target" or unit == "focus" or string.find(unit, "party") then
 			return ValueAndPercent(cur, per)
 		else
 			return ColorPercent(per)
@@ -90,7 +90,7 @@ oUF.Tags.Events["hp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UN
 oUF.Tags.Methods["power"] = function(unit)
 	local cur = UnitPower(unit)
 	local per = oUF.Tags.Methods["perpp"](unit) or 0
-	if (unit == "player") or unit == "target" or unit == "focus" then
+	if unit == "player" or unit == "target" or unit == "focus" then
 		if per < 100 and UnitPowerType(unit) == 0 then
 			return K.ShortValue(cur).." - "..per
 		else
@@ -278,25 +278,12 @@ oUF.Tags.Events["tarname"] = "UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE UNIT
 -- AltPower value tag
 oUF.Tags.Methods["altpower"] = function(unit)
 	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
-	return cur > 0 and cur
-end
-oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
-
--- Monk stagger
-oUF.Tags.Methods["monkstagger"] = function(unit)
-	if unit ~= "player" or K.Class ~= "MONK" then
-		return
+	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
+	if max > 0 and not UnitIsDeadOrGhost(unit) then
+		return string_format("%s%%", math.floor(cur / max * 100 + 0.5))
 	end
-
-	local cur = UnitStagger(unit) or 0
-	local perc = cur / UnitHealthMax(unit)
-	if cur == 0 then
-		return
-	end
-
-	return K.ShortValue(cur).." - "..K.MyClassColor..K.Round(perc * 100).."%"
 end
-oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
+oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE"
 
 oUF.Tags.Methods["leadassist"] = function(unit)
 	local isLeader = UnitIsGroupLeader(unit)
@@ -307,20 +294,9 @@ oUF.Tags.Methods["leadassist"] = function(unit)
 end
 oUF.Tags.Events["leadassist"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 
-oUF.Tags.Methods["lfdrole"] = function(unit)
-	local Role = UnitGroupRolesAssigned(unit)
-	local isTank = Role == "TANK"
-	local isHealer = Role == "HEALER"
-	local Tank, Healer = isTank and "|cff0099CC[T]|r" or "", isHealer and "|cff00FF00[H]|r" or ""
-
-	return (Tank..Healer)
-end
-oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
-
-
-oUF.Tags.Methods['pethappiness'] = function(unit)
+oUF.Tags.Methods["pethappiness"] = function(unit)
 	local hasPetUI, isHunterPet = HasPetUI()
-	if (UnitIsUnit('pet', unit) and hasPetUI and isHunterPet) then
+	if (UnitIsUnit("pet", unit) and hasPetUI and isHunterPet) then
 		local left, right, top, bottom
 		local happiness = GetPetHappiness()
 
@@ -335,4 +311,4 @@ oUF.Tags.Methods['pethappiness'] = function(unit)
 		return CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 14, 14, left, right, top, bottom, 0, 0)
 	end
 end
-oUF.Tags.Events['pethappiness'] = 'UNIT_HAPPINESS PET_UI_UPDATE'
+oUF.Tags.Events["pethappiness"] = "UNIT_HAPPINESS PET_UI_UPDATE"

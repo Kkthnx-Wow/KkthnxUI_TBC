@@ -270,6 +270,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
 
 	Window:CreateSection("Inventory Sizes")
+	Window:CreateSlider("Inventory", "BagsScale", "Bags Scale", .5, 1.5, .1)
 	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
 	Window:CreateSlider("Inventory", "BankWidth", L["Bank Width"], 10, 18, 1)
 	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 40, 1)

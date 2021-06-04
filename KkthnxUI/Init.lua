@@ -211,7 +211,7 @@ function K.SetupUIScale(init)
 		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
 	elseif not InCombatLockdown() then
 		if scale >= 0.64 then
-			SetCVar("UIscale", scale) -- Fix blizzard chatframe offset
+			SetCVar("uiscale", scale) -- Fix blizzard chatframe offset
 		end
 		UIParent:SetScale(scale)
 	end
@@ -235,6 +235,7 @@ local function UpdatePixelScale(event)
 end
 
 K:RegisterEvent("PLAYER_LOGIN", function()
+	SetCVar("useUiScale", 1) -- Fix blizzard chatframe offset
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 

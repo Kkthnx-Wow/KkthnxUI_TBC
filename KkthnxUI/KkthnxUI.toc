@@ -2,7 +2,7 @@
 ## Title: |cff669DFFKkthnxUI|r |cff8fb901TBC|r
 ## Notes: Empty toc for Curseforge
 ## Author: Josh "Kkthnx" Russell
-## Version: 10.2.0
+## Version: 10.2.1
 ## X-Support: BC Classic
 ## X-Curse-Project-ID: 95528
 ## X-WoWI-ID: 24615
