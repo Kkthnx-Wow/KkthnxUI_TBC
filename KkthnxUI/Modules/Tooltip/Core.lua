@@ -285,27 +285,16 @@ function Module:OnTooltipSetUnit()
 		end
 
 		if K.Class == "HUNTER" and unit == "pet" then
-			local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
-			local _, isHunterPet = HasPetUI()
-			local petFoodTypes = GetPetFoodTypes()
-			if not happiness or not isHunterPet or not petFoodTypes then
-				return
-			end
+			local Happiness, DamagePercentage, LoyaltyRate = GetPetHappiness()
+			if Happiness then
+				local Hex = K.RGBToHex(unpack(K.Colors.happiness[Happiness]))
+				local Happy = ({"Unhappy", "Content", "Happy"})[Happiness]
+				local Loyalty = LoyaltyRate > 0 and "gaining" or "losing"
 
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(_G['PET_HAPPINESS'..happiness])
-			GameTooltip:AddLine(string_format(PET_DAMAGE_PERCENTAGE, damagePercentage))
-			GameTooltip:AddLine(string_format(PET_DIET_TEMPLATE, BuildListString(petFoodTypes)))
-
-			local tooltipLoyalty = nil
-			if (loyaltyRate < 0) then
-				tooltipLoyalty = _G['LOSING_LOYALTY']
-			elseif (loyaltyRate > 0) then
-				tooltipLoyalty = _G['GAINING_LOYALTY']
-			end
-
-			if (tooltipLoyalty) then
-				GameTooltip:AddLine(tooltipLoyalty)
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Pet is "..Hex..Happy.."|r", 1, 1, 1)
+				GameTooltip:AddLine("Pet is doing "..Hex..DamagePercentage.."%|r damage", 1, 1, 1)
+				GameTooltip:AddLine("Pet is "..Hex..Loyalty.."|r loyalty", 1, 1, 1)
 			end
 		end
 

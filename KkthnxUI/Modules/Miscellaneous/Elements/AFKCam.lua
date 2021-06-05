@@ -75,6 +75,8 @@ local stats = {
 	"Druids receive Flight Form at level 68",
 	"Flying mounts are only usable in Outland at level 70",
 	"Normal flying mount training costs 225g",
+	"You can jump down from the Scryer elevator without dying",
+	"Druids in cat form are not tameable by hunters".."|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 }
 
 local function IsIn(val, ...)

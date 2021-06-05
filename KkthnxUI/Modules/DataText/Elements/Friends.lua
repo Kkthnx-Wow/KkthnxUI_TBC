@@ -1,29 +1,49 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
-local format, sort, wipe, unpack, tinsert = string.format, table.sort, table.wipe, unpack, table.insert
-local C_Timer_After = C_Timer.After
-local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
-local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
-local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
-local BNet_GetClientEmbeddedTexture, BNet_GetValidatedCharacterName, BNet_GetClientTexture = BNet_GetClientEmbeddedTexture, BNet_GetValidatedCharacterName, BNet_GetClientTexture
-local CanCooperateWithGameAccount, GetRealZoneText, GetQuestDifficultyColor = CanCooperateWithGameAccount, GetRealZoneText, GetQuestDifficultyColor
-local BNGetNumFriends, BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriendGameAccounts, BNGetFriendGameAccountInfo = BNGetNumFriends, BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriendGameAccounts, BNGetFriendGameAccountInfo
-local HybridScrollFrame_GetOffset, HybridScrollFrame_Update = HybridScrollFrame_GetOffset, HybridScrollFrame_Update
-local BNET_CLIENT_WOW, UNKNOWN, GUILD_ONLINE_LABEL, CHARACTER_FRIEND = BNET_CLIENT_WOW, UNKNOWN, GUILD_ONLINE_LABEL, CHARACTER_FRIEND
-local FRIENDS_TEXTURE_ONLINE, FRIENDS_TEXTURE_AFK, FRIENDS_TEXTURE_DND = FRIENDS_TEXTURE_ONLINE, FRIENDS_TEXTURE_AFK, FRIENDS_TEXTURE_DND
-local EXPANSION_NAME0 = EXPANSION_NAME0
-local WOW_PROJECT_ID = WOW_PROJECT_ID or 5
-local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
-local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE or 1
-local CLIENT_WOW_DIFF = "WoV"
+local _G = _G
+local string_format = _G.string.format
+local table_insert = _G.table.insert
+local table_sort = _G.table.sort
+local table_wipe = _G.table.wipe
+local unpack = _G.unpack
 
-local r, g, b = K.r, K.g, K.b
-local infoFrame, updateRequest, prevTime
-local friendTable, bnetTable = {}, {}
+local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
+local BNGetFriendGameAccountInfo = _G.BNGetFriendGameAccountInfo
+local BNGetFriendInfo = _G.BNGetFriendInfo
+local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
+local BNGetNumFriendGameAccounts = _G.BNGetNumFriendGameAccounts
+local BNGetNumFriends = _G.BNGetNumFriends
+local BNet_GetClientEmbeddedTexture = _G.BNet_GetClientEmbeddedTexture
+local BNet_GetClientTexture = _G.BNet_GetClientTexture
+local BNet_GetValidatedCharacterName = _G.BNet_GetValidatedCharacterName
+local CHARACTER_FRIEND = _G.CHARACTER_FRIEND
+local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
+local C_FriendList_GetNumOnlineFriends = _G.C_FriendList.GetNumOnlineFriends
+local C_Timer_After = _G.C_Timer.After
+local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
+local EXPANSION_NAME0 = _G.EXPANSION_NAME0
+local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
+local FRIENDS_TEXTURE_DND = _G.FRIENDS_TEXTURE_DND
+local FRIENDS_TEXTURE_ONLINE = _G.FRIENDS_TEXTURE_ONLINE
+local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
+local GetRealZoneText = _G.GetRealZoneText
+local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
+local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
+local UNKNOWN = _G.UNKNOWN
+local WOW_PROJECT_60 = _G.WOW_PROJECT_CLASSIC or 2
+local WOW_PROJECT_ID = _G.WOW_PROJECT_ID or 5
+local WOW_PROJECT_MAINLINE = _G.WOW_PROJECT_MAINLINE or 1
+
+local CLIENT_WOW_DIFF = "WoV"
 local activeZone, inactiveZone = "|cff4cff4c", K.GreyColor
-local noteString = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:16|t %s"
 local broadcastString = "|TInterface\\FriendsFrame\\BroadcastIcon:12|t %s (%s)"
+local friendTable, bnetTable = {}, {}
+local infoFrame, updateRequest, prevTime
+local noteString = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:16|t %s"
+local r, g, b = K.r, K.g, K.b
 
 local menuList = {
 	[1] = {text = "Join or Invite", isTitle = true, notCheckable = true}
@@ -36,7 +56,7 @@ local function sortFriends(a, b)
 end
 
 local function buildFriendTable(num)
-	wipe(friendTable)
+	table_wipe(friendTable)
 
 	for i = 1, num do
 		local info = C_FriendList_GetFriendInfoByIndex(i)
@@ -48,11 +68,11 @@ local function buildFriendTable(num)
 				status = FRIENDS_TEXTURE_DND
 			end
 			local class = K.ClassList[info.className]
-			tinsert(friendTable, {info.name, info.level, class, info.area, status})
+			table_insert(friendTable, {info.name, info.level, class, info.area, status})
 		end
 	end
 
-	sort(friendTable, sortFriends)
+	table_sort(friendTable, sortFriends)
 end
 
 local function sortBNFriends(a, b)
@@ -62,7 +82,7 @@ local function sortBNFriends(a, b)
 end
 
 local function buildBNetTable(num)
-	wipe(bnetTable)
+	table_wipe(bnetTable)
 
 	for i = 1, num do
 		local _, accountName, battleTag, _, charName, gameID, _, isOnline, _, isAFK, isDND, broadcastText, note, _, broadcastTime = BNGetFriendInfo(i)
@@ -80,6 +100,7 @@ local function buildBNetTable(num)
 			else
 				status = FRIENDS_TEXTURE_ONLINE
 			end
+
 			if client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID then
 				if not zoneName or zoneName == "" then
 					infoText = UNKNOWN
@@ -95,18 +116,21 @@ local function buildBNetTable(num)
 					infoText = gameText
 				end
 			end
-			if client == BNET_CLIENT_WOW and wowProjectID ~= WOW_PROJECT_ID then client = CLIENT_WOW_DIFF end
 
-			tinsert(bnetTable, {i, accountName, charName, gameID, client, realmName, status, class, level, infoText, note, broadcastText, broadcastTime})
+			if client == BNET_CLIENT_WOW and wowProjectID ~= WOW_PROJECT_ID then
+				client = CLIENT_WOW_DIFF
+			end
+
+			table_insert(bnetTable, {i, accountName, charName, gameID, client, realmName, status, class, level, infoText, note, broadcastText, broadcastTime})
 		end
 	end
 
-	sort(bnetTable, sortBNFriends)
+	table_sort(bnetTable, sortBNFriends)
 end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > .1 then
+	if self.timer > 0.1 then
 		if not infoFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
@@ -189,7 +213,7 @@ local function buttonOnClick(self, btn)
 				local index = 2
 				if #menuList > 1 then
 					for i = 2, #menuList do
-						table.wipe(menuList[i])
+						table_wipe(menuList[i])
 					end
 				end
 
@@ -271,29 +295,29 @@ local function buttonOnEnter(self)
 				elseif faction == "Alliance" then
 					clientString = "|TInterface\\FriendsFrame\\PlusManz-Alliance:16:|t"
 				end
-				GameTooltip:AddLine(format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
+				GameTooltip:AddLine(string_format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
 
 				if wowProjectID ~= WOW_PROJECT_ID then
 					zoneName = "*"..gameText
 				end
 
-				GameTooltip:AddLine(format("%s%s", inactiveZone, zoneName))
+				GameTooltip:AddLine(string_format("%s%s", inactiveZone, zoneName))
 			else
-				GameTooltip:AddLine(format("|cffffffff%s%s", clientString, accountName))
+				GameTooltip:AddLine(string_format("|cffffffff%s%s", clientString, accountName))
 				if gameText ~= "" then
-					GameTooltip:AddLine(format("%s%s", inactiveZone, gameText))
+					GameTooltip:AddLine(string_format("%s%s", inactiveZone, gameText))
 				end
 			end
 		end
 
 		if note and note ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(format(noteString, note), 1,.8,0)
+			GameTooltip:AddLine(string_format(noteString, note), 1, 0.8, 0)
 		end
 
 		if broadcastText and broadcastText ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), .3,.6,.8, 1)
+			GameTooltip:AddLine(string_format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.6, 0.8, 1)
 		end
 	else
 		GameTooltip:AddLine(L["WoW"], 1,.8,0)
@@ -301,8 +325,8 @@ local function buttonOnEnter(self)
 
 		local name, level, class, area = unpack(self.data)
 		local classColor = K.RGBToHex(K.ClassColor(class))
-		GameTooltip:AddLine(format("%s %s%s", level, classColor, name))
-		GameTooltip:AddLine(format("%s%s", inactiveZone, area))
+		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
+		GameTooltip:AddLine(string_format("%s%s", inactiveZone, area))
 	end
 	GameTooltip:Show()
 end
@@ -310,7 +334,7 @@ end
 function Module:FriendsPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(370, 20)
-	button:SetPoint("TOPLEFT", 0, - (index-1) *20)
+	button:SetPoint("TOPLEFT", 0, - (index - 1) * 20)
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
 	button.HL:SetColorTexture(r, g, b, .2)
@@ -331,7 +355,7 @@ function Module:FriendsPanel_CreateButton(parent, index)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	button.gameIcon:SetTexCoord(.17, .83, .17, .83)
+	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
 
 	button.gameIcon.border = CreateFrame("Frame", nil, button)
 	button.gameIcon.border:SetFrameLevel(button:GetFrameLevel())
@@ -357,8 +381,8 @@ function Module:FriendsPanel_UpdateButton(button)
 		local zoneColor = GetRealZoneText() == area and activeZone or inactiveZone
 		local levelColor = K.RGBToHex(GetQuestDifficultyColor(level))
 		local classColor = K.ClassColors[class] or levelColor
-		button.name:SetText(format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
-		button.zone:SetText(format("%s%s", zoneColor, area))
+		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
+		button.zone:SetText(string_format("%s%s", zoneColor, area))
 		button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
@@ -377,12 +401,12 @@ function Module:FriendsPanel_UpdateButton(button)
 			end
 			zoneColor = GetRealZoneText() == infoText and activeZone or inactiveZone
 		end
-		button.name:SetText(format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
-		button.zone:SetText(format("%s%s", zoneColor, infoText))
+		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
+		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 
 		if client == CLIENT_WOW_DIFF then
 			button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
-			button.gameIcon:SetVertexColor(.3, .3, .3)
+			button.gameIcon:SetVertexColor(0.3, 0.3, 0.3)
 		else
 			button.gameIcon:SetTexture(BNet_GetClientTexture(client))
 			button.gameIcon:SetVertexColor(1, 1, 1)
@@ -460,9 +484,9 @@ local function FriendsPanel_OnEnter()
 		GameTooltip:SetOwner(Module.FriendsDataTextFrame, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOMRIGHT", Module.FriendsDataTextFrame, "TOPRIGHT", 5, 2)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(FRIENDS_LIST, format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0,.6,1, 0,.6,1)
+		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0, 0.6, 1, 0, 0.6, 1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(NONE, 1,1,1)
+		GameTooltip:AddLine(NONE, 1, 1, 1)
 		GameTooltip:Show()
 		return
 	end
@@ -485,12 +509,12 @@ local function FriendsPanel_OnEnter()
 
 	Module:FriendsPanel_Init()
 	Module:FriendsPanel_Update()
-	infoFrame.friendCountText:SetText(format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
+	infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
 end
 
 local function FriendsPanel_OnEvent()
 	Module:FriendsPanel_Refresh()
-	Module.FriendsDataTextFrame.Text:SetText(format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+	Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
 
 	updateRequest = false
 	if infoFrame and infoFrame:IsShown() then
@@ -534,12 +558,12 @@ function Module:CreateSocialDataText()
 
 	Module.FriendsDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
-	Module.FriendsDataTextFrame:SetSize(32, 32)
+	Module.FriendsDataTextFrame:SetSize(28, 28)
 
 	Module.FriendsDataTextFrame.Texture = Module.FriendsDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.FriendsDataTextFrame.Texture:SetPoint("LEFT", Module.FriendsDataTextFrame, "LEFT", 0, 0)
 	Module.FriendsDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Chat")
-	Module.FriendsDataTextFrame.Texture:SetSize(32, 32)
+	Module.FriendsDataTextFrame.Texture:SetSize(28, 28)
 
 	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

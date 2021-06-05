@@ -2,18 +2,17 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
+local string_format = _G.string.format
 local pairs = _G.pairs
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CURRENCY = _G.CURRENCY
-local C_Timer_NewTicker = _G.C_Timer.NewTicker
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
 local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
 local GetMoney = _G.GetMoney
-local GetNumWatchedTokens = _G.GetNumWatchedTokens
 local InCombatLockdown = _G.InCombatLockdown
 local IsControlKeyDown = _G.IsControlKeyDown
 local NO = _G.NO
@@ -56,9 +55,9 @@ end
 local function getSlotString()
 	local num = CalculateTotalNumberOfFreeBagSlots()
 	if num < 10 then
-		return format(slotString, "|cffff0000", num)
+		return string_format(slotString, "|cffff0000", num)
 	else
-		return format(slotString, "|cff00ff00", num)
+		return string_format(slotString, "|cff00ff00", num)
 	end
 end
 
@@ -154,7 +153,7 @@ local function OnEnter()
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Toggle Bags".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, .6,.8,1)
+	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
@@ -195,12 +194,12 @@ function Module:CreateGoldDataText()
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
 		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		Module.GoldDataTextFrame:SetSize(32, 32)
+		Module.GoldDataTextFrame:SetSize(28, 28)
 
 		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
 		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
 		Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
-		Module.GoldDataTextFrame.Texture:SetSize(32, 32)
+		Module.GoldDataTextFrame.Texture:SetSize(28, 28)
 
 		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

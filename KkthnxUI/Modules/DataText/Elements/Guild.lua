@@ -1,23 +1,51 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
-Module.guildTable = {}
-local r, g, b = K.r, K.g, K.b
-local infoFrame, gName, gOnline, gRank
+local _G = _G
+local select = _G.select
+local string_format = _G.string.format
+local table_sort = _G.table.sort
+local table_wipe = _G.table.wipe
 
-local wipe, sort, format, select = table.wipe, table.sort, format, select
-local CLASS_ICON_TCOORDS, SELECTED_DOCK_FRAME = CLASS_ICON_TCOORDS, SELECTED_DOCK_FRAME
-local LEVEL_ABBR, CLASS_ABBR, NAME, ZONE, RANK, REMOTE_CHAT = LEVEL_ABBR, CLASS_ABBR, NAME, ZONE, RANK, REMOTE_CHAT
-local IsAltKeyDown, IsShiftKeyDown, InviteToGroup, C_Timer_After, Ambiguate, MouseIsOver = IsAltKeyDown, IsShiftKeyDown, InviteToGroup, C_Timer.After, Ambiguate, MouseIsOver
-local MailFrame, MailFrameTab_OnClick, SendMailNameEditBox = MailFrame, MailFrameTab_OnClick, SendMailNameEditBox
-local ChatEdit_ChooseBoxForSend, ChatEdit_ActivateChat, ChatFrame_OpenChat, ChatFrame_GetMobileEmbeddedTexture = ChatEdit_ChooseBoxForSend, ChatEdit_ActivateChat, ChatFrame_OpenChat, ChatFrame_GetMobileEmbeddedTexture
-local GetNumGuildMembers, GetGuildInfo, GetGuildRosterInfo, IsInGuild = GetNumGuildMembers, GetGuildInfo, GetGuildRosterInfo, IsInGuild
-local GetQuestDifficultyColor, GetRealZoneText, UnitInRaid, UnitInParty = GetQuestDifficultyColor, GetRealZoneText, UnitInRaid, UnitInParty
-local HybridScrollFrame_GetOffset, HybridScrollFrame_Update = HybridScrollFrame_GetOffset, HybridScrollFrame_Update
-local C_GuildInfo_GuildRoster = C_GuildInfo.GuildRoster
+local Ambiguate = _G.Ambiguate
+local CLASS_ABBR = _G.CLASS_ABBR
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
+local C_GuildInfo_GuildRoster = _G.C_GuildInfo.GuildRoster
+local C_Timer_After = _G.C_Timer.After
+local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
+local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
+local ChatFrame_GetMobileEmbeddedTexture = _G.ChatFrame_GetMobileEmbeddedTexture
+local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
+local GetGuildInfo = _G.GetGuildInfo
+local GetGuildRosterInfo = _G.GetGuildRosterInfo
+local GetNumGuildMembers = _G.GetNumGuildMembers
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
+local GetRealZoneText = _G.GetRealZoneText
+local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
+local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
+local InviteToGroup = _G.InviteToGroup
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsInGuild = _G.IsInGuild
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local LEVEL_ABBR = _G.LEVEL_ABBR
+local MailFrame = _G.MailFrame
+local MailFrameTab_OnClick = _G.MailFrameTab_OnClick
+local MouseIsOver = _G.MouseIsOver
+local NAME = _G.NAME
+local RANK = _G.RANK
+local REMOTE_CHAT = _G.REMOTE_CHAT
+local SELECTED_DOCK_FRAME = _G.SELECTED_DOCK_FRAME
+local SendMailNameEditBox = _G.SendMailNameEditBox
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local ZONE = _G.ZONE
+
+local guildTable = {}
+local infoFrame, gName, gOnline, gRank
+local r, g, b = K.r, K.g, K.b
 
 local function rosterButtonOnClick(self, btn)
-	local name = Module.guildTable[self.index][3]
+	local name = guildTable[self.index][3]
 	if btn == "LeftButton" then
 		if IsAltKeyDown() then
 			InviteToGroup(name)
@@ -73,7 +101,7 @@ end
 
 function Module:GuildPanel_UpdateButton(button)
 	local index = button.index
-	local level, class, name, zone, status = unpack(Module.guildTable[index])
+	local level, class, name, zone, status = unpack(guildTable[index])
 
 	local levelcolor = K.RGBToHex(GetQuestDifficultyColor(level))
 	button.level:SetText(levelcolor..level)
@@ -139,7 +167,7 @@ local function sortRosters(a, b)
 end
 
 function Module:GuildPanel_SortUpdate()
-	sort(Module.guildTable, sortRosters)
+	table_sort(guildTable, sortRosters)
 	Module:GuildPanel_Update()
 end
 
@@ -251,13 +279,13 @@ end)
 function Module:GuildPanel_Refresh()
 	C_GuildInfo_GuildRoster()
 
-	wipe(Module.guildTable)
+	table_wipe(guildTable)
 	local count = 0
 	local total, _, online = GetNumGuildMembers()
 	local guildName, guildRank = GetGuildInfo("player")
 
 	gName:SetText("|cff0099ff<"..(guildName or "")..">")
-	gOnline:SetText(format(K.InfoColor.."%s:".." %d/%d", GUILD_ONLINE_LABEL, online, total))
+	gOnline:SetText(string_format(K.InfoColor.."%s:".." %d/%d", GUILD_ONLINE_LABEL, online, total))
 	gRank:SetText(K.InfoColor..RANK..": "..(guildRank or ""))
 
 	for i = 1, total do
@@ -288,14 +316,14 @@ function Module:GuildPanel_Refresh()
 
 			count = count + 1
 
-			if not Module.guildTable[count] then
-				Module.guildTable[count] = {}
+			if not guildTable[count] then
+				guildTable[count] = {}
 			end
-			Module.guildTable[count][1] = level
-			Module.guildTable[count][2] = class
-			Module.guildTable[count][3] = Ambiguate(name, "none")
-			Module.guildTable[count][4] = zone
-			Module.guildTable[count][5] = status
+			guildTable[count][1] = level
+			guildTable[count][2] = class
+			guildTable[count][3] = Ambiguate(name, "none")
+			guildTable[count][4] = zone
+			guildTable[count][5] = status
 		end
 	end
 
@@ -369,12 +397,12 @@ function Module:CreateGuildDataText()
 
 	Module.GuildDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
-	Module.GuildDataTextFrame:SetSize(32, 32)
+	Module.GuildDataTextFrame:SetSize(28, 28)
 
 	Module.GuildDataTextFrame.Texture = Module.GuildDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.GuildDataTextFrame.Texture:SetPoint("LEFT", Module.GuildDataTextFrame, "LEFT", 0, 0)
 	Module.GuildDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-AccountSecurity")
-	Module.GuildDataTextFrame.Texture:SetSize(32, 32)
+	Module.GuildDataTextFrame.Texture:SetSize(28, 28)
 
 	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

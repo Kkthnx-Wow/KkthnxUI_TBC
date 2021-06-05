@@ -711,7 +711,6 @@ function Module:OnEnable()
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local deleteButton = C["Inventory"].DeleteButton
 	local showNewItem = C["Inventory"].ShowNewItem
-	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")
 
 	-- Init
@@ -866,12 +865,6 @@ function Module:OnEnable()
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
-
-		if hasCanIMogIt then
-			self.canIMogIt = parentFrame:CreateTexture(nil, "OVERLAY")
-			self.canIMogIt:SetSize(C["Inventory"].IconSize / 2.6, C["Inventory"].IconSize / 2.6)
-			self.canIMogIt:SetPoint(unpack(CanIMogIt.ICON_LOCATIONS[CanIMogItOptions["iconLocation"]]))
-		end
 	end
 
 	function MyButton:ItemOnEnter()
@@ -894,21 +887,6 @@ function Module:OnEnable()
 
 	local function isItemNeedsLevel(item)
 		return item.link and item.level and item.rarity > 1 and (item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
-	end
-
-	local function UpdateCanIMogIt(self, item)
-		if not self.canIMogIt then
-			return
-		end
-
-		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagID, item.slotID)
-		if text and text ~= "" then
-			local icon = CanIMogIt.tooltipOverlayIcons[unmodifiedText]
-			self.canIMogIt:SetTexture(icon)
-			self.canIMogIt:Show()
-		else
-			self.canIMogIt:Hide()
-		end
 	end
 
 	local function UpdatePawnArrow(self, item)
@@ -995,8 +973,6 @@ function Module:OnEnable()
 			GameTooltip:Hide()
 		end
 
-		-- Support CanIMogIt
-		UpdateCanIMogIt(self, item)
 		-- Support Pawn
 		UpdatePawnArrow(self, item)
 	end

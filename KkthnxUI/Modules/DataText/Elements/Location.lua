@@ -2,20 +2,21 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
-local unpack = _G.unpack
-local string_format = _G.string.format
 local select = _G.select
+local string_format = _G.string.format
+local unpack = _G.unpack
 
 local COMBAT_ZONE = _G.COMBAT_ZONE
 local CONTESTED_TERRITORY = _G.CONTESTED_TERRITORY
 local FACTION_CONTROLLED_TERRITORY = _G.FACTION_CONTROLLED_TERRITORY
 local FACTION_STANDING_LABEL4 = _G.FACTION_STANDING_LABEL4
 local FREE_FOR_ALL_TERRITORY = _G.FREE_FOR_ALL_TERRITORY
+local GetSubZoneText = _G.GetSubZoneText
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local GetZoneText = _G.GetZoneText
 local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
 
-local zone, pvpType
+local zone, pvpType, subZone
 
 local zoneInfo = {
 	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},

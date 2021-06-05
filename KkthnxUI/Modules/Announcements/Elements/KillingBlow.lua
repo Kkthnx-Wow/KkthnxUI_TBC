@@ -41,6 +41,8 @@ end
 function Module:SetupKillingBlow()
 	local _, subevent, sourceGUID, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
 	if subevent == "PARTY_KILL" and sourceGUID == UnitGUID("player") then
+		print(subevent)
+		print(sourceGUID)
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
 		if Caster == K.Name and (BG_Opponents[TargetName] or mask > 0) then
 			if mask > 0 and BG_Opponents[TargetName] then
@@ -48,9 +50,11 @@ function Module:SetupKillingBlow()
 				TargetName = TargetName
 			end
 
-			if C["Announcements"].PvPEmote then
+			print("Dwdwdw")
+
+			--if C["Announcements"].PvPEmote then
 				DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
-			end
+			--end
 		end
 	end
 end
