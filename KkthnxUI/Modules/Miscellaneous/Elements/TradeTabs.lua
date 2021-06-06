@@ -1,12 +1,15 @@
 local K, C = unpack(select(2, ...))
-local M = K:GetModule("Miscellaneous")
+local Module = K:GetModule("Miscellaneous")
 
-local pairs, unpack, tinsert = pairs, unpack, tinsert
-local GetSpellCooldown, GetSpellInfo = GetSpellCooldown, GetSpellInfo
-local InCombatLockdown, IsPlayerSpell, IsCurrentSpell = InCombatLockdown, IsPlayerSpell, IsCurrentSpell
+local _G = _G
+local pairs = _G.pairs
+local table_insert = _G.table.insert
 
-local CAMPFIRE_ID = 818
-local SMELTING_ID = 2656
+local GetSpellCooldown = _G.GetSpellCooldown
+local GetSpellInfo = _G.GetSpellInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsCurrentSpell = _G.IsCurrentSpell
+local IsPlayerSpell = _G.IsPlayerSpell
 
 local tradeList = {
 	["Cooking"] = {
@@ -84,10 +87,13 @@ local tradeList = {
 	},
 }
 
+local CAMPFIRE_ID = 818
+local SMELTING_ID = 2656
+local index = 1
 local myProfessions = {}
 local tabList = {}
 
-function M:UpdateProfessions()
+function Module:UpdateProfessions()
 	for tradeName, list in pairs(tradeList) do
 		for spellID in pairs(list) do
 			if IsPlayerSpell(spellID) then
@@ -98,7 +104,7 @@ function M:UpdateProfessions()
 	end
 end
 
-function M:TradeTabs_Update()
+function Module:TradeTabs_Update()
 	for _, tab in pairs(tabList) do
 		local spellID = tab.spellID
 		if IsCurrentSpell(spellID) then
@@ -116,29 +122,14 @@ function M:TradeTabs_Update()
 	end
 end
 
-function M:TradeTabs_Reskin()
-	if not C.db["Skins"]["BlizzardSkins"] then return end
-
-	for _, tab in pairs(tabList) do
-		tab:SetCheckedTexture(DB.textures.pushed)
-		tab:GetRegions():Hide()
-		B.CreateBDFrame(tab)
-		local texture = tab:GetNormalTexture()
-		if texture then texture:SetTexCoord(unpack(DB.TexCoord)) end
-	end
-end
-
-local index = 1
-function M:TradeTabs_Create(spellID)
+function Module:TradeTabs_Create(spellID)
 	local name, _, texture = GetSpellInfo(spellID)
-
 	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
 	tab.spellID = spellID
 	tab:SetAttribute("type", "spell")
 	tab:SetAttribute("spell", name)
 	tab:SetNormalTexture(texture)
-	tab:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 	tab:Show()
 
 	tab.CD = CreateFrame("Cooldown", nil, tab, "CooldownFrameTemplate")
@@ -149,18 +140,17 @@ function M:TradeTabs_Create(spellID)
 	cover:EnableMouse(true)
 	tab.cover = cover
 
-	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -33, -70 - (index-1)*45)
-	tinsert(tabList, tab)
+	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -33, -70 - (index - 1) * 45)
+	table_insert(tabList, tab)
 	index = index + 1
 
 	return tab
 end
 
-function M:TradeTabs_OnLoad()
-	M:UpdateProfessions()
+function Module:TradeTabs_OnLoad()
+	Module:UpdateProfessions()
 
 	local hasCooking
-
 	for tradeName, spellID in pairs(myProfessions) do
 		if tradeName == "Mining" then
 			spellID = SMELTING_ID
@@ -175,28 +165,27 @@ function M:TradeTabs_OnLoad()
 		self:TradeTabs_Create(CAMPFIRE_ID)
 	end
 
-	--M:TradeTabs_Reskin()
-	M:TradeTabs_Update()
-	K:RegisterEvent("TRADE_SKILL_SHOW", M.TradeTabs_Update)
-	K:RegisterEvent("TRADE_SKILL_CLOSE", M.TradeTabs_Update)
-	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", M.TradeTabs_Update)
+	Module:TradeTabs_Update()
+	K:RegisterEvent("TRADE_SKILL_SHOW", Module.TradeTabs_Update)
+	K:RegisterEvent("TRADE_SKILL_CLOSE", Module.TradeTabs_Update)
+	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.TradeTabs_Update)
 end
 
-function M.TradeTabs_OnEvent(event, addon)
+function Module.TradeTabs_OnEvent(event, addon)
 	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
-		K:UnregisterEvent(event, M.TradeTabs_OnEvent)
+		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
 		if InCombatLockdown() then
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", M.TradeTabs_OnEvent)
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnEvent)
 		else
-			M:TradeTabs_OnLoad()
+			Module:TradeTabs_OnLoad()
 		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		K:UnregisterEvent(event, M.TradeTabs_OnEvent)
-		M:TradeTabs_OnLoad()
+		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
+		Module:TradeTabs_OnLoad()
 	end
 end
 
-function M:CreateTradeTabs()
+function Module:CreateTradeTabs()
 	if not C["Misc"].TradeTabs then
 		return
 	end
@@ -205,5 +194,5 @@ function M:CreateTradeTabs()
 		return
 	end
 
-	K:RegisterEvent("ADDON_LOADED", M.TradeTabs_OnEvent)
+	K:RegisterEvent("ADDON_LOADED", Module.TradeTabs_OnEvent)
 end
