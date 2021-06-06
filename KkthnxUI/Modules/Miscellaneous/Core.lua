@@ -160,6 +160,13 @@ do
 	end
 end
 
+-- Temporary taint fix
+do
+	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
+		InterfaceOptionsFrameOkay:Click()
+	end)
+end
+
 -- Select target when click on raid units
 do
 	local function fixRaidGroupButton()
@@ -211,13 +218,35 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
-function Module:CreateEnhanceDressup()
+function Module:CreateEnhanceNormalDressup()
 	local parent = _G.DressUpFrameResetButton
 	local button = Module:MailBox_CreatButton(parent, 80, 22, "Undress", {"RIGHT", parent, "LEFT", -1, 0})
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", function(_, btn)
-		local actor = DressUpFrame.ModelScene:GetPlayerActor()
-		if not actor then return end
+		local actor = DressUpFrame.DressUpModel
+		if not actor then
+			return
+		end
+
+		if btn == "LeftButton" then
+			actor:Undress()
+		else
+			actor:UndressSlot(19)
+		end
+	end)
+
+	K.AddTooltip(button, "ANCHOR_TOP", string.format("%sUndress all|n%sUndress tabard", K.LeftButton, K.RightButton))
+end
+
+function Module:CreateEnhanceAuctionDressup()
+	local parent = _G.SideDressUpModelResetButton
+	local button = Module:MailBox_CreatButton(parent, 80, 22, "Undress", {"TOP", parent, "BOTTOM", 0, -4})
+	button:RegisterForClicks("AnyUp")
+	button:SetScript("OnClick", function(_, btn)
+		local actor = SideDressUpModel
+		if not actor then
+			return
+		end
 
 		if btn == "LeftButton" then
 			actor:Undress()
@@ -232,7 +261,9 @@ end
 -- Add friend and guild invite on target menu
 function Module:MenuButton_OnClick(info)
 	local name, server = UnitName(info.unit)
-	if server and server ~= "" then name = name.."-"..server end
+	if server and server ~= "" then
+		name = name.."-"..server
+	end
 
 	if info.value == "name" then
 		if MailFrame:IsShown() then
@@ -244,7 +275,9 @@ function Module:MenuButton_OnClick(info)
 			local hasText = (editBox:GetText() ~= "")
 			ChatEdit_ActivateChat(editBox)
 			editBox:Insert(name)
-			if not hasText then editBox:HighlightText() end
+			if not hasText then
+				editBox:HighlightText()
+			end
 		end
 	elseif info.value == "guild" then
 		GuildInvite(name)
@@ -252,7 +285,9 @@ function Module:MenuButton_OnClick(info)
 end
 
 function Module:MenuButton_Show(_, unit)
-	if UIDROPDOWNMENU_MENU_LEVEL > 1 then return end
+	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
+		return
+	end
 
 	if unit and (unit == "target" or string.find(unit, "party") or string.find(unit, "raid")) then
 		local info = UIDropDownMenu_CreateInfo()
@@ -274,8 +309,6 @@ function Module:MenuButton_Show(_, unit)
 end
 
 function Module:CreateMenuButton_Add()
-	--if not C.db["Misc"]["EnhancedMenu"] then return end
-
 	Module.MenuButtonList = {
 		["name"] = COPY_NAME,
 		["guild"] = gsub(CHAT_GUILD_INVITE_SEND, HEADER_COLON, ""),
@@ -289,7 +322,8 @@ function Module:OnEnable()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossEmote()
 	self:CreateDurabilityFrameMove()
-	self:CreateEnhanceDressup()
+	self:CreateEnhanceAuctionDressup()
+	self:CreateEnhanceNormalDressup()
 	self:CreateErrorsFrame()
 	self:CreateHelmCloakToggle()
 	self:CreateImprovedMail()
@@ -340,34 +374,4 @@ function Module:OnEnable()
 		end
 		_AddonTooltip_Update(owner)
 	end
-
-	-- Add (+X%) to quest rewards experience text
-	hooksecurefunc("QuestInfo_Display", function()
-		local unitXP, unitXPMax = UnitXP("player"), UnitXPMax("player")
-		local Font = K.GetFont(C["UIFonts"].GeneralFonts)
-		local Path, _, Flag = _G[Font]:GetFont()
-
-		if _G.QuestInfoFrame.questLog then
-			local selectedQuest = GetQuestLogSelection()
-			if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
-				local xp = GetQuestLogRewardXP()
-				if xp and xp > 0 then
-					local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
-					if text then
-						_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
-						_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFont(Path, select(3, MapQuestInfoRewardsFrame.XPFrame.Name:GetFont()), Flag)
-					end
-				end
-			end
-		else
-			local xp = GetRewardXP()
-			if xp and xp > 0 then
-				local text = _G.QuestInfoXPFrame.ValueText:GetText()
-				if text then
-					_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
-					_G.QuestInfoXPFrame.ValueText:SetFont(Path, select(3, QuestInfoXPFrame.ValueText:GetFont()), Flag)
-				end
-			end
-		end
-	end)
 end

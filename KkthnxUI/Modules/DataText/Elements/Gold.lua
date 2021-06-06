@@ -194,12 +194,12 @@ function Module:CreateGoldDataText()
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
 		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		Module.GoldDataTextFrame:SetSize(28, 28)
+		Module.GoldDataTextFrame:SetSize(24, 24)
 
 		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
 		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
 		Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
-		Module.GoldDataTextFrame.Texture:SetSize(28, 28)
+		Module.GoldDataTextFrame.Texture:SetSize(24, 24)
 
 		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
