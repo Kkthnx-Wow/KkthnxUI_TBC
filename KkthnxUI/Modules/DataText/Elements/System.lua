@@ -267,7 +267,7 @@ function Module:CreateSystemDataText()
 
 	Module.SystemDataTextFrame.Texture = Module.SystemDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.SystemDataTextFrame.Texture:SetPoint("LEFT", Module.SystemDataTextFrame, "LEFT", 0, 0)
-	Module.SystemDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\HelpIcon-CharacterStuck]])
+	Module.SystemDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\HelpIcon-ReportLag]])
 	Module.SystemDataTextFrame.Texture:SetSize(24, 24)
 
 	Module.SystemDataTextFrame.Text = Module.SystemDataTextFrame:CreateFontString("OVERLAY")

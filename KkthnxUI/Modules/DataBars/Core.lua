@@ -194,22 +194,22 @@ function Module:UpdateReputation()
 
 	if isCapped and textFormat ~= 0 then
 		-- show only name and standing on exalted
-		displayString = string_format("%s: [%s]", name, isFriend and friendText or K.ShortenString(standingLabel, 1, false))
+		displayString = string_format("%s: [%s]", name, K.ShortenString(standingLabel, 1, false))
 	else
 		if textFormat == 1 then
-			displayString = string_format("%s: %d%% [%s]", name, ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %d%% [%s]", name, ((value - Min) / (maxMinDiff) * 100), standingLabel)
 		elseif textFormat == 2 then
-			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue(Max - Min), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue(Max - Min), standingLabel)
 		elseif textFormat == 3 then
-			displayString = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), standingLabel)
 		elseif textFormat == 4 then
-			displayString = string_format("%s: %s [%s]", name, K.ShortValue(value - Min), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s [%s]", name, K.ShortValue(value - Min), standingLabel)
 		elseif textFormat == 5 then
-			displayString = string_format("%s: %s [%s]", name, K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s [%s]", name, K.ShortValue((Max - Min) - (value-Min)), standingLabel)
 		elseif textFormat == 6 then
-			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue((Max - Min) - (value-Min)), standingLabel)
 		elseif textFormat == 7 then
-			displayString = string_format("%s: %s - %d%% (%s) [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+			displayString = string_format("%s: %s - %d%% (%s) [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), K.ShortValue((Max - Min) - (value-Min)), standingLabel)
 		end
 	end
 
@@ -237,6 +237,16 @@ function Module:OnEnter()
 		if RestedXP and RestedXP > 0 then
 			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
 		end
+
+		if K.Class == "HUNTER" and HasPetUI() then
+			local cur, max = GetPetExperience()
+			if max ~= 0 then
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Pet Experience")
+				GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
+			end
+		end
 	end
 
 	if GetWatchedFactionInfo() then
@@ -254,16 +264,6 @@ function Module:OnEnter()
 				_G.GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
 			_G.GameTooltip:Show()
-		end
-	end
-
-	if K.Class == "HUNTER" and HasPetUI() then
-		local cur, max = GetPetExperience()
-		if max ~= 0 then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Pet Experience")
-			GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
 		end
 	end
 

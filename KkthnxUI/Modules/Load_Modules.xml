@@ -147,28 +147,23 @@
    <Script file="DataBars\Core.lua" />
    <!-- Loot -->
    <Script file="Loot\Core.lua" />
-   <Script file="Loot\Elements\GroupLoot.lua" />
    <Script file="Loot\Elements\AutoConfirm.lua" />
    <Script file="Loot\Elements\AutoGreed.lua" />
    <Script file="Loot\Elements\FasterLoot.lua" />
+   <Script file="Loot\Elements\GroupLoot.lua" />
    <!-- Skins Blizzard -->
    <Include file="Skins\Core.lua" />
    <Include file="Skins\Blizzard\Character.lua" />
    <Include file="Skins\Blizzard\ChatBubble.lua" />
    <Include file="Skins\Blizzard\ChatFrame.lua" />
-   <Include file="Skins\Blizzard\Friends.lua" />
+   <Include file="Skins\Blizzard\Inspect.lua" />
+   <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />
-   <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\StackSplit.lua" />
    <Include file="Skins\Blizzard\StaticPopup.lua" />
    <Include file="Skins\Blizzard\Talent.lua" />
    <Include file="Skins\Blizzard\TradeSkill.lua" />
-   <Include file="Skins\Blizzard\Miscellaneous.lua" />
-   <!-- <Include file="Skins\Blizzard\DeathRecap.lua" />
-   <Include file="Skins\Blizzard\WidgetFrame.lua" />
-   <Include file="Skins\Blizzard\LossControl.lua" />
-   <Include file="Skins\Blizzard\Miscellaneous.lua" /> -->
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
@@ -176,14 +171,14 @@
    <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\Pawn.lua" />
    <Include file="Skins\Addons\TradeSkillFrame.lua" />
+
+   <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\Bartender4.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\TinyInspect.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
-   <Include file="Skins\Addons\Simulationcraft.lua" /> -->
-
-   <!-- Disabled/Broken/WIP AddOns -->
-   <!-- <Include file="Skins\Addons\BigWigs.lua" />
+   <Include file="Skins\Addons\Simulationcraft.lua" />
+   <Include file="Skins\Addons\BigWigs.lua" />
    <Include file="Skins\Addons\ChocolateBar.lua" />
    <Include file="Skins\Addons\Immersion.lua" />
    <Include file="Skins\Addons\OPie.lua" />

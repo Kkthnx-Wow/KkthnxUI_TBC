@@ -72,11 +72,14 @@ local daysAbr = {
 local stats = {
 	"Burning Crusade was released on January 16th, 2007",
 	"Burning Crusade, was the first expansion for World of Warcraft",
+	"Don't just play warrior. Be a warrior!",
+	"Don't just watch a player struggle, help them!",
+	"Druids in cat form are not tameable by hunters".."|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t",
 	"Druids receive Flight Form at level 68",
 	"Flying mounts are only usable in Outland at level 70",
+	"Group quests is a means to make new friends",
 	"Normal flying mount training costs 225g",
 	"You can jump down from the Scryer elevator without dying",
-	"Druids in cat form are not tameable by hunters".."|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 }
 
 local function IsIn(val, ...)

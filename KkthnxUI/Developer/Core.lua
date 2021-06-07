@@ -65,17 +65,23 @@ do
 	end
 end
 
--- function FuckYou_Spitters(_, msg, sender)
--- 	if msg and msg:find("spits on you") then
--- 		local Responses = {"Spit on me Daddy", "Oh yeah I like it dirty", "uWu thanks"}
--- 		SendChatMessage(Responses[math.random(1, #Responses)], "WHISPER", nil, sender)
--- 	end
--- end
+local spitFactResponses = {
+	"Did you know a lack of spit was once used as an admission of guilt.",
+	"Did you know saliva production has a circadian rhythm.",
+	"Did you know spit can battle bacteria.",
+	"Did you know spit is mostly water.",
+	"Did you know spit keeps you from getting cavities.",
+	"Did you know stress can leave you spit-less.",
+	"Did you know there are five different kinds of spit.",
+	"Did you know there's a medical standard for how much spit you should have.",
+	"Did you know you need spit if you want to taste anything.",
+}
 
--- local frame = CreateFrame("Frame")
--- frame:RegisterEvent("PLAYER_LOGIN")
--- frame:RegisterEvent("CHAT_MSG_EMOTE")
--- frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
--- frame:SetScript("OnEvent", function(self, event)
--- 	FuckYou_Spitters()
--- end)
+local function SpitFacts(_, _, msg, author)
+	if string.find(msg, "spits on you") then
+		SendChatMessage(spitFactResponses[math.random(1, #spitFactResponses)], "WHISPER", nil, author)
+	end
+end
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", SpitFacts)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", SpitFacts)

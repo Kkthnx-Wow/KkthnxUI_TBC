@@ -898,6 +898,8 @@ function Module:OnEnable()
 			return
 		end
 
+		print(PawnIsContainerItemAnUpgrade)
+
 		if self.UpgradeIcon then
 			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
 		end
