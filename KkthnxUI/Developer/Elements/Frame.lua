@@ -43,29 +43,8 @@ local UnitName = _G.UnitName
 -- /kt, get gametooltip names
 
 local KKUI_DEVS = {
-	-- Retail
-	["Iamnsfw-Sargeras"] = true,
-	["Kkthnx-Sargeras"] = true,
-	["Kkthnx-Thrall"] = true,
-	["Kkthnxbye-Sargeras"] = true,
-	["Kkthnxtv-Sargeras"] = true,
-	["Kkthnxui-Sargeras"] = true,
-	["Kkthnxx-Sargeras"] = true,
-	["Littledots-Sargeras"] = true,
-	["Superfreaky-Sargeras"] = true,
-	["Tattoofreak-Sargeras"] = true,
-	["Toxicfreak-Sargeras"] = true,
-
-	-- Firestorm
-	["Crackbot-Sethraliss"] = true,
-	["Forumtroll-Sethraliss"] = true,
-	["Givesnofox-Sethraliss"] = true,
-	["Kkthnx-Sethraliss"] = true,
-	["Kkthnxtv-Sethraliss"] = true,
-	["Kkthnxx-Sethraliss"] = true,
-	["Mazikeenlol-Sethraliss"] = true,
-	["Rustbucket-Sethraliss"] = true,
-	["Toxicfreak-Sethraliss"] = true,
+	-- TBC Classic
+	["Kkthnx-Sulfuras"] = true,
 }
 
 local function isDeveloper()

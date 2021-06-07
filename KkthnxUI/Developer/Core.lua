@@ -65,17 +65,17 @@ do
 	end
 end
 
-do
-	local SpitterEmotes = {
-		"VIOLIN", "CHUCKLE", "FLEX", "PITY", "SLAP", "BONK"
-	}
+-- do
+-- 	local SpitterEmotes = {
+-- 		"VIOLIN", "CHUCKLE", "FLEX", "PITY", "SLAP", "BONK"
+-- 	}
 
-	local function EmoteOnSpitters(_, _, msg, spitter)
-		if string.find(msg, "spits on you") then
-			DoEmote(SpitterEmotes[math.random(1, #SpitterEmotes)], spitter)
-		end
-	end
+-- 	local function EmoteOnSpitters(_, _, msg, spitter)
+-- 		if string.find(msg, "spits on you") then
+-- 			DoEmote(SpitterEmotes[math.random(1, #SpitterEmotes)], spitter)
+-- 		end
+-- 	end
 
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", EmoteOnSpitters)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", EmoteOnSpitters)
-end
+-- 	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", EmoteOnSpitters)
+-- 	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", EmoteOnSpitters)
+-- end
