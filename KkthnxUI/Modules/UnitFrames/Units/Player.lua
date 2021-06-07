@@ -306,15 +306,15 @@ function Module:CreatePlayer()
 		self.Name:SetFontObject(UnitframeFont)
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			if C["Unitframe"].HealthbarColor.Value == "Class" then
-				self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
+				self:Tag(self.Name, "[name] [fulllevel]")
 			else
-				self:Tag(self.Name, "[color][name] [fulllevel][afkdnd]")
+				self:Tag(self.Name, "[color][name] [fulllevel]")
 			end
 		else
 			if C["Unitframe"].HealthbarColor.Value == "Class" then
-				self:Tag(self.Name, "[name][afkdnd]")
+				self:Tag(self.Name, "[name]")
 			else
-				self:Tag(self.Name, "[color][name][afkdnd]")
+				self:Tag(self.Name, "[color][name]")
 			end
 		end
 	end
@@ -420,14 +420,14 @@ function Module:CreatePlayer()
 		self.FloatingCombatFeedback.abbreviateNumbers = true
 
 		-- Turn off Blizzard's default combat text.
-		SetCVar("enableFloatingCombatText", 0)
-		SetCVar("floatingCombatTextCombatHealing", 0)
-		SetCVar("floatingCombatTextCombatDamage", 0)
-		SHOW_COMBAT_TEXT = "0"
-		if (CombatText_UpdateDisplayedMessages) then
-			CombatText_UpdateDisplayedMessages()
-		end
-		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
+		-- SetCVar("enableFloatingCombatText", 0)
+		-- SetCVar("floatingCombatTextCombatHealing", 0)
+		-- SetCVar("floatingCombatTextCombatDamage", 0)
+		-- SHOW_COMBAT_TEXT = "0"
+		-- if (CombatText_UpdateDisplayedMessages) then
+		-- 	CombatText_UpdateDisplayedMessages()
+		-- end
+		--K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	-- Swing timer

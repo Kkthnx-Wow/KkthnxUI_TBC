@@ -93,15 +93,15 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[afkdnd][name] [fulllevel]")
+			self:Tag(self.Name, "[name] [fulllevel]")
 		else
-			self:Tag(self.Name, "[afkdnd][color][name] [fulllevel]")
+			self:Tag(self.Name, "[color][name] [fulllevel]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[afkdnd][name]")
+			self:Tag(self.Name, "[name]")
 		else
-			self:Tag(self.Name, "[afkdnd][color][name]")
+			self:Tag(self.Name, "[color][name]")
 		end
 	end
 
@@ -306,8 +306,8 @@ function Module:CreateTarget()
 		self.FloatingCombatFeedback.abbreviateNumbers = true
 
 		-- Default CombatText
-		SetCVar("enableFloatingCombatText", 0)
-		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
+		--SetCVar("enableFloatingCombatText", 0)
+		--K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	if C["Unitframe"].PvPIndicator then

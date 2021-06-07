@@ -73,7 +73,7 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) or UnitIsAFK(unit) or	UnitIsDND(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per = GetUnitHealthPerc(unit) or 0
@@ -118,15 +118,6 @@ oUF.Tags.Methods["color"] = function(unit)
 end
 oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FACTION UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
-oUF.Tags.Methods["afkdnd"] = function(unit)
-	if UnitIsAFK(unit) then
-		return "|TInterface/FriendsFrame/StatusIcon-Away:16:16|t"
-	elseif UnitIsDND(unit) then
-		return "|TInterface/FriendsFrame/StatusIcon-DnD:16:16|t"
-	end
-end
-oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
-
 oUF.Tags.Methods["DDG"] = function(unit)
 	if UnitIsFeignDeath(unit) then
 		return "|cffffffff"..GetFeignDeathTag().."|r"
@@ -136,6 +127,10 @@ oUF.Tags.Methods["DDG"] = function(unit)
 		return "|cffCFCFCF"..L["Ghost"].."|r"
 	elseif not UnitIsConnected(unit) then
 		return "|cffCFCFCF"..PLAYER_OFFLINE.."|r"
+	elseif UnitIsAFK(unit) then
+		return "|cffCFCFCF"..AFK.."|r"
+	elseif UnitIsDND(unit) then
+		return "|cffCFCFCF"..DND.."|r"
 	end
 end
 oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"

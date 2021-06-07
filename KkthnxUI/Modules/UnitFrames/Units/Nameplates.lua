@@ -4,7 +4,6 @@ local Module = K:GetModule("Unitframes")
 local _G = _G
 local math_rad = _G.math.rad
 local pairs = _G.pairs
-local string_format = _G.string.format
 local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
@@ -12,22 +11,14 @@ local unpack = _G.unpack
 
 local Ambiguate = _G.Ambiguate
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
-local C_NamePlate_SetNamePlateEnemySize = _G.C_NamePlate.SetNamePlateEnemySize
-local C_NamePlate_SetNamePlateFriendlySize = _G.C_NamePlate.SetNamePlateFriendlySize
 local CreateFrame = _G.CreateFrame
-local GetInstanceInfo = _G.GetInstanceInfo
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
 local INTERRUPTED = _G.INTERRUPTED
 local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
 local SetCVar = _G.SetCVar
 local UnitClassification = _G.UnitClassification
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
@@ -38,13 +29,8 @@ local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
-local aksCacheData = {}
 local customUnits = {}
-local explosivesID = 120651
-local groupRoles = {}
 local guidToPlate = {}
-local hasExplosives
-local isInGroup
 local isInInstance
 local isTargetClassPower
 local showPowerList = {}
@@ -949,7 +935,7 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[afkdnd][color][name] [nplevel]")
+		self:Tag(name, "[color][name] [nplevel]")
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 

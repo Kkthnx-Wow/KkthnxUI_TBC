@@ -91,8 +91,9 @@ function Module:CreateLatencyDataText()
 
 	Module.LatencyDataTextFrame.Texture = Module.LatencyDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.LatencyDataTextFrame.Texture:SetPoint("LEFT", Module.LatencyDataTextFrame, "LEFT", 0, 0)
-	Module.LatencyDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\HelpIcon-Bug]])
+	Module.LatencyDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp"))
 	Module.LatencyDataTextFrame.Texture:SetSize(24, 24)
+	Module.LatencyDataTextFrame.Texture:SetVertexColor(102/255, 157/255, 255/255)
 
 	Module.LatencyDataTextFrame.Text = Module.LatencyDataTextFrame:CreateFontString("OVERLAY")
 	Module.LatencyDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

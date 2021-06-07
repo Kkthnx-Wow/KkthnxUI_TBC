@@ -76,7 +76,7 @@ local function UpdateCategoriesAnchor()
 	local prev
 	for _, frame in pairs(framesToSort) do
 		if not prev then
-			frame:SetPoint("TOP", 0, -35)
+			frame:SetPoint("TOP", 0, -104)
 		else
 			frame:SetPoint("TOP", prev, "BOTTOM")
 		end
@@ -135,13 +135,14 @@ end
 local function CreateStatRow(parent, index)
 	local frame = CreateFrame("Frame", "$parentRow"..index, parent, "StatFrameTemplate")
 	frame:SetWidth(180)
-	frame:SetPoint("TOP", parent.header, "BOTTOM", 0, -2 - (index-1)*16)
+	frame:SetPoint("TOP", parent.header, "BOTTOM", 0, -2 - (index - 1) * 16)
 
 	local background = frame:CreateTexture(nil, "BACKGROUND")
 	background:SetAtlas("UI-Character-Info-Line-Bounce", true)
-	background:SetAlpha(.3)
+	background:SetAlpha(0.3)
 	background:SetPoint("CENTER")
 	background:SetShown(index % 2 == 0)
+	frame.background = background
 
 	return frame
 end
@@ -153,10 +154,93 @@ local function CreateHeaderArrow(parent, direct, func)
 
 	local bu = CreateFrame("Button", nil, parent)
 	bu:SetPoint(direct, parent.header, xOffset, 0)
-	K.ReskinArrow(bu, arrowDirec)
+	K.ReskinArrow(bu, arrowDirec, false)
 	bu:SetSize(14, 14)
 	bu.__owner = parent
 	bu:SetScript("OnClick", func)
+end
+
+local function CreatePlayerILvl(parent, category)
+	local frame = CreateFrame("Frame", "KKUI_StatCategoryIlvl", parent)
+	frame:SetWidth(200)
+	frame:SetHeight(42 + 16)
+	frame:SetPoint("TOP", 0, -30)
+
+	local header = CreateFrame("Frame", "$parentHeader", frame, "CharacterStatFrameCategoryTemplate")
+	header:SetPoint("TOP")
+	header.Background:Hide()
+	header.Title:SetText(category)
+	header.Title:SetTextColor(cr, cg, cb)
+	frame.header = header
+
+	local line = frame:CreateTexture(nil, "ARTWORK")
+	line:SetSize(180, K.Mult)
+	line:SetPoint("BOTTOM", header, 0, 6)
+	line:SetColorTexture(1, 1, 1, .25)
+
+	local iLvlFrame = CreateStatRow(frame, 1)
+	iLvlFrame:SetHeight(30)
+	iLvlFrame.background:Show()
+	iLvlFrame.background:SetAtlas("UI-Character-Info-ItemLevel-Bounce", true)
+
+	M.PlayerILvl = K.CreateFontString(iLvlFrame, 20)
+end
+
+local function GetItemSlotLevel(unit, index)
+	local level
+	local itemLink = GetInventoryItemLink(unit, index)
+	if itemLink then
+		level = select(4, GetItemInfo(itemLink))
+	end
+	return tonumber(level) or 0
+end
+
+local function GetILvlTextColor(level)
+	if level >= 150 then
+		return 1, .5, 0
+	elseif level >= 115 then
+		return .63, .2, .93
+	elseif level >= 80 then
+		return 0, .43, .87
+	elseif level >= 45 then
+		return .12, 1, 0
+	else
+		return 1, 1, 1
+	end
+end
+
+function M:UpdatePlayerILvl()
+	if not M.PlayerILvl then return end
+
+	local total, level = 0
+	for index = 1, 15 do
+		if index ~= 4 then
+			level = GetItemSlotLevel("player", index)
+			if level > 0 then
+				total = total + level
+			end
+		end
+	end
+
+	local mainhand = GetItemSlotLevel("player", 16)
+	local offhand = GetItemSlotLevel("player", 17)
+	local ranged = GetItemSlotLevel("player", 18)
+
+	--[[
+	Note: We have to unify iLvl with others who use MerInspect,
+	although it seems incorrect for Hunter with two melee weapons.
+	]]
+	if mainhand > 0 and offhand > 0 then
+		total = total + mainhand + offhand
+	elseif offhand > 0 and ranged > 0 then
+		total = total + offhand + ranged
+	else
+		total = total + max(mainhand, offhand, ranged) * 2
+	end
+
+	local average = K.Round(total / 16, 1)
+	M.PlayerILvl:SetText(average)
+	M.PlayerILvl:SetTextColor(GetILvlTextColor(average))
 end
 
 local function CreateStatHeader(parent, index, category)
@@ -178,7 +262,7 @@ local function CreateStatHeader(parent, index, category)
 	CreateHeaderArrow(frame, "RIGHT", Arrow_GoDown)
 
 	local line = frame:CreateTexture(nil, "ARTWORK")
-	line:SetSize(180, 1)
+	line:SetSize(180, K.Mult)
 	line:SetPoint("BOTTOM", header, 0, 6)
 	line:SetColorTexture(1, 1, 1, .25)
 
@@ -267,6 +351,10 @@ function M:CharacterStatePanel()
 		end
 		scrollBar:SetValue(scrollBar:GetValue() - step)
 	end)
+
+	-- Player iLvl
+	CreatePlayerILvl(stat, "ItemLevel")
+	hooksecurefunc("PaperDollFrame_UpdateStats", M.UpdatePlayerILvl)
 
 	local categories = {
 		"PLAYERSTAT_BASE_STATS",

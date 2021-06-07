@@ -65,23 +65,17 @@ do
 	end
 end
 
-local spitFactResponses = {
-	"Did you know a lack of spit was once used as an admission of guilt.",
-	"Did you know saliva production has a circadian rhythm.",
-	"Did you know spit can battle bacteria.",
-	"Did you know spit is mostly water.",
-	"Did you know spit keeps you from getting cavities.",
-	"Did you know stress can leave you spit-less.",
-	"Did you know there are five different kinds of spit.",
-	"Did you know there's a medical standard for how much spit you should have.",
-	"Did you know you need spit if you want to taste anything.",
-}
+do
+	local SpitterEmotes = {
+		"VIOLIN", "CHUCKLE", "FLEX", "PITY", "SLAP", "BONK"
+	}
 
-local function SpitFacts(_, _, msg, author)
-	if string.find(msg, "spits on you") then
-		SendChatMessage(spitFactResponses[math.random(1, #spitFactResponses)], "WHISPER", nil, author)
+	local function EmoteOnSpitters(_, _, msg, spitter)
+		if string.find(msg, "spits on you") then
+			DoEmote(SpitterEmotes[math.random(1, #SpitterEmotes)], spitter)
+		end
 	end
-end
 
-ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", SpitFacts)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", SpitFacts)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", EmoteOnSpitters)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", EmoteOnSpitters)
+end

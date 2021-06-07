@@ -2,30 +2,34 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Miscellaneous")
 
 local _G = _G
-local select = _G.select
+local table_insert = _G.table.insert
+local string_gsub = _G.string.gsub
+local table_wipe = _G.table.wipe
 
 local BNGetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
+local C_QuestLog_GetQuestInfo = _G.C_QuestLog.GetQuestInfo
 local FRIEND = _G.FRIEND
 local GUILD = _G.GUILD
+local GetFileIDFromPath = _G.GetFileIDFromPath
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
-local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
-local GetRewardXP = _G.GetRewardXP
+local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
+local GetQuestLogTitle = _G.GetQuestLogTitle
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsGuildMember = _G.IsGuildMember
+local IsQuestComplete = _G.IsQuestComplete
+local MAX_NUM_QUESTS = _G.MAX_NUM_QUESTS or 25
 local NO = _G.NO
+local NUMGOSSIPBUTTONS = _G.NUMGOSSIPBUTTONS or 32
 local PlaySound = _G.PlaySound
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UnitGUID = _G.UnitGUID
-local UnitXP = _G.UnitXP
-local UnitXPMax = _G.UnitXPMax
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -128,6 +132,7 @@ do
 			if not itemLink then
 				return
 			end
+
 			BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 			cache[itemLink] = true
 			itemLink = nil
@@ -314,6 +319,109 @@ function Module:CreateMenuButton_Add()
 		["guild"] = gsub(CHAT_GUILD_INVITE_SEND, HEADER_COLON, ""),
 	}
 	hooksecurefunc("UnitPopup_ShowMenu", Module.MenuButton_Show)
+end
+
+do
+	-- Sourced: https://www.curseforge.com/wow/addons/questframefixer
+	if not IsAddOnLoaded("QuestFrameFixer") then
+		local ACTIVE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\ActiveQuestIcon")
+		local AVAILABLE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\AvailableQuestIcon")
+
+		local titleLines = {}
+		local questIconTextures = {}
+
+		for i = 1, MAX_NUM_QUESTS do
+			local titleLine = _G["QuestTitleButton" .. i]
+			table_insert(titleLines, titleLine)
+			table_insert(questIconTextures, _G[titleLine:GetName() .. "QuestIcon"])
+		end
+
+		QuestFrameGreetingPanel:HookScript("OnShow", function()
+			for i, titleLine in ipairs(titleLines) do
+				if (titleLine:IsVisible()) then
+					local bulletPointTexture = questIconTextures[i]
+					if (titleLine.isActive == 1) then
+						bulletPointTexture:SetTexture(ACTIVE_QUEST_ICON_FILEID)
+					else
+						bulletPointTexture:SetTexture(AVAILABLE_QUEST_ICON_FILEID)
+					end
+				end
+			end
+		end)
+	end
+
+	-- Sourced: https://www.curseforge.com/wow/addons/quest-icon-desaturation
+	if not IsAddOnLoaded("QuestIconDesaturation") then
+		local escapes = {
+			["|c%x%x%x%x%x%x%x%x"] = "", -- color start
+			["|r"] = "" -- color end
+		}
+
+		local function unescape(str)
+			for k, v in pairs(escapes) do
+				str = string_gsub(str, k, v)
+			end
+
+			return str
+		end
+
+		local completedActiveQuests = {}
+		local function getCompletedQuestsInLog()
+			table_wipe(completedActiveQuests)
+			local numEntries = GetNumQuestLogEntries()
+			local questLogTitleText, isComplete, questId, _
+			for i = 1, numEntries, 1 do
+				_, _, _, _, _, isComplete, _, questId = GetQuestLogTitle(i)
+				if (isComplete == 1 or IsQuestComplete(questId)) then
+					questLogTitleText = C_QuestLog_GetQuestInfo(questId)
+					completedActiveQuests[questLogTitleText] = true
+				end
+			end
+
+			return completedActiveQuests
+		end
+
+		local function setDesaturation(maxLines, lineMap, iconMap, activePred)
+			local completedQuests = getCompletedQuestsInLog()
+			for i = 1, maxLines do
+				local line = lineMap[i]
+				local icon = iconMap[i]
+				icon:SetDesaturated(nil)
+				if (line:IsVisible() and activePred(line)) then
+					local questName = unescape(line:GetText())
+					if (not completedQuests[questName]) then
+						icon:SetDesaturated(1)
+					end
+				end
+			end
+		end
+
+		local function getLineAndIconMaps(maxLines, titleIdent, iconIdent)
+			local lines = {}
+			local icons = {}
+			for i = 1, maxLines do
+				local titleLine = _G[titleIdent .. i]
+				table_insert(lines, titleLine)
+				table_insert(icons, _G[titleLine:GetName() .. iconIdent])
+			end
+
+			return lines, icons
+		end
+
+		local questFrameTitleLines, questFrameIconTextures = getLineAndIconMaps(MAX_NUM_QUESTS, "QuestTitleButton", "QuestIcon")
+		QuestFrameGreetingPanel:HookScript("OnShow", function()
+			setDesaturation(MAX_NUM_QUESTS, questFrameTitleLines, questFrameIconTextures, function(line)
+				return line.isActive == 1
+			end)
+		end)
+
+		local gossipFrameTitleLines, gossipFrameIconTextures = getLineAndIconMaps(NUMGOSSIPBUTTONS, "GossipTitleButton", "GossipIcon")
+		hooksecurefunc("GossipFrameUpdate", function()
+			setDesaturation(NUMGOSSIPBUTTONS, gossipFrameTitleLines, gossipFrameIconTextures, function(line)
+				return line.type == "Active"
+			end)
+		end)
+	end
 end
 
 function Module:OnEnable()

@@ -86,9 +86,9 @@ function Module:CreateFocus()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Unitframe"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[name][afkdnd]")
+		self:Tag(self.Name, "[name]")
 	else
-		self:Tag(self.Name, "[color][name][afkdnd]")
+		self:Tag(self.Name, "[color][name]")
 	end
 
 	-- Level

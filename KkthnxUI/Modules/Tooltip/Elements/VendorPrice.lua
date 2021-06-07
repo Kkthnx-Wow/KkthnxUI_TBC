@@ -28,7 +28,7 @@ local function SetupVendorPrice(tooltip, tooltipObject)
 			if classID and classID == 11 then -- Fix for quiver/ammo pouch so ammo is not included
 				count = 1
 			end
-			SetTooltipMoney(tooltip, sellPrice * count, "STATIC", SELL_PRICE .. ":")
+			SetTooltipMoney(tooltip, sellPrice * count, nil, string.format("%s:", SELL_PRICE))
 		end
 	end
 

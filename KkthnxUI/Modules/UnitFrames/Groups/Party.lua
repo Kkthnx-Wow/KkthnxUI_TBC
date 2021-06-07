@@ -77,9 +77,9 @@ function Module:CreateParty()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Party"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[afkdnd][leadassist][name]")
+		self:Tag(self.Name, "[leadassist][name]")
 	else
-		self:Tag(self.Name, "[afkdnd][leadassist][color][name]")
+		self:Tag(self.Name, "[leadassist][color][name]")
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
@@ -233,7 +233,7 @@ function Module:CreateParty()
 	-- self.StatusIndicator:SetPoint("CENTER", 0, 0.5)
 	-- self.StatusIndicator:SetFontObject(UnitframeFont)
 	-- self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
-	-- self:Tag(self.StatusIndicator, "[afkdnd]")
+	-- self:Tag(self.StatusIndicator, "")
 
 	if (C["Party"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")

@@ -186,13 +186,13 @@ function Module:ReskinRegions()
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -4)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
 		else
 			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -12)
 		end
-		MiniMapMailIcon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Mail")
-		MiniMapMailFrame:SetScale(1.8)
-		MiniMapMailIcon:SetRotation(rad(-27.5))
+		MiniMapMailIcon:SetTexture("Interface\\MINIMAP\\TRACKING\\Mailbox")
+		MiniMapMailFrame:SetScale(1.2)
+		MiniMapMailIcon:SetRotation(rad(-34.5))
 		MiniMapMailFrame:SetHitRectInsets(11, 11, 11, 15)
 	end
 

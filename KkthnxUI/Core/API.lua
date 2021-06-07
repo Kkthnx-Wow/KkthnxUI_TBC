@@ -437,9 +437,15 @@ function K.SetupArrow(self, direction)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 
-function K.ReskinArrow(self, direction)
+function K.ReskinArrow(self, direction, skin)
+	if skin == nil then
+		skin = true
+	end
+
 	self:SetSize(16, 16)
-	self:SkinButton()
+	if skin == true then
+		self:SkinButton()
+	end
 
 	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
 	local dis = self:GetDisabledTexture()

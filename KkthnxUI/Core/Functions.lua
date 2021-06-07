@@ -35,9 +35,6 @@ local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
-local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceDescription = _G.GetSpellDescription(277253)
-local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 
 local mapRects = {}

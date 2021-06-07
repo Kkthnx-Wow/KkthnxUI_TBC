@@ -22,7 +22,7 @@ local function OnUpdate(_, elapsed)
 	local weight = 2048 ^ -elapsed
 	speed = min(weight * speed + (1 - weight) * sqrt(dX * dX + dY * dY) / elapsed, 1024)
 
-	local size = speed / 12
+	local size = speed / 6 - 16
 	if size > 0 then
 		local scale = UIParent:GetEffectiveScale()
 		Module.Texture:SetSize(size, size)
@@ -36,10 +36,10 @@ end
 
 function Module:CreateMouseTrail()
 	if C["Misc"].MouseTrail then
-		Module.Frame = CreateFrame("Frame", nil, UIParent)
+		Module.Frame = Module.Frame or CreateFrame("Frame", nil, UIParent)
 		Module.Frame:SetFrameStrata("TOOLTIP")
 
-		Module.Texture = Module.Frame:CreateTexture()
+		Module.Texture = Module.Texture or Module.Frame:CreateTexture()
 		Module.Texture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Aura73]]) -- Create texture picker dropdown in future?
 
 		Module.Frame:SetScript("OnUpdate", OnUpdate)

@@ -15,16 +15,19 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added fix for blizzard chatframe offset bug",
-	"Added merchant item quality color for name",
-	"Added option to scale bags",
-	"Added pet buffs for feeding and mend",
-	"Added |CFFFF7C0ADruid|r mana when in cat form and such",
-	"Fixed party pets showing without being in party",
-	"Updated TopCenterContainerHolder position",
-	"Updated character stat panel button to not conflict with other addons",
-	"Updated sortbags code",
-	"Various monk/dk code cleaned up",
+	"Added icon and movers to fps/ms datatext",
+	"Added more gossips for auto-questing",
+	"Added new icons for datatext",
+	"Added quest frame fixer code",
+	"Added quest icon desaturation code",
+	"Fixed combat section in interface being wonky",
+	"Fixed killing blow emoting",
+	"Fixed mousetrail module showing when hiding",
+	"Fixed sapped module to announce when sapped",
+	"Updated character stat panel with itemlevel",
+	"Updated how AFK/DND is shown on unitframes",
+	"Updated vendor price string",
+	"Various code cleanups",
 }
 
 local changelogFrame

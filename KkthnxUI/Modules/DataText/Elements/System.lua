@@ -267,8 +267,9 @@ function Module:CreateSystemDataText()
 
 	Module.SystemDataTextFrame.Texture = Module.SystemDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.SystemDataTextFrame.Texture:SetPoint("LEFT", Module.SystemDataTextFrame, "LEFT", 0, 0)
-	Module.SystemDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\HelpIcon-ReportLag]])
+	Module.SystemDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\help.blp")
 	Module.SystemDataTextFrame.Texture:SetSize(24, 24)
+	Module.SystemDataTextFrame.Texture:SetVertexColor(102/255, 157/255, 255/255)
 
 	Module.SystemDataTextFrame.Text = Module.SystemDataTextFrame:CreateFontString("OVERLAY")
 	Module.SystemDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

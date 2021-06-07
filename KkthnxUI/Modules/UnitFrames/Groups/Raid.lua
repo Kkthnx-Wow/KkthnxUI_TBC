@@ -147,7 +147,7 @@ function Module:CreateRaid()
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[afkdnd][name]")
+	self:Tag(self.Name, "[name]")
 
 	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
@@ -185,7 +185,7 @@ function Module:CreateRaid()
 		-- self.StatusIndicator:SetFontObject(RaidframeFont)
 		-- self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
 		-- self.StatusIndicator:SetTextColor(1, 0, 0)
-		-- self:Tag(self.StatusIndicator, "[afkdnd]")
+		-- self:Tag(self.StatusIndicator, "")
 	end
 
 	if C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
