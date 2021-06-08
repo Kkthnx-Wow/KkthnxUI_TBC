@@ -124,7 +124,11 @@ end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	Module.SystemDataTextFrame.Text:SetText(L["FPS"]..": "..colorFPS(fps))
+	if C["DataText"].HideText then
+		Module.SystemDataTextFrame.Text:SetText("")
+	else
+		Module.SystemDataTextFrame.Text:SetText(L["FPS"]..": "..colorFPS(fps))
+	end
 end
 
 local function OnEnter()

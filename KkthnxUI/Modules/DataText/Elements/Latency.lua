@@ -30,7 +30,11 @@ end
 local function setLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
 	local latency = math_max(latencyHome, latencyWorld)
-	Module.LatencyDataTextFrame.Text:SetText(L["MS"]..": "..colorLatency(latency))
+	if C["DataText"].HideText then
+		Module.LatencyDataTextFrame.Text:SetText("")
+	else
+		Module.LatencyDataTextFrame.Text:SetText(L["MS"]..": "..colorLatency(latency))
+	end
 end
 
 local function OnEnter()

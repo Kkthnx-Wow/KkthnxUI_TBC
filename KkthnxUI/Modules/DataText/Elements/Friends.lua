@@ -514,7 +514,11 @@ end
 
 local function FriendsPanel_OnEvent()
 	Module:FriendsPanel_Refresh()
-	Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+	if C["DataText"].HideText then
+		Module.FriendsDataTextFrame.Text:SetText("")
+	else
+		Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+	end
 
 	updateRequest = false
 	if infoFrame and infoFrame:IsShown() then

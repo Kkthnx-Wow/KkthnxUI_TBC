@@ -381,7 +381,7 @@ local DataText = function(self)
 	Window:CreateColorSelection("DataText", "IconColor", "Color The Icons") -- Needs Locale
 
 	Window:CreateSection("DataText Text")
-	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")  -- Needs Locale
+	Window:CreateSwitch("DataText", "HideText", "Only Show Icon & Hide Text")  -- Needs Locale
 end
 
 local General = function(self)
