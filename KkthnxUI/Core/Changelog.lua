@@ -17,6 +17,7 @@ local CLOSE = _G.CLOSE
 local changelogData = {
 	"Added option for user to pick from a list of mouse trails",
 	"Added overall durability datatext to character frame",
+	"Added toxiui clean texture to be picked from statusbars",
 	"Fixed pet buffs being too far down (related to wrong options)",
 	"Fixed worldmap party dots being invisible",
 	"Updated aurawatch for tracking all spell ranks",

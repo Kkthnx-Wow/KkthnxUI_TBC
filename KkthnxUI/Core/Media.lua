@@ -72,6 +72,7 @@ local TextureTable = {
 	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUIStatusbar,
 	["Palooza"] = C["Media"].Statusbars.PaloozaStatusbar,
 	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUIStatusbar,
+	["ToxiUI"] = C["Media"].Statusbars.ToxiUIStatusbar,
 	["Tukui"] = C["Media"].Statusbars.TukuiStatusbar,
 	["ZorkUI"] = C["Media"].Statusbars.ZorkUIStatusbar,
 }
