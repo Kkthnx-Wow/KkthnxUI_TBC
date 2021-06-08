@@ -17,6 +17,8 @@ local function DataAnalyze(v)
 		newTable.Duration = v[2]
 		if v[3] == "OnCastSuccess" then
 			newTable.OnSuccess = true
+		elseif v[3] == "UnitCastSucceed" then
+			newTable.CastSucceed = true
 		end
 		newTable.UnitID = v[4]
 		newTable.ItemID = v[5]
@@ -531,13 +533,17 @@ function Module:AuraWatch_SetupAura(index, UnitID, name, icon, count, duration, 
 	frames.Index = (frames.Index + 1 > maxFrames) and maxFrames or frames.Index + 1
 end
 
-function Module:AuraWatch_UpdateAura(spellID, UnitID, index, bool)
+function Module:AuraWatch_UpdateAura(spellName, spellID, UnitID, index, bool)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[spellID] then -- ignore spells
 		return
 	end
 
 	for KEY, VALUE in pairs(AuraList) do
 		local value = VALUE.List[spellID]
+		if not value then
+			value = auraListByName[KEY] and auraListByName[KEY][spellName]
+		end
+
 		if value and value.AuraID and value.UnitID == UnitID then
 			local filter = bool and "HELPFUL" or "HARMFUL"
 			local name, icon, count, _, duration, expires, caster, _, _, _, _, _, _, _, _, number = UnitAura(value.UnitID, index, filter)
@@ -736,30 +742,41 @@ function Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceF
 end
 
 local cache = {}
-local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
-function Module:AuraWatch_UpdateInt(_, ...)
+function Module:AuraWatch_UpdateInt(event, ...)
 	if not IntCD.List then
 		return
 	end
 
-	local timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID = ...
-	local value = IntCD.List[spellID]
-	if value and cache[timestamp] ~= spellID and Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags) then
-		local guid, name = destGUID, destName
-		if value.OnSuccess then
-			guid, name = sourceGUID, sourceName
+	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local unit, _, spellID = ...
+		local value = IntCD.List[spellID]
+		if value and value.CastSucceed and unit then
+			local unitID = value.UnitID:lower()
+			local guid = UnitGUID(unit)
+			local isPassed
+			if unitID == "all" and (unit == "player" or strfind(unit, "pet") or UnitInRaid(unit) or UnitInParty(unit) or not GetPlayerInfoByGUID(guid)) then
+				isPassed = true
+			elseif unitID == "player" and (unit == "player" or unit == "pet") then
+				isPassed = true
+			end
+			if isPassed then
+				Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, UnitName(unit))
+			end
+		end
+	else
+		local timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID = ...
+		local value = IntCD.List[spellID]
+		if value and cache[timestamp] ~= spellID and Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags) then
+			local guid, name = destGUID, destName
+			if value.OnSuccess then guid, name = sourceGUID, sourceName end
+
+			Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, name)
+			cache[timestamp] = spellID
 		end
 
-		Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, name)
-		if C["AuraWatch"].QuakeRing and spellID == 240447 then
-			PlaySound(soundKitID, "Master") -- 'Ding' on quake
+		if #cache > 666 then
+			wipe(cache)
 		end
-
-		cache[timestamp] = spellID
-	end
-
-	if #cache > 666 then
-		wipe(cache)
 	end
 end
 
@@ -789,6 +806,7 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 				frame.Spellname:SetText(nil)
 			end
 		end
+
 		value.Index = 1
 	end
 end
@@ -797,6 +815,7 @@ end
 function Module.AuraWatch_OnEvent(event, ...)
 	if not C["AuraWatch"].Enable then
 		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
+		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
 		return
 	end
@@ -812,6 +831,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 	end
 end
 K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
+K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.AuraWatch_OnEvent)
 K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
 
 function Module:AuraWatch_OnUpdate(elapsed)
@@ -864,6 +884,7 @@ SlashCmdList.AuraWatch = function(msg)
 					K.HideButtonGlow(value[i].glowFrame)
 				end
 			end
+
 			value[1].MoveHandle:Show()
 		end
 

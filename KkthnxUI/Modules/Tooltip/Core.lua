@@ -542,36 +542,23 @@ K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
 	local tooltips = {
+		AutoCompleteBox,
 		ChatMenu,
-		EmoteMenu,
-		LanguageMenu,
-		VoiceMacroMenu,
-		GameTooltip,
 		EmbeddedItemTooltip,
-		ItemRefTooltip,
+		EmoteMenu,
+		FriendsTooltip,
+		GameTooltip,
+		GeneralDockManagerOverflowButtonList,
+		IMECandidatesFrame,
 		ItemRefShoppingTooltip1,
 		ItemRefShoppingTooltip2,
+		ItemRefTooltip,
+		LanguageMenu,
+		NamePlateTooltip,
 		ShoppingTooltip1,
 		ShoppingTooltip2,
-		AutoCompleteBox,
-		FriendsTooltip,
-		GeneralDockManagerOverflowButtonList,
-		ReputationParagonTooltip,
-		NamePlateTooltip,
-		QueueStatusFrame,
-		FloatingGarrisonFollowerTooltip,
-		FloatingGarrisonFollowerAbilityTooltip,
-		FloatingGarrisonMissionTooltip,
-		GarrisonFollowerAbilityTooltip,
-		GarrisonFollowerTooltip,
-		FloatingGarrisonShipyardFollowerTooltip,
-		GarrisonShipyardFollowerTooltip,
-		BattlePetTooltip,
-		PetBattlePrimaryAbilityTooltip,
-		PetBattlePrimaryUnitTooltip,
-		FloatingBattlePetTooltip,
-		FloatingPetBattleAbilityTooltip,
-		IMECandidatesFrame
+		VoiceMacroMenu,
+		WorldMapTooltip
 	}
 
 	for _, f in pairs(tooltips) do
@@ -633,83 +620,13 @@ Module:RegisterTooltips("KkthnxUI", function()
 			Module.ReskinTooltip(CharNoteTooltip)
 		end
 	end)
-
-	if IsAddOnLoaded("BattlePetBreedID") then
-		hooksecurefunc("BPBID_SetBreedTooltip", function(parent)
-			if parent == FloatingBattlePetTooltip then
-				Module.ReskinTooltip(BPBID_BreedTooltip2)
-			else
-				Module.ReskinTooltip(BPBID_BreedTooltip)
-			end
-		end)
-	end
-
-	-- MDT and DT
-	if MDT and MDT.ShowInterface then
-		local isMDTStyled
-		hooksecurefunc(MDT, "ShowInterface", function()
-			if not isMDTStyled then
-				Module.ReskinTooltip(MDT.tooltip)
-				Module.ReskinTooltip(MDT.pullTooltip)
-				isMDTStyled = true
-			end
-		end)
-	end
 end)
 
-Module:RegisterTooltips("Blizzard_DebugTools", function()
-	Module.ReskinTooltip(FrameStackTooltip)
-	Module.ReskinTooltip(EventTraceTooltip)
+-- Module:RegisterTooltips("Blizzard_DebugTools", function()
+-- 	Module.ReskinTooltip(FrameStackTooltip)
+-- 	Module.ReskinTooltip(EventTraceTooltip)
 
-	FrameStackTooltip:SetScale(UIParent:GetScale())
-	EventTraceTooltip:SetParent(UIParent)
-	EventTraceTooltip:SetFrameStrata("TOOLTIP")
-end)
-
-Module:RegisterTooltips("Blizzard_Collections", function()
-	PetJournalPrimaryAbilityTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	PetJournalSecondaryAbilityTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	PetJournalPrimaryAbilityTooltip.Delimiter1:SetHeight(1)
-	PetJournalPrimaryAbilityTooltip.Delimiter1:SetColorTexture(0, 0, 0)
-	PetJournalPrimaryAbilityTooltip.Delimiter2:SetHeight(1)
-	PetJournalPrimaryAbilityTooltip.Delimiter2:SetColorTexture(0, 0, 0)
-end)
-
-Module:RegisterTooltips("Blizzard_GarrisonUI", function()
-	local Garrison_Tooltips = {
-		GarrisonMissionMechanicTooltip,
-		GarrisonMissionMechanicFollowerCounterTooltip,
-		GarrisonShipyardMapMissionTooltip,
-		GarrisonBonusAreaTooltip,
-		GarrisonBuildingFrame.BuildingLevelTooltip,
-		GarrisonFollowerAbilityWithoutCountersTooltip,
-		GarrisonFollowerMissionAbilityWithoutCountersTooltip
-	}
-
-	for _, f in pairs(Garrison_Tooltips) do
-		f:HookScript("OnShow", Module.ReskinTooltip)
-	end
-end)
-
-Module:RegisterTooltips("Blizzard_PVPUI", function()
-	ConquestTooltip:HookScript("OnShow", Module.ReskinTooltip)
-end)
-
-Module:RegisterTooltips("Blizzard_Contribution", function()
-	ContributionBuffTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	ContributionBuffTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
-	ContributionBuffTooltip.Border:SetAlpha(0)
-end)
-
-Module:RegisterTooltips("Blizzard_EncounterJournal", function()
-	EncounterJournalTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	EncounterJournalTooltip.Item1.icon:SetTexCoord(unpack(K.TexCoords))
-	EncounterJournalTooltip.Item1.IconBorder:SetAlpha(0)
-	EncounterJournalTooltip.Item2.icon:SetTexCoord(unpack(K.TexCoords))
-	EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
-end)
-
-Module:RegisterTooltips("Blizzard_Calendar", function()
-	CalendarContextMenu:HookScript("OnShow", Module.ReskinTooltip)
-	CalendarInviteStatusContextMenu:HookScript("OnShow", Module.ReskinTooltip)
-end)
+-- 	FrameStackTooltip:SetScale(UIParent:GetScale())
+-- 	EventTraceTooltip:SetParent(UIParent)
+-- 	EventTraceTooltip:SetFrameStrata("TOOLTIP")
+-- end)

@@ -137,7 +137,7 @@ function Module:CreatePet()
 
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 	self.Buffs:SetWidth(82)
-	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HidePetName and C["Unitframe"].HidePetLevel and -6 or -20)
 	self.Buffs.num = 4 * 2
 	self.Buffs.spacing = 6
 	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 2 - 1))) / self.Buffs.num)) * 2)

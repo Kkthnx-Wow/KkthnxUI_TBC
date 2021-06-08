@@ -15,19 +15,15 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added icon and movers to fps/ms datatext",
-	"Added more gossips for auto-questing",
-	"Added new icons for datatext",
-	"Added quest frame fixer code",
-	"Added quest icon desaturation code",
-	"Fixed combat section in interface being wonky",
-	"Fixed killing blow emoting",
-	"Fixed mousetrail module showing when hiding",
-	"Fixed sapped module to announce when sapped",
-	"Updated character stat panel with itemlevel",
-	"Updated how AFK/DND is shown on unitframes",
-	"Updated vendor price string",
-	"Various code cleanups",
+	"Added option for user to pick from a list of mouse trails",
+	"Added overall durability datatext to character frame",
+	"Fixed pet buffs being too far down (related to wrong options)",
+	"Fixed worldmap party dots being invisible",
+	"Updated aurawatch for tracking all spell ranks",
+	"Updated datatext icons to allow user to pick their own color",
+	"Updated default font (very slight tweak to its design I guess?)",
+	"Updated hunter aurawatch spell",
+	"Updated tooltips list some were missing",
 }
 
 local changelogFrame

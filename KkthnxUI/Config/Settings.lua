@@ -182,10 +182,8 @@ C["DataBars"] = {
 	["Enable"] = true,
 	["ExperienceColor"] = {0, 0.4, 1, .8},
 	["Height"] = 14,
-	["HonorColor"] = {240/255, 114/255, 65/255},
 	["MouseOver"] = false,
 	["RestedColor"] = {1, 0, 1, 0.2},
-	["TrackHonor"] = false,
 	["Width"] = 180,
 	["Text"] = {
 		["Options"] = {
@@ -215,13 +213,14 @@ C["DataText"] = {
 	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
+	["IconColor"] = {102/255, 157/255, 255/255}
 }
 
 C["AuraWatch"] = {
 	["ClickThrough"] = false,
 	["Enable"] = true,
 	["IconScale"] = 1,
-	["WatchSpellRank"] = false,
+	["WatchSpellRank"] = true,
 }
 
 -- General
@@ -316,6 +315,13 @@ C["Misc"] = {
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
+	["MouseTrailTexture"] = {
+		["Options"] = {
+			["Circle"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
+			["Star"] = "Interface\\Cooldown\\Star4",
+		},
+		["Value"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73"
+	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,

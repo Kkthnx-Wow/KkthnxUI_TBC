@@ -78,7 +78,7 @@ local stats = {
 	"Druids receive Flight Form at level 68",
 	"Flying mounts are only usable in Outland at level 70",
 	"Group quests is a means to make new friends",
-	"Normal flying mount training costs 225g",
+	"Normal flying mount training costs |cffffffff225|r|cffffd700g|r",
 	"You can jump down from the Scryer elevator without dying",
 }
 

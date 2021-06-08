@@ -200,7 +200,7 @@ function Module:CreateGoldDataText()
 		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
 		Module.GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
 		Module.GoldDataTextFrame.Texture:SetSize(24, 24)
-		Module.GoldDataTextFrame.Texture:SetVertexColor(102/255, 157/255, 255/255)
+		Module.GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

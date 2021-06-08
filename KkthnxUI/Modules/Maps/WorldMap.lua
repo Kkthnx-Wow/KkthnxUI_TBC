@@ -144,7 +144,7 @@ end
 
 local function CreateMapPartyDots()
 	local WorldMapUnitPin, WorldMapUnitPinSizes
-	local partyTexture = "WhiteCircle-RaidBlips"
+	local partyTexture = "Interface\\OptionsFrame\\VoiceChat-Record" -- Blizzard stopped using atlas API on worldmap dots in 38921
 
 	local function setPinTexture(self)
 		self:SetPinTexture("raid", partyTexture)

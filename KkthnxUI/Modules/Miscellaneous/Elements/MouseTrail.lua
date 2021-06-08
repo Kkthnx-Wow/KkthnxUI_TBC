@@ -40,7 +40,8 @@ function Module:CreateMouseTrail()
 		Module.Frame:SetFrameStrata("TOOLTIP")
 
 		Module.Texture = Module.Texture or Module.Frame:CreateTexture()
-		Module.Texture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Aura73]]) -- Create texture picker dropdown in future?
+		Module.Texture:SetBlendMode("ADD")
+		Module.Texture:SetTexture(C["Misc"].MouseTrailTexture.Value) -- Create texture picker dropdown in future?
 
 		Module.Frame:SetScript("OnUpdate", OnUpdate)
 	else

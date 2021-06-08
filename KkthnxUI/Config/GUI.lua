@@ -378,6 +378,7 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 	Window:CreateSwitch("DataText", "Coords", "Enable Positon Coords") -- Needs Locale
+	Window:CreateColorSelection("DataText", "IconColor", "Color The Icons") -- Needs Locale
 
 	Window:CreateSection("DataText Text")
 	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")  -- Needs Locale
@@ -456,6 +457,7 @@ local Misc = function(self)
 	Window:CreateSection("Mouse Trail")
 	Window:CreateSwitch("Misc", "MouseTrail", L["Enable Mouse Trail"])
 	Window:CreateColorSelection("Misc", "MouseTrailColor", L["Mouse Trail Color"])
+	Window:CreateDropdown("Misc", "MouseTrailTexture", "Pick Your Mouse Texture")
 end
 
 local Nameplate = function(self)
