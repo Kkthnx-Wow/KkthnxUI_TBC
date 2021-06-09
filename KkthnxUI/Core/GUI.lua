@@ -205,7 +205,7 @@ local AnchorOnEnter = function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
 		GameTooltip:AddLine(INFO)
-		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 0.6, 0.8, 1, 1)
+		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163/255, 211/255, 255/255)
 
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
 		GameTooltip:Show()

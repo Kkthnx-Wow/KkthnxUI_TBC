@@ -241,7 +241,7 @@ local function BuildICON(iconSize)
 	frame.Spellname = K.CreateFontString(parentFrame, 13, "", "OUTLINE", false, "TOP", 0, 5)
 	frame.Count = K.CreateFontString(parentFrame, iconSize * 0.40, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
-	frame.glowFrame = CreateFrame("Frame", nil, frame)
+	frame.glowFrame = frame.glowFrame or CreateFrame("Frame", nil, frame)
 	frame.glowFrame:SetPoint("TOPLEFT", frame, -4, 4)
 	frame.glowFrame:SetPoint("BOTTOMRIGHT", frame, 4, -4)
 	frame.glowFrame:SetSize(iconSize, iconSize)

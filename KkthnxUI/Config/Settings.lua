@@ -65,6 +65,7 @@ C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDisenchant"] = false,
+	["AutoDismount"] = false,
 	["AutoInvite"] = false,
 	["AutoOpenItems"] = false,
 	["AutoQuest"] = false,

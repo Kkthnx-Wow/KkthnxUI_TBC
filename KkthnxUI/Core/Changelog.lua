@@ -15,6 +15,7 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
+	"Added option for auto dismount/stand module",
 	"Added option for user to pick from a list of mouse trails",
 	"Added overall durability datatext to character frame",
 	"Added toxiui clean texture to be picked from statusbars",
