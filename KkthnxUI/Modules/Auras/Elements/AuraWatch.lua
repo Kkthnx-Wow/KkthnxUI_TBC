@@ -589,7 +589,7 @@ function Module:UpdateAuraWatch(UnitID)
 		if not name then
 			break
 		end
-		Module:AuraWatch_SetupAura(Module:AuraWatch_UpdateAura(spellID, UnitID, index, true))
+		Module:AuraWatch_SetupAura(Module:AuraWatch_UpdateAura(name, spellID, UnitID, index, true))
 		index = index + 1
 	end
 
@@ -599,7 +599,7 @@ function Module:UpdateAuraWatch(UnitID)
 		if not name then
 			break
 		end
-		Module:AuraWatch_SetupAura(Module:AuraWatch_UpdateAura(spellID, UnitID, index, false))
+		Module:AuraWatch_SetupAura(Module:AuraWatch_UpdateAura(name, spellID, UnitID, index, false))
 		index = index + 1
 	end
 end
@@ -932,37 +932,3 @@ SlashCmdList.AuraWatch = function(msg)
 		end
 	end
 end
-
--- Gift of the Titans
-local hasTitan
-function Module:AuraWatch_OnUnitAura()
-	if not IntCD.MoveHandle then
-		return
-	end
-
-	for i = 1, 40 do
-		local name, _, _, _, _, expires, _, _, _, spellID = UnitBuff("player", i)
-		if not name then
-			break
-		end
-
-		if spellID == 313698 then
-			if not hasTitan then
-				Module:AuraWatch_SetupInt(313698, nil, expires - GetTime() + 60, "player")
-			end
-			hasTitan = true
-			return
-		end
-	end
-	hasTitan = false
-end
-
-function Module:AuraWatch_CheckInstance()
-	local diffID = select(3, GetInstanceInfo())
-	if diffID == 152 then
-		K:RegisterEvent("UNIT_AURA", Module.AuraWatch_OnUnitAura, "player")
-	else
-		K:UnregisterEvent("UNIT_AURA", Module.AuraWatch_OnUnitAura)
-	end
-end
-K:RegisterEvent("UPDATE_INSTANCE_INFO", Module.AuraWatch_CheckInstance)
