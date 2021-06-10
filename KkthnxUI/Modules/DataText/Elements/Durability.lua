@@ -27,8 +27,6 @@ local localSlots = {
 	[11] = {18, INVTYPE_RANGED, 1000}
 }
 
-local lastShown = 0
-
 local function sortSlots(a, b)
 	if a and b then
 		return (a[3] == b[3] and a[1] < b[1]) or (a[3] < b[3])
@@ -53,14 +51,6 @@ local function getItemDurability()
 	return numSlots
 end
 
-local function isLowDurability()
-	for i = 1, #localSlots do
-		if localSlots[i][3] < 0.25 then
-			return true
-		end
-	end
-end
-
 local function gradientColor(perc)
 	perc = perc > 1 and 1 or perc < 0 and 0 or perc -- Stay between 0-1
 
@@ -68,11 +58,7 @@ local function gradientColor(perc)
 	local r1, g1, b1, r2, g2, b2 = select(seg * 3 + 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0) -- R -> Y -> G
 	local r, g, b = r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 
-	return string_format("|cff%02x%02x%02x", r*255, g*255, b*255), r, g, b
-end
-
-local function SaveClickTime()
-	lastShown = GetTime()
+	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255), r, g, b
 end
 
 local function OnEvent()
@@ -81,11 +67,6 @@ local function OnEvent()
 		Module.DurabilityDataTextFrame.Text:SetText(string_format(string_gsub("[color]%d|r%% ".."Dur", "%[color%]", (gradientColor(math_floor(localSlots[1][3] * 100) / 100))), math_floor(localSlots[1][3] * 100)))
 	else
 		Module.DurabilityDataTextFrame.Text:SetText("Dur"..": "..K.MyClassColor..NONE)
-	end
-
-	if isLowDurability() and ((lastShown == 0) or (GetTime() - lastShown > 0.0833333)) then -- only half an hour
-		_G.UIErrorsFrame:AddMessage("You have gear that is very low durability 20% or lower! Repair now!", 1, 0, 0, SaveClickTime)
-		K.Print("You have gear that is very low durability 20% or lower! Repair now!")
 	end
 end
 
@@ -122,14 +103,14 @@ local function OnLeave()
 end
 
 function Module:CreateDurabilityDataText()
-	-- if not C["DataText"].Durability then
-	-- 	return
-	-- end
+	if not C["Misc"].SlotDurability then
+		return
+	end
 
-	Module.DurabilityDataTextFrame = CreateFrame("Frame", nil, UIParent)
+	Module.DurabilityDataTextFrame = Module.DurabilityDataTextFrame or CreateFrame("Frame", nil, UIParent)
     Module.DurabilityDataTextFrame:SetParent(PaperDollFrame)
 
-	Module.DurabilityDataTextFrame.Text = Module.DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
+	Module.DurabilityDataTextFrame.Text = Module.DurabilityDataTextFrame.Text or Module.DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
     Module.DurabilityDataTextFrame.Text:SetPoint("TOPLEFT", CharacterWristSlot, "BOTTOMRIGHT", -14, -10)
 	Module.DurabilityDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 

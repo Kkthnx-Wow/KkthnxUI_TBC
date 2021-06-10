@@ -844,8 +844,6 @@ function Module:CreatePlates()
 	self.Auras.CustomFilter = Module.CustomFilter
 	self.Auras.PostCreateIcon = Module.PostCreateAura
 	self.Auras.PostUpdateIcon = Module.PostUpdateAura
-	self.Auras.PreUpdate = Module.bolsterPreUpdate
-	self.Auras.PostUpdate = Module.bolsterPostUpdate
 
 	Module:CreateThreatColor(self)
 

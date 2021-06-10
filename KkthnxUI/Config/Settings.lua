@@ -209,12 +209,12 @@ C["DataText"] = {
 	["Guild"] = false,
 	["GuildSortBy"] = 1,
 	["GuildSortOrder"] = true,
-	["HideText"] = true,
+	["HideText"] = false,
+	["IconColor"] = {102/255, 157/255, 255/255},
 	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
-	["IconColor"] = {102/255, 157/255, 255/255}
 }
 
 C["AuraWatch"] = {

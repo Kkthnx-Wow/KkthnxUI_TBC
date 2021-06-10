@@ -11,7 +11,6 @@ local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
-local GetRuneCooldown = _G.GetRuneCooldown
 local GetTime = _G.GetTime
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
@@ -502,24 +501,6 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 	else
 		button:SetScript("OnUpdate", nil)
 		button.timer:Hide()
-	end
-end
-
-function Module.bolsterPreUpdate(element)
-	element.bolster = 0
-	element.bolsterIndex = nil
-end
-
-function Module.bolsterPostUpdate(element)
-	if not element.bolsterIndex then
-		return
-	end
-
-	for _, button in pairs(element) do
-		if button == element.bolsterIndex then
-			button.count:SetText(element.bolster)
-			return
-		end
 	end
 end
 

@@ -27,6 +27,7 @@ local changelogData = {
 	"Updated default font (very slight tweak to its design I guess?)",
 	"Updated hunter aurawatch spell",
 	"Updated tooltips list some were missing",
+	"Various code cleanup",
 }
 
 local changelogFrame

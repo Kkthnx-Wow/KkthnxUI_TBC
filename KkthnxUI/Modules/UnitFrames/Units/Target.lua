@@ -181,8 +181,6 @@ function Module:CreateTarget()
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.PreUpdate = Module.bolsterPreUpdate
-		self.Buffs.PostUpdate = Module.bolsterPostUpdate
 	end
 
 	if C["Unitframe"].TargetCastbar then

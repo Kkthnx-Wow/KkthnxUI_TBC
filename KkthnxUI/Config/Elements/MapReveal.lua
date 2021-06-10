@@ -84,7 +84,7 @@ C.MapZoneData = {
 
 	-- Kalimdor
 	--[[Ashenvale]] [1440] = {minLevel = 18, maxLevel = 30},
-	--[[Azshara]] [1447] = {minLevel = 45, 	maxLevel = 55},
+	--[[Azshara]] [1447] = {minLevel = 45, maxLevel = 55, faction = "Horde"},
 	--[[Darkshore]] [1439] = {minLevel = 10, maxLevel = 20, faction = "Alliance"},
 	--[[Desolace]] [1443] = {minLevel = 30, maxLevel = 40},
 	--[[Durotar]] [1411] = {minLevel = 1, maxLevel = 10, faction = "Horde"},
@@ -94,20 +94,20 @@ C.MapZoneData = {
 	--[[Mulgore]] [1412] = {minLevel = 1, maxLevel = 10, faction = "Horde"},
 	--[[Silithus]] [1451] = {minLevel = 55, maxLevel = 60},
 	--[[Stonetalon Mountains]] [1442] = {minLevel = 15, maxLevel = 27},
-	--[[Tanaris]] [1446] = {minLevel = 40, 	maxLevel = 50},
-	--[[Teldrassil]] [1438] = {minLevel = 1, maxLevel = 10},
+	--[[Tanaris]] [1446] = {minLevel = 40, maxLevel = 50},
+	--[[Teldrassil]] [1438] = {minLevel = 1, maxLevel = 10, faction = "Alliance"},
 	--[[The Barrens]] [1413] = {minLevel = 10, maxLevel = 25},
 	--[[Thousand Needles]] [1441] = {minLevel = 25, maxLevel = 35},
 	--[[Un'Goro Crater]] [1449] = {minLevel = 48, maxLevel = 55},
 	--[[Winterspring]] [1452] = {minLevel = 55, maxLevel = 60},
 
 	-- Outland
-	--[[Blade's Edge Mntains]] [1949] = {minLevel = 65, maxLevel = 70},
-	--[[Hellfire Peninsula]] [1944] = {minLevel = 58, maxLevel = 70},
-	--[[Nagrand]] [1951] = {minLevel = 64, maxLevel = 70},
+	--[[Blade's Edge Mountains]] [1949] = {minLevel = 65, maxLevel = 68},
+	--[[Hellfire Peninsula]] [1944] = {minLevel = 58, maxLevel = 63},
+	--[[Nagrand]] [1951] = {minLevel = 64, maxLevel = 67},
 	--[[Netherstorm]] [1953] = {minLevel = 66, maxLevel = 70},
 	--[[Shadowmoon Valley]] [1948] = {minLevel = 67, maxLevel = 70},
-	--[[Terokkar Forest]] [1952] = {minLevel = 62, maxLevel = 70},
-	--[[Zangarmarsh]] [1946] = {minLevel = 60, maxLevel = 63},
+	--[[Terokkar Forest]] [1952] = {minLevel = 62, maxLevel = 65},
+	--[[Zangarmarsh]] [1946] = {minLevel = 60, maxLevel = 64},
 
 }

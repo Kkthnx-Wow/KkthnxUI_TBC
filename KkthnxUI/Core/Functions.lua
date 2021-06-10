@@ -17,10 +17,7 @@ local unpack = _G.unpack
 
 local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local CreateVector2D = _G.CreateVector2D
-local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
 local GameTooltip = _G.GameTooltip
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetTime = _G.GetTime
 local ITEM_LEVEL = _G.ITEM_LEVEL
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
@@ -215,10 +212,6 @@ function K.GetAddOnVersion(addon)
 	return K.AddOnVersion[string_lower(addon)] or nil
 end
 
-function K.HelpInfoAcknowledge(callbackArg)
-	KkthnxUIDB.Variables[K.Realm][K.Name].Help[callbackArg] = true
-end
-
 -- Itemlevel
 function K.InspectItemTextures()
 	if not K.ScanTooltip.gems then
@@ -227,7 +220,6 @@ function K.InspectItemTextures()
 		table_wipe(K.ScanTooltip.gems)
 	end
 
-	local step = 1
 	for i = 1, 5 do
 		local tex = _G[K.ScanTooltip:GetName().."Texture"..i]
 		local texture = tex and tex:IsShown() and tex:GetTexture()
@@ -290,32 +282,9 @@ function K.GetItemLevel(link, arg1, arg2, fullScan)
 	end
 end
 
--- RoleUpdater
--- local function CheckRole()
--- 	local tree = GetSpecialization()
--- 	if not tree then
--- 		return
--- 	end
-
--- 	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
--- 	if role == "TANK" then
--- 		K.Role = "Tank"
--- 	elseif role == "HEALER" then
--- 		K.Role = "Healer"
--- 	elseif role == "DAMAGER" then
--- 		if stat == 4 then	-- 1 Strength, 2 Agility, 4 Intellect
--- 			K.Role = "Caster"
--- 		else
--- 			K.Role = "Melee"
--- 		end
--- 	end
--- end
--- K:RegisterEvent("PLAYER_LOGIN", CheckRole)
--- K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
-
 function K.GetGroupUnit(unit)
-	if UnitIsUnit(unit, 'player') then return end
-	if strfind(unit, 'party') or strfind(unit, 'raid') then
+	if UnitIsUnit(unit, "player") then return end
+	if string_find(unit, "party") or string_find(unit, 'raid') then
 		return unit
 	end
 
@@ -330,6 +299,7 @@ function K.GetGroupUnit(unit)
 		end
 	end
 end
+
 
 -- Chat channel check
 function K.CheckChat(useRaidWarning)

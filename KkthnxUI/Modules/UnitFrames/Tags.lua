@@ -78,7 +78,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 	else
 		local per = GetUnitHealthPerc(unit) or 0
 		local cur = UnitHealth(unit)
-		if unit == "player" or unit == "target" or unit == "focus" or string.find(unit, "party") then
+		if unit == "player" or unit == "target" or unit == "focus" or string_find(unit, "party") then
 			return ValueAndPercent(cur, per)
 		else
 			return ColorPercent(per)

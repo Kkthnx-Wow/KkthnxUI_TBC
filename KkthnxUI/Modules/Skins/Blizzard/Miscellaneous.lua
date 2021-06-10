@@ -11,7 +11,10 @@ local function UpdateMerchantItemQuality(self, link)
 	else
 		MerchantFrame_RegisterForQualityUpdates()
 	end
-	self.Name:SetTextColor(textR, textG, textB)
+
+	if self.Name then
+		self.Name:SetTextColor(textR, textG, textB)
+	end
 end
 
 table_insert(C.defaultThemes, function()
