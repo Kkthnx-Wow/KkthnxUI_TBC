@@ -77,9 +77,9 @@ function Module:CreateParty()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Party"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[leadassist][name]")
+		self:Tag(self.Name, "[name]")
 	else
-		self:Tag(self.Name, "[leadassist][color][name]")
+		self:Tag(self.Name, "[color][name]")
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
@@ -210,7 +210,7 @@ function Module:CreateParty()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(HealPredictionTexture)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -219,7 +219,7 @@ function Module:CreateParty()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(HealPredictionTexture)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {
@@ -229,18 +229,18 @@ function Module:CreateParty()
 		}
 	end
 
-	-- self.StatusIndicator = self.Power:CreateFontString(nil, "OVERLAY")
-	-- self.StatusIndicator:SetPoint("CENTER", 0, 0.5)
-	-- self.StatusIndicator:SetFontObject(UnitframeFont)
-	-- self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
-	-- self:Tag(self.StatusIndicator, "")
+	self.StatusIndicator = self.Power:CreateFontString(nil, "OVERLAY")
+	self.StatusIndicator:SetPoint("CENTER", 0, 0.5)
+	self.StatusIndicator:SetFontObject(UnitframeFont)
+	self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
+	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	if (C["Party"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
-		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0, 0.8)
 		self.TargetHighlight:Hide()
 
 		local function UpdatePartyTargetGlow()
@@ -254,6 +254,18 @@ function Module:CreateParty()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
 	end
+
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.LeaderIndicator:SetSize(12, 12)
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.AssistantIndicator:SetSize(12, 12)
+
+	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.MasterLooterIndicator:SetPoint("LEFT", self.LeaderIndicator, "RIGHT")
+	self.MasterLooterIndicator:SetSize(12, 12)
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetSize(20, 20)

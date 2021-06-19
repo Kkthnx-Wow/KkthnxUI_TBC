@@ -89,44 +89,44 @@ local MountFilterList = {
 
 	-- Wolves
 	[1132] = true,
-	[5665] = true,
-	[5668] = true,
+	[12330] = true,
+	[12351] = true,
+	[18245] = true,
 	[18796] = true,
 	[18797] = true,
 	[18798] = true,
-	[18245] = true,
-	[12330] = true,
-	[12351] = true,
+	[19029] = true,
+	[5665] = true,
+	[5668] = true,
 
 	-- Raptors
-	[8588] = true,
-	[8591] = true,
-	[8592] = true,
+	[13317] = true,
+	[18246] = true,
 	[18788] = true,
 	[18789] = true,
 	[18790] = true,
-	[18246] = true,
 	[19872] = true,
 	[8586] = true,
-	[13317] = true,
+	[8588] = true,
+	[8591] = true,
+	[8592] = true,
 
 	-- Undead Horses
 	[13331] = true,
 	[13332] = true,
 	[13333] = true,
 	[13334] = true,
-	[18791] = true,
-	[18248] = true,
 	[13335] = true,
+	[18248] = true,
+	[18791] = true,
 
 	-- Qiraji Battle Tanks
+	[21176] = true,
 	[21218] = true,
 	[21321] = true,
 	[21323] = true,
 	[21324] = true,
-	[21176] = true
 }
-
 
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
@@ -212,6 +212,7 @@ local function isItemMount(item)
 
 	return MountFilterList[item.id]
 end
+
 local function isItemLegendary(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -269,7 +270,7 @@ local function isQuestItem(item)
 		return
 	end
 
-	return item.questID or item.isQuestItem
+	return item.isQuestItem
 end
 
 function Module:GetFilters()
@@ -277,6 +278,7 @@ function Module:GetFilters()
 
 	filters.onlyBags = function(item) return isItemInBag(item) and not isEmptySlot(item) end
 	filters.bagAmmo = function(item) return isItemInBag(item) and isItemAmmo(item) end
+	filters.bagMount = function(item) return isItemInBag(item) and isItemMount(item) end
 	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
 	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) end
 	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
@@ -293,7 +295,6 @@ function Module:GetFilters()
 	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end
 	filters.bagQuest = function(item) return isItemInBag(item) and isQuestItem(item) end
 	filters.bankQuest = function(item) return isItemInBank(item) and isQuestItem(item) end
-	filters.bagMount = function(item) return isItemInBag(item) and isItemMount(item) end
 
 	return filters
 end

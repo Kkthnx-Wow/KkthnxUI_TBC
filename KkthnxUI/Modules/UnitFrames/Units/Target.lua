@@ -93,15 +93,15 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name] [fulllevel]")
+			self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
 		else
-			self:Tag(self.Name, "[color][name] [fulllevel]")
+			self:Tag(self.Name, "[color][name] [fulllevel][afkdnd]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name]")
+			self:Tag(self.Name, "[name][afkdnd]")
 		else
-			self:Tag(self.Name, "[color][name]")
+			self:Tag(self.Name, "[color][name][afkdnd]")
 		end
 	end
 
@@ -254,7 +254,7 @@ function Module:CreateTarget()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(HealPredictionTexture)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -263,7 +263,7 @@ function Module:CreateTarget()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(HealPredictionTexture)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {
@@ -302,21 +302,6 @@ function Module:CreateTarget()
 		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
 		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-
-		-- Default CombatText
-		--SetCVar("enableFloatingCombatText", 0)
-		--K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
-	end
-
-	if C["Unitframe"].PvPIndicator then
-		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		self.PvPIndicator:SetSize(30, 33)
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
-		else
-			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
-		end
-		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")

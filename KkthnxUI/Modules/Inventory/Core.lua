@@ -32,11 +32,13 @@ local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
+local ITEM_STARTS_QUEST = _G.ITEM_STARTS_QUEST
 
 local bagsFont = K.GetFont(C["UIFonts"].InventoryFonts)
 local toggleButtons = {}
 local deleteEnable, favouriteEnable, splitEnable, customJunkEnable
 local sortCache = {}
+local questItemCache = {}
 
 _G.StaticPopupDialogs["KKUI_WIPE_JUNK_LIST"] = {
 	text = "Are you sure to wipe the custom junk list?",
@@ -219,13 +221,18 @@ function Module:CreateBagToggle()
 		K.TogglePanel(self.BagBar)
 		if self.BagBar:IsShown() then
 			bagToggleButton.KKUI_Border:SetVertexColor(1, 0, 0)
+			bagToggleButton.Icon:SetDesaturated(true)
 			PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-			if self.keyring and self.keyring:IsShown() then self.keyToggle:Click() end
-		elseif C["General"].ColorTextures then
-			bagToggleButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
-			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+			if self.keyring and self.keyring:IsShown() then
+				self.keyToggle:Click()
+			end
 		else
-			bagToggleButton.KKUI_Border:SetVertexColor(1, 1, 1)
+			if C["General"].ColorTextures then
+				bagToggleButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				bagToggleButton.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
+			bagToggleButton.Icon:SetDesaturated(false)
 			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 		end
 	end)
@@ -251,13 +258,19 @@ function Module:CreateKeyToggle()
 	keyButton:SetScript("OnClick", function()
 		ToggleFrame(self.keyring)
 		if self.keyring:IsShown() then
-			--bu.bg:SetBackdropBorderColor(1, .8, 0)
+			keyButton.KKUI_Border:SetVertexColor(1, 0, 0)
+			keyButton.Icon:SetDesaturated(true)
 			PlaySound(SOUNDKIT.KEY_RING_OPEN)
 			if self.BagBar and self.BagBar:IsShown() then
 				self.bagToggle:Click()
 			end
 		else
-			--B.SetBorderColor(bu.bg)
+			if C["General"].ColorTextures then
+				keyButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				keyButton.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
+			keyButton.Icon:SetDesaturated(false)
 			PlaySound(SOUNDKIT.KEY_RING_CLOSE)
 		end
 	end)
@@ -313,7 +326,7 @@ end
 
 function Module:GetEmptySlot(name)
 	if name == "Bag" then
-		for bagID = 0, 4 do
+		for bagID = 0, NUM_BAG_SLOTS do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -325,7 +338,7 @@ function Module:GetEmptySlot(name)
 			return -1, slotID
 		end
 
-		for bagID = 5, 11 do
+		for bagID = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -689,6 +702,30 @@ function Module:CloseBags()
 	CloseAllBags()
 end
 
+function Module:IsAcceptableQuestItem(link)
+	if not link then
+		return
+	end
+
+	local canAccept = questItemCache[link]
+	if not canAccept then
+		K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		K.ScanTooltip:SetHyperlink(link)
+
+		for i = 2, K.ScanTooltip:NumLines() do
+			local line = _G["KKUI_ScanTooltipTextLeft"..i]
+			local lineText = line and line:GetText()
+			if lineText and string_match(lineText, ITEM_STARTS_QUEST) then
+				canAccept = true
+				questItemCache[link] = true
+				break
+			end
+		end
+	end
+
+	return canAccept
+end
+
 function Module:OnEnable()
 	self:CreateInventoryBar()
 	self:CreateAutoRepair()
@@ -748,31 +785,30 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
+		AddNewContainer("Bag", 8, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 4, "BagFavourite", filters.bagFavourite)
 		AddNewContainer("Bag", 1, "AmmoItem", filters.bagAmmo)
 		AddNewContainer("Bag", 2, "BagMount", filters.bagMount)
 		AddNewContainer("Bag", 3, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 4, "BagFavourite", filters.bagFavourite)
-		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
 		AddNewContainer("Bag", 6, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
 		AddNewContainer("Bag", 7, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 8, "Junk", filters.bagsJunk)
 
 		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
 		f.main:SetFilter(filters.onlyBags, true)
 
-		local keyring = MyContainer:New("Keyring", {Columns = bagsWidth, Parent = f.main})
-		keyring:SetFilter(filters.onlyKeyring, true)
-		keyring:SetPoint("TOPRIGHT", f.main, "BOTTOMRIGHT", 0, -5)
-		keyring:Hide()
-		f.main.keyring = keyring
+		f.main.keyring = MyContainer:New("Keyring", {Columns = bagsWidth, Parent = f.main})
+		f.main.keyring:SetFilter(filters.onlyKeyring, true)
+		f.main.keyring:SetPoint("TOPRIGHT", f.main, "BOTTOMRIGHT", 0, -5)
+		f.main.keyring:Hide()
 
-		AddNewContainer("Bank", 1, "bankAmmoItem", filters.bankAmmo)
-		AddNewContainer("Bank", 2, "BankEquipment", filters.bankEquipment)
-		AddNewContainer("Bank", 3, "BankLegendary", filters.bankLegendary)
 		AddNewContainer("Bank", 4, "BankFavourite", filters.bankFavourite)
-		AddNewContainer("Bank", 5, "BankGoods", filters.bankGoods)
+		AddNewContainer("Bank", 1, "bankAmmoItem", filters.bankAmmo)
+		AddNewContainer("Bank", 3, "BankLegendary", filters.bankLegendary)
+		AddNewContainer("Bank", 2, "BankEquipment", filters.bankEquipment)
 		AddNewContainer("Bank", 6, "BankConsumable", filters.bankConsumable)
+		AddNewContainer("Bank", 5, "BankGoods", filters.bankGoods)
 		AddNewContainer("Bank", 7, "BankQuest", filters.bankQuest)
 
 		f.bank = MyContainer:New("Bank", {Columns = bankWidth, Bags = "bank"})
@@ -835,7 +871,7 @@ function Module:OnEnable()
 		self.Favourite:SetSize(24, 24)
 		self.Favourite:SetPoint("TOPRIGHT", 3, 2)
 
-		self.Quest = parentFrame:CreateTexture(nil, "OVERLAY")
+		self.Quest = self:CreateTexture(nil, "OVERLAY")
 		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
 		self.Quest:SetSize(26, 26)
 		self.Quest:SetPoint("LEFT", 0, 1)
@@ -845,23 +881,19 @@ function Module:OnEnable()
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
-			if not self.glowFrame then
-				self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-				self.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16})
-				self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
-				self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
-				self.glowFrame:Hide()
-			end
+			self.glowFrame = self.glowFrame or CreateFrame("Frame", nil, self, "BackdropTemplate")
+			self.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16})
+			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
+			self.glowFrame:Hide()
 
-			if self.glowFrame and not self.glowFrame.Animation then
-				self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
-				self.glowFrame.Animation:SetLooping("BOUNCE")
-				self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
-				self.glowFrame.Animation.Fader:SetFromAlpha(1)
-				self.glowFrame.Animation.Fader:SetToAlpha(0.1)
-				self.glowFrame.Animation.Fader:SetDuration(0.6)
-				self.glowFrame.Animation.Fader:SetSmoothing("OUT")
-			end
+			self.glowFrame.Animation = self.glowFrame.Animation or self.glowFrame:CreateAnimationGroup()
+			self.glowFrame.Animation:SetLooping("BOUNCE")
+			self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
+			self.glowFrame.Animation.Fader:SetFromAlpha(1)
+			self.glowFrame.Animation.Fader:SetToAlpha(0.1)
+			self.glowFrame.Animation.Fader:SetDuration(0.6)
+			self.glowFrame.Animation.Fader:SetSmoothing("OUT")
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
@@ -885,8 +917,13 @@ function Module:OnEnable()
 		[3] = {0, 0.5, 0.8, 0.4},
 	}
 
+	local iLvlItemClassIDs = {
+		[LE_ITEM_CLASS_ARMOR] = true,
+		[LE_ITEM_CLASS_WEAPON] = true,
+	}
+
 	local function isItemNeedsLevel(item)
-		return item.link and item.level and item.rarity > 1 and (item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+		return item.link and item.level and item.rarity > 1 and iLvlItemClassIDs[item.classID]
 	end
 
 	local function UpdatePawnArrow(self, item)
@@ -898,15 +935,19 @@ function Module:OnEnable()
 			return
 		end
 
-		print(PawnIsContainerItemAnUpgrade)
-
 		if self.UpgradeIcon then
 			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
 		end
 	end
 
 	function MyButton:OnUpdate(item)
-		local buttonIconTexture = _G[self:GetName().."IconTexture"]
+		if MerchantFrame:IsShown() then
+			if item.isInSet then
+				self:SetAlpha(.5)
+			else
+				self:SetAlpha(1)
+			end
+		end
 
 		if self.JunkIcon then
 			if (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 then
@@ -922,26 +963,27 @@ function Module:OnEnable()
 			self.Favourite:Hide()
 		end
 
-		self.iLvl:SetText("")
 		if showItemLevel and isItemNeedsLevel(item) then
-			local level = K.GetItemLevel(item.link, item.bagID, item.slotID) or item.level
+			--local level = B.GetItemLevel(item.link, item.bagID, item.slotID) or item.level
+			local level = item.level
 			local color = K.QualityColors[item.rarity]
-
 			self.iLvl:SetText(level)
 			self.iLvl:SetTextColor(color.r, color.g, color.b)
+		else
+			self.iLvl:SetText("")
 		end
 
 		-- Determine if we can use that item or not?
 		if (Unfit:IsItemUnusable(item.id) or item.minLevel and item.minLevel > K.Level) and not item.locked then
-			buttonIconTexture:SetVertexColor(1, 0.1, 0.1)
+			_G[self:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		else
-			buttonIconTexture:SetVertexColor(1, 1, 1)
+			_G[self:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.rarity]
-				if item.questID or item.isQuestItem then
+				if item.isQuestItem then
 					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
 				elseif color and item.rarity and item.rarity > -1 then
 					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b)
@@ -971,7 +1013,7 @@ function Module:OnEnable()
 		end
 
 		-- Hide empty tooltip
-		if not GetContainerItemInfo(item.bagID, item.slotID) then
+		if GameTooltip:GetOwner() == self and not GetContainerItemInfo(item.bagID, item.slotID) then
 			GameTooltip:Hide()
 		end
 
@@ -980,13 +1022,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdateQuest(item)
-		if item.questID and not item.questActive then
-			self.Quest:Show()
-		else
-			self.Quest:Hide()
-		end
-
-		if item.questID or item.isQuestItem then
+		if item.isQuestItem then
 			self.KKUI_Border:SetVertexColor(1, .82, .2)
 		elseif item.rarity and item.rarity > -1 then
 			local color = K.QualityColors[item.rarity]
@@ -998,6 +1034,8 @@ function Module:OnEnable()
 				self.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
+
+		self.Quest:SetShown(item.isQuestItem and Module:IsAcceptableQuestItem(item.link))
 	end
 
 	function MyContainer:OnContentsChanged()
@@ -1019,8 +1057,8 @@ function Module:OnEnable()
 					col = columns
 				end
 
-				local xPos = (col-1) * (iconSize + spacing)
-				local yPos = -1 * (row-1) * (iconSize + spacing)
+				local xPos = (col - 1) * (iconSize + spacing)
+				local yPos = -1 * (row - 1) * (iconSize + spacing)
 
 				self.freeSlot:ClearAllPoints()
 				self.freeSlot:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos + yOffset)
@@ -1070,7 +1108,7 @@ function Module:OnEnable()
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
-		elseif string_match(name, MOUNT) then
+		elseif string_match(name, "Mount$") then
 			label = MOUNTS
 		end
 
@@ -1174,14 +1212,10 @@ function Module:OnEnable()
 	Module.initComplete = true
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
-	-- K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
 	K:RegisterEvent("AUCTION_HOUSE_SHOW", Module.OpenBags)
 	K:RegisterEvent("AUCTION_HOUSE_CLOSED", Module.CloseBags)
 
 	-- Fixes
-	-- BankFrame.GetRight = function()
-	-- 	return f.bank:GetRight()
-	-- end
 	BankFrameItemButton_Update = K.Noop
 
 	-- Shift key alert

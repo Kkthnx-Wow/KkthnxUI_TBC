@@ -12,6 +12,13 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
+-- Those items should not be deleted by Vendor / Delete Grays
+local GreysBlackList = {
+	[32888] = "The Relics of Terokk",
+	[28664] = "Nitrin's Instructions",
+}
+
+
 local sellCount, stop, cache = 0, true, {}
 local errorText = _G.ERR_VENDOR_DOESNT_BUY
 
@@ -36,14 +43,16 @@ local function startSelling()
 
 			local link = GetContainerItemLink(bag, slot)
 			if link then
-				local price = select(11, GetItemInfo(link))
+				local _, _, _, _, _, itemType, _, _, _, _, price = GetItemInfo(link)
 				local _, count, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(bag, slot)
-				if (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and price and price > 0 and not cache["b"..bag.."s"..slot] then
-					sellCount = sellCount + price*count
-					cache["b"..bag.."s"..slot] = true
-					_G.UseContainerItem(bag, slot)
-					C_Timer_After(0.15, startSelling)
-					return
+				if not GreysBlackList[itemID] then
+					if (quality and quality == 0 and itemType and itemType ~= "Quest" or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and price and price > 0 and not cache["b"..bag.."s"..slot] then
+						sellCount = sellCount + price * count
+						cache["b"..bag.."s"..slot] = true
+						_G.UseContainerItem(bag, slot)
+						C_Timer_After(0.15, startSelling)
+						return
+					end
 				end
 			end
 		end

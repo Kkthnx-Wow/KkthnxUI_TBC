@@ -71,8 +71,6 @@ function Module:CreateRecycleBin()
 		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
 	end
 	bin:SetSize(width, height)
-	-- bin:CreateBorder()
-	-- bin:SetFrameStrata("HIGH")
 	bin:Hide()
 
 	local function hideBinButton()
@@ -142,9 +140,9 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnDragStart", nil)
 				end
 
-				if child:HasScript("OnClick") then
-					child:HookScript("OnClick", clickFunc)
-				end
+				-- if child:HasScript("OnClick") then
+				-- 	child:HookScript("OnClick", clickFunc)
+				-- end
 
 				if child:IsObjectType("Button") then
 					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
@@ -162,7 +160,7 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					child:HookScript("OnMouseUp", clickFunc)
+					-- child:HookScript("OnMouseUp", clickFunc)
 				end
 
 				child.styled = true

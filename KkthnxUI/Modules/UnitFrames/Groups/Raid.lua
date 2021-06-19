@@ -123,7 +123,7 @@ function Module:CreateRaid()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(HealPredictionTexture)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -132,7 +132,7 @@ function Module:CreateRaid()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(HealPredictionTexture)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {
@@ -190,7 +190,8 @@ function Module:CreateRaid()
 
 	if C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
 		self.AuraTrack = self.AuraTrack or CreateFrame("Frame", nil, self.Health)
-		self.AuraTrack:SetAllPoints()
+		self.AuraTrack:SetPoint("TOPLEFT", self.Health ,"TOPLEFT", -4, -6)
+		self.AuraTrack:SetPoint("BOTTOMRIGHT", self.Health ,"BOTTOMRIGHT", 4, 6)
 		self.AuraTrack.Texture = RaidframeTexture
 		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
 		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures

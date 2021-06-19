@@ -39,7 +39,7 @@ function Module:CreateWowHeadLinks()
 	mEB:SetHitRectInsets(0, 90, 0, 0)
 	mEB:SetScript("OnKeyDown", function() end)
 	mEB:SetScript("OnMouseUp", function()
-		if mEB:IsMouseOver() then 
+		if mEB:IsMouseOver() then
 			mEB:HighlightText()
 		else
 			mEB:HighlightText(0, 0)
@@ -53,13 +53,13 @@ function Module:CreateWowHeadLinks()
 	mEB.t:SetColorTexture(0.05, 0.05, 0.05, 1.0)
 
 	-- Create hidden font string (used for setting width of editbox)
-	mEB.z = mEB:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
+	mEB.z = mEB:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	mEB.z:Hide()
 
 	-- Function to set editbox value
 	local function SetQuestInBox(questListID)
 
-		local questTitle, void, void, isHeader, void, void, void, questID = GetQuestLogTitle(questListID)
+		local questTitle, _, _, isHeader, _, _, _, questID = GetQuestLogTitle(questListID)
 		if questID and not isHeader then
 
 			-- Hide editbox if quest ID is invalid
@@ -78,7 +78,9 @@ function Module:CreateWowHeadLinks()
 				mEB.tiptext = questTitle .. "|n" .. L["Press To Copy"]
 			else
 				mEB.tiptext = ""
-				if mEB:IsMouseOver() and GameTooltip:IsShown() then GameTooltip:Hide() end
+				if mEB:IsMouseOver() and GameTooltip:IsShown() then
+					GameTooltip:Hide()
+				end
 			end
 
 		end

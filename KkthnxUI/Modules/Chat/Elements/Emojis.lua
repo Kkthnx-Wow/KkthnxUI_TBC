@@ -45,10 +45,14 @@ local setEmojiTexture = {
 	ThumbsUp = getEmojiMedia.."ThumbsUp.tga",
 	Wink = getEmojiMedia.."Wink.tga",
 	ZZZ = getEmojiMedia.."ZZZ.tga",
+	DragonRawr = getEmojiMedia.."DragonRawr.blp",
 }
 
 -- EMOJI EXPRESSION MAPS
 local setEmoji = {}
+
+setEmoji[":drawr:"] = setEmojiTexture.DragonRawr
+
 setEmoji[",,!,,"] = setEmojiTexture.MiddleFinger
 setEmoji["8%)"] = setEmojiTexture.Sunglasses
 setEmoji["8%-%)"] = setEmojiTexture.Sunglasses

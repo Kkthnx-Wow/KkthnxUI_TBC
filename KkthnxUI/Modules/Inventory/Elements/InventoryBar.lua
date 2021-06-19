@@ -113,6 +113,10 @@ function Module:CreateInventoryBar()
 	_G.MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", _G.MainMenuBarBackpackButton, "BOTTOMRIGHT", -1, 3)
 	_G.MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)
 	_G.MainMenuBarBackpackButton:HookScript("OnLeave", OnLeave)
+	_G.MainMenuBarBackpackButton:UnregisterEvent("ITEM_PUSH")
+	for slot = 0, 3 do
+		_G["CharacterBag"..slot.."Slot"]:UnregisterEvent("ITEM_PUSH")
+	end
 
 	table_insert(Module.BagBar.buttons, _G.MainMenuBarBackpackButton)
 	self:SkinBag(_G.MainMenuBarBackpackButton)

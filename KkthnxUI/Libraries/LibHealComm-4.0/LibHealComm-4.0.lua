@@ -1,6 +1,6 @@
 if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then return end
 
-local major = "LibHealComm-4.0"
+local major = "LibHealComm-4.0-KkthnxUI"
 local minor = 92
 assert(LibStub, format("%s requires LibStub.", major))
 
@@ -906,32 +906,32 @@ if( playerClass == "DRUID" ) then
 				healAmount = healAmount / hotData[spellName].ticks
 
 				totalTicks = 7
-				
+
 				if( equippedSetCache["Nordrassil"] >= 2 ) then totalTicks = totalTicks + 2 end
-				
+
 			elseif( spellName == Lifebloom ) then
 				-- Figure out the bomb heal, apparently Gift of Nature double dips and will heal 10% for the HOT + 10% again for the direct heal
 				local bombSpellPower = spellPower
 				if( playerCurrentRelic and bloomBombIdols[playerCurrentRelic] ) then
 					bombSpellPower = bombSpellPower + bloomBombIdols[playerCurrentRelic]
 				end
-				
+
 				local bombSpell = bombSpellPower * hotData[spellName].dhCoeff * (1 + talentData[EmpoweredRejuv].current)
 				bombAmount = math.ceil(calculateGeneralAmount(hotData[spellName].levels[spellRank], hotData[spellName].bomb[spellRank], bombSpell, spModifier, healModifier))
-			
+
 				-- Figure out the hot tick healing
 				spellPower = spellPower * (hotData[spellName].coeff * (1 + talentData[EmpoweredRejuv].current))
-				
+
 				-- Idol of the Emerald Queen, +47 SP per tick
 				if( playerCurrentRelic == 27886 ) then
 					spellPower = spellPower + 47
 				end
-				
+
 				spellPower = spellPower / hotData[spellName].ticks
 				healAmount = healAmount / hotData[spellName].ticks
 				-- Figure out total ticks
 				totalTicks = 7
-				
+
 			end
 
 			healAmount = calculateGeneralAmount(hotData[spellName].levels[spellRank], healAmount, spellPower, spModifier, healModifier)
@@ -960,22 +960,22 @@ if( playerClass == "DRUID" ) then
 				spellPower = spellPower * spellData[spellName].coeff
 			-- Healing Touch
 			elseif( spellName == HealingTouch ) then
-				
+
 				healAmount = healAmount + (spellPower * talentData[EmpoweredTouch].current)
-				
+
 				local castTime = spellRank >= 5 and 3.5 or (spellRank == 4 and 3 or (spellRank == 3 and 2.5 or (spellRank == 2 and 2 or 1.5)))
 				spellPower = spellPower * (castTime / 3.5)
-				
+
 				if( playerCurrentRelic == 22399 ) then
 					healAmount = healAmount + 100
 				elseif( playerCurrentRelic == 28568 ) then
 					healAmount = healAmount + 136
 				end
-				
+
 				if equippedSetCache["Thunderheart"] >= 4 then
 					healModifier = healModifier + 0.05
 				end
-				
+
 			-- Tranquility
 			elseif( spellName == Tranquility ) then
 				spellPower = spellPower * spellData[spellName].coeff * (1 + talentData[EmpoweredRejuv].current)
@@ -1375,13 +1375,13 @@ if( playerClass == "SHAMAN" ) then
 			-- Chain Heal
 			if( spellName == ChainHeal ) then
 				spellPower = spellPower * spellData[spellName].coeff
-				
+
 				if( equippedSetCache["Skyshatter"] >= 4 ) then
 					healModifier = healModifier * 1.05
 				end
-				
+
 				healModifier = healModifier * (1 + talentData[ImpChainHeal].current)
-				
+
 				if playerCurrentRelic == 28523 then healAmount = healAmount + 87 end
 			-- Heaing Wave
 			elseif( spellName == HealingWave ) then
@@ -1392,9 +1392,9 @@ if( playerClass == "SHAMAN" ) then
 				--healModifier = healModifier * (talentData[HealingWay].spent == 3 and 1.25 or talentData[HealingWay].spent == 2 and 1.16 or talentData[HealingWay].spent == 1 and 1.08 or 1)
 
 				local castTime = spellRank > 3 and 3 or spellRank == 3 and 2.5 or spellRank == 2 and 2 or 1.5
-				
+
 				if playerCurrentRelic == 27544 then spellPower = spellPower + 88 end
-				
+
 				spellPower = spellPower * (castTime / 3.5)
 
 			-- Lesser Healing Wave
@@ -1840,21 +1840,21 @@ end
 local function parseHotBomb(casterGUID, wasUpdated, spellID, amount, ...)
 	local spellName, spellRank = GetSpellInfo(spellID)
 	if( not amount or not spellName or select("#", ...) == 0 ) then return end
-	
+
 	-- If we don't have a pending hot then there is no bomb as far as were concerned
 	local hotPending = pendingHots[casterGUID] and pendingHots[casterGUID][spellName]
 	if( not hotPending or not hotPending.bitType ) then return end
 	hotPending.hasBomb = true
-	
+
 	pendingHeals[casterGUID] = pendingHeals[casterGUID] or {}
 	pendingHeals[casterGUID][spellName] = pendingHeals[casterGUID][spellName] or {}
-	
+
 	local pending = pendingHeals[casterGUID][spellName]
 	pending.endTime = hotPending.endTime
 	pending.spellID = spellID
 	pending.bitType = BOMB_HEALS
 	pending.stack = 1 -- TBC Lifebloom bomb heal does not stack
-	
+
 	loadHealList(pending, amount, pending.stack, pending.endTime, nil, ...)
 
 	if( not wasUpdated ) then
@@ -2106,7 +2106,7 @@ function HealComm:COMBAT_LOG_EVENT_UNFILTERED(...)
 				local targets, amt = GetHealTargets(type, destGUID, max(amount, 0), spellID)
 				if targets then
 					parseHotHeal(sourceGUID, false, spellID, amt, totalTicks, tickInterval, strsplit(",", targets))
-					
+
 					-- Hot with a bomb!
 					if( bombAmount ) then
 						local bombTargets, bombAmount = GetHealTargets(BOMB_HEALS, destGUID, math.max(bombAmount, 0), spellName)
@@ -2143,19 +2143,19 @@ function HealComm:COMBAT_LOG_EVENT_UNFILTERED(...)
 			local amount = getRecord(pending, destGUID)
 			if( amount ) then
 				parseHotHeal(sourceGUID, true, spellID, amount, pending.totalTicks, pending.tickInterval, compressGUID[destGUID])
-				
+
 				-- Plant the bomb
 				local bombPending = pending.hasBomb and pendingHeals[sourceGUID][spellName]
 				if( bombPending and bombPending.bitType ) then
 					local bombAmount = getRecord(bombPending, destGUID)
 					if( bombAmount ) then
 						parseHotBomb(sourceGUID, true, spellID, bombAmount, compressGUID[destGUID])
-						
+
 						sendMessage(string.format("UB:%s:%d:%d:%s:%d:%d:%s", pending.totalTicks, spellID, bombAmount, compressGUID[destGUID], amount, pending.tickInterval, compressGUID[destGUID]))
 						return
 					end
 				end
-				
+
 				sendMessage(string.format("U:%s:%d:%d:%d:%s", spellID, amount, pending.totalTicks, pending.tickInterval, compressGUID[destGUID]))
 			end
 		end

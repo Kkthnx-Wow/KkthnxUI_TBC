@@ -220,13 +220,6 @@ function Module:UpdateHotKey()
 	end
 end
 
-function Module:HookHotKey(button)
-	Module.UpdateHotKey(button)
-	if button.UpdateHotkeys then
-		hooksecurefunc(button, "UpdateHotkeys", Module.UpdateHotKey)
-	end
-end
-
 function Module:UpdateEquipItemColor()
 	if not self.KKUI_Border then
 		return
@@ -261,6 +254,7 @@ function Module:StyleActionButton(button, cfg)
 	local count = _G[buttonName.."Count"]
 	local name = _G[buttonName.."Name"]
 	local border = _G[buttonName.."Border"]
+	local autoCastable = _G[buttonName.."AutoCastable"]
 	local NewActionTexture = button.NewActionTexture
 	local cooldown = _G[buttonName.."Cooldown"]
 	local normalTexture = button:GetNormalTexture()
@@ -319,7 +313,7 @@ function Module:StyleActionButton(button, cfg)
 
 	if hotkey then
 		hotkey:SetParent(overlay)
-		Module:HookHotKey(button)
+		Module.UpdateHotKey(button)
 		SetupFontString(hotkey, cfg.hotkey)
 	end
 
@@ -332,13 +326,18 @@ function Module:StyleActionButton(button, cfg)
 		end
 	end
 
+	if autoCastable then
+		autoCastable:SetTexCoord(.217, .765, .217, .765)
+		autoCastable:SetAllPoints()
+	end
+
 	button.__styled = true
 end
 
 function Module:UpdateStanceHotKey()
 	for i = 1, NUM_STANCE_SLOTS do
 		_G["StanceButton"..i.."HotKey"]:SetText(GetBindingKey("SHAPESHIFTBUTTON"..i))
-		Module:HookHotKey(_G["StanceButton"..i])
+		Module.UpdateHotKey(_G["StanceButton"..i])
 	end
 end
 
@@ -356,6 +355,9 @@ function Module:StyleAllActionButtons(cfg)
 		Module:StyleActionButton(_G["OverrideActionBarButton"..i], cfg)
 	end
 
+	--leave vehicle
+	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"], cfg)
+
 	-- Petbar buttons
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		Module:StyleActionButton(_G["PetActionButton"..i], cfg)
@@ -365,9 +367,6 @@ function Module:StyleAllActionButtons(cfg)
 	for i = 1, NUM_STANCE_SLOTS do
 		Module:StyleActionButton(_G["StanceButton"..i], cfg)
 	end
-
-	-- Leave Vehicle
-	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"], cfg)
 end
 
 function Module:CreateBarSkin()
@@ -447,6 +446,7 @@ function Module:CreateBarSkin()
 	Module:StyleAllActionButtons(cfg)
 
 	-- Update hotkeys
+	hooksecurefunc("ActionButton_UpdateHotkeys", Module.UpdateHotKey)
 	hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
 	Module:UpdateStanceHotKey()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)

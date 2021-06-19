@@ -209,22 +209,24 @@ local function GetILvlTextColor(level)
 	end
 end
 
-function M:UpdatePlayerILvl()
-	if not M.PlayerILvl then return end
+function M:UpdateUnitILvl(unit, text)
+	if not text then
+		return
+	end
 
 	local total, level = 0
 	for index = 1, 15 do
 		if index ~= 4 then
-			level = GetItemSlotLevel("player", index)
+			level = GetItemSlotLevel(unit, index)
 			if level > 0 then
 				total = total + level
 			end
 		end
 	end
 
-	local mainhand = GetItemSlotLevel("player", 16)
-	local offhand = GetItemSlotLevel("player", 17)
-	local ranged = GetItemSlotLevel("player", 18)
+	local mainhand = GetItemSlotLevel(unit, 16)
+	local offhand = GetItemSlotLevel(unit, 17)
+	local ranged = GetItemSlotLevel(unit, 18)
 
 	--[[
 	Note: We have to unify iLvl with others who use MerInspect,
@@ -239,8 +241,12 @@ function M:UpdatePlayerILvl()
 	end
 
 	local average = K.Round(total / 16, 1)
-	M.PlayerILvl:SetText(average)
-	M.PlayerILvl:SetTextColor(GetILvlTextColor(average))
+	text:SetText(average)
+	text:SetTextColor(GetILvlTextColor(average))
+end
+
+function M:UpdatePlayerILvl()
+	M:UpdateUnitILvl("player", M.PlayerILvl)
 end
 
 local function CreateStatHeader(parent, index, category)
@@ -308,7 +314,9 @@ local function ToggleMagicRes()
 end
 
 local function UpdateStats()
-	if not (M.StatPanel and M.StatPanel:IsShown()) then return end
+	if not (M.StatPanel and M.StatPanel:IsShown()) then
+		return
+	end
 
 	for _, frame in pairs(categoryFrames) do
 		SetCharacterStats(frame.statsTable, frame.category)
@@ -339,15 +347,16 @@ function M:CharacterStatePanel()
 	scrollFrame:SetAllPoints()
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
+
 	local stat = CreateFrame("Frame", nil, scrollFrame)
 	stat:SetSize(200, 1)
 	statPanel.child = stat
 	scrollFrame:SetScrollChild(stat)
 	scrollFrame:SetScript("OnMouseWheel", function(self, delta)
 		local scrollBar = self.ScrollBar
-		local step = delta*25
+		local step = delta * 25
 		if IsShiftKeyDown() then
-			step = step*6
+			step = step * 6
 		end
 		scrollBar:SetValue(scrollBar:GetValue() - step)
 	end)
@@ -378,7 +387,7 @@ function M:CharacterStatePanel()
 	-- Expand button
 	local bu = CreateFrame("Button", nil, PaperDollFrame)
 	bu:SetPoint("RIGHT", CharacterFrameCloseButton, "LEFT", 2, 0)
-	K.ReskinArrow(bu, "right")
+	K.ReskinArrow(bu, "right", false)
 
 	bu:SetScript("OnClick", function(self)
 		ExpandStat = not ExpandStat

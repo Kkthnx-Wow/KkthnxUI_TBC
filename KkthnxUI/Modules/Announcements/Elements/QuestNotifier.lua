@@ -13,7 +13,7 @@ local string_match = _G.string.match
 local debugMode = false
 local completedQuest, initComplete = {}
 
-local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
+local soundKitID = 6199 -- https://tbc.wowhead.com/sound=6199/b-peonbuildingcomplete1
 
 local function acceptText(link, daily)
 	if daily then

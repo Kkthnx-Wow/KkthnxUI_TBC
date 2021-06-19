@@ -5,6 +5,7 @@ local _G = _G
 local table_insert = _G.table.insert
 local string_gsub = _G.string.gsub
 local table_wipe = _G.table.wipe
+local string_format = _G.string.format
 
 local BNGetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
@@ -17,6 +18,7 @@ local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
 local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
+local GetPetHappiness = _G.GetPetHappiness
 local GetQuestLogTitle = _G.GetQuestLogTitle
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -30,6 +32,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UnitGUID = _G.UnitGUID
+local UnitName = _G.UnitName
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -88,7 +91,7 @@ function Module:CreateErrorsFrame()
 	local Font = K.GetFont(C["UIFonts"].GeneralFonts)
 	local Path, _, Flag = _G[Font]:GetFont()
 
-	UIErrorsFrame:SetFont(Path, 15, Flag)
+	UIErrorsFrame:SetFont(Path, 16, Flag)
 	UIErrorsFrame:ClearAllPoints()
 	UIErrorsFrame:SetPoint("TOP", 0, -300)
 
@@ -241,6 +244,34 @@ function Module:CreateEnhanceNormalDressup()
 	end)
 
 	K.AddTooltip(button, "ANCHOR_TOP", string.format("%sUndress all|n%sUndress tabard", K.LeftButton, K.RightButton))
+
+	-- Enable zooming for character frame and dressup frame
+	DressUpModelFrame:HookScript("OnMouseWheel", Model_OnMouseWheel)
+
+	-- Enable panning for dressup frame
+	DressUpModelFrame:HookScript("OnMouseDown", function(self, btn)
+		if btn == "RightButton" then
+			Model_StartPanning(self)
+		end
+	end)
+
+	DressUpModelFrame:HookScript("OnMouseUp", function(self, btn)
+		Model_StopPanning(self)
+	end)
+
+	DressUpModelFrame:ClearAllPoints()
+	DressUpModelFrame:SetPoint("TOPLEFT", DressUpFrame, 22, -76)
+	DressUpModelFrame:SetPoint("BOTTOMRIGHT", DressUpFrame, -46, 106)
+
+	-- Reset dressup frame when reset button clicked
+	DressUpFrameResetButton:HookScript("OnClick", function()
+		DressUpModelFrame.rotation = 0
+		DressUpModelFrame:SetRotation(0)
+		DressUpModelFrame:SetPosition(0, 0, 0)
+		DressUpModelFrame.zoomLevel = 0
+		DressUpModelFrame:SetPortraitZoom(0)
+		DressUpModelFrame:RefreshCamera()
+	end)
 end
 
 function Module:CreateEnhanceAuctionDressup()
@@ -261,64 +292,16 @@ function Module:CreateEnhanceAuctionDressup()
 	end)
 
 	K.AddTooltip(button, "ANCHOR_TOP", string.format("%sUndress all|n%sUndress tabard", K.LeftButton, K.RightButton))
-end
 
--- Add friend and guild invite on target menu
-function Module:MenuButton_OnClick(info)
-	local name, server = UnitName(info.unit)
-	if server and server ~= "" then
-		name = name.."-"..server
-	end
-
-	if info.value == "name" then
-		if MailFrame:IsShown() then
-			MailFrameTab_OnClick(nil, 2)
-			SendMailNameEditBox:SetText(name)
-			SendMailNameEditBox:HighlightText()
-		else
-			local editBox = ChatEdit_ChooseBoxForSend()
-			local hasText = (editBox:GetText() ~= "")
-			ChatEdit_ActivateChat(editBox)
-			editBox:Insert(name)
-			if not hasText then
-				editBox:HighlightText()
-			end
-		end
-	elseif info.value == "guild" then
-		GuildInvite(name)
-	end
-end
-
-function Module:MenuButton_Show(_, unit)
-	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
-		return
-	end
-
-	if unit and (unit == "target" or string.find(unit, "party") or string.find(unit, "raid")) then
-		local info = UIDropDownMenu_CreateInfo()
-		info.text = Module.MenuButtonList["name"]
-		info.arg1 = {value = "name", unit = unit}
-		info.func = Module.MenuButton_OnClick
-		info.notCheckable = true
-		UIDropDownMenu_AddButton(info)
-
-		if IsInGuild() and UnitIsPlayer(unit) and not UnitCanAttack("player", unit) and not UnitIsUnit("player", unit) then
-			info = UIDropDownMenu_CreateInfo()
-			info.text = Module.MenuButtonList["guild"]
-			info.arg1 = {value = "guild", unit = unit}
-			info.func = Module.MenuButton_OnClick
-			info.notCheckable = true
-			UIDropDownMenu_AddButton(info)
-		end
-	end
-end
-
-function Module:CreateMenuButton_Add()
-	Module.MenuButtonList = {
-		["name"] = COPY_NAME,
-		["guild"] = gsub(CHAT_GUILD_INVITE_SEND, HEADER_COLON, ""),
-	}
-	hooksecurefunc("UnitPopup_ShowMenu", Module.MenuButton_Show)
+	-- Reset side dressup when reset button clicked
+	SideDressUpModelResetButton:HookScript("OnClick", function()
+		SideDressUpModel.rotation = 0
+		SideDressUpModel:SetRotation(0)
+		SideDressUpModel:SetPosition(0, 0, -0.1)
+		SideDressUpModel.zoomLevel = 0
+		SideDressUpModel:SetPortraitZoom(0)
+		SideDressUpModel:RefreshCamera()
+	end)
 end
 
 do
@@ -424,6 +407,130 @@ do
 	end
 end
 
+function Module:CreateGUIGameMenuButton()
+	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
+	gui:SetText(K.InfoColor.."KkthnxUI|r")
+	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	GameMenuFrame:HookScript("OnShow", function(self)
+		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
+	end)
+
+	gui:SetScript("OnClick", function()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		K["GUI"]:Toggle()
+		HideUIPanel(GameMenuFrame)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end)
+end
+
+do
+	if IsAddOnLoaded("Anti-Deluxe") then
+		local function FuckYou_AntiDeluxe() -- Dont let others hook and change this
+			local buffs, i = { }, 1
+			local buff = UnitBuff("target", i)
+			local check = ""
+			local setEmotes = {"CHEER", "HUG", "CLAP", "CONGRATS", "GLAD"} -- make it interesting
+
+			while buff do
+				buffs[#buffs + 1] = buff
+				i = i + 1
+				buff = UnitBuff("target", i)
+			end
+
+			buffs = table.concat(buffs, ", ")
+			if string.match(buffs, "Reawakened") then
+				Check = "False"
+				DeluxeAndy = GetUnitName("target")
+
+				if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
+					return
+				end
+
+				for _, v in pairs(MountOwners) do
+					if v == DeluxeAndy then
+						Check = "True"
+						break
+					end
+				end
+
+				if Check == "False" then -- No Need to keep emoting the same person
+					DoEmote(setEmotes[math.random(1, #setEmotes)])
+					table.insert(MountOwners, DeluxeAndy)
+				end
+			end
+		end
+
+		BuffCheck = FuckYou_AntiDeluxe -- Hook this shitty addon to fix the shitty choices this dev has made
+	end
+end
+
+local function SetupAutoTrackRep(_, messagetype)
+	if not C["DataBars"].AutoTrackReputation then
+		return
+	end
+
+	if messagetype == "FACTION" then
+		local faction = GetCurrentCombatTextEventInfo()
+		if faction ~= "Guild" and faction ~= GetWatchedFactionInfo() then
+			ExpandAllFactionHeaders()
+
+			for i = 1, GetNumFactions() do
+				if faction == GetFactionInfo(i) then
+					SetWatchedFactionIndex(i)
+					break
+				end
+			end
+		end
+	end
+end
+
+-- Hunter pet happiness
+local petHappinessStr, lastHappiness = {
+	[1] = L["Pet Unhappy"],
+	[2] = L["Pet Bad Mood"],
+	[3] = L["Pet Happy"],
+}
+
+local FeedPetIcon = "|TInterface\\ICONS\\Ability_Hunter_BeastTraining:10:10:-1:0|t "
+local function CheckPetHappiness(_, unit)
+	if unit ~= "pet" then
+		return
+	end
+
+	local happiness = GetPetHappiness()
+	if not lastHappiness or lastHappiness ~= happiness then
+		local str = petHappinessStr[happiness]
+		if str then
+			local petName = UnitName(unit)
+			RaidNotice_AddMessage(RaidWarningFrame, string_format(FeedPetIcon..str, K.InfoColorTint, K.MyClassColor..petName.."|r"), ChatTypeInfo["RAID_WARNING"])
+			if happiness == 1 then
+				PlaySound(12197)
+			elseif happiness == 2 then
+				PlaySound(5274)
+			end
+		end
+
+		lastHappiness = happiness
+	end
+end
+
+function Module:CreatePetHappiness()
+	if K.Class ~= "HUNTER" then
+		return
+	end
+
+	if C["Misc"].PetHappiness then
+		K:RegisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
+	else
+		K:UnregisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
+	end
+end
+
 function Module:OnEnable()
 	self:CharacterStatePanel()
 	self:CreateAFKCam()
@@ -433,11 +540,12 @@ function Module:OnEnable()
 	self:CreateEnhanceAuctionDressup()
 	self:CreateEnhanceNormalDressup()
 	self:CreateErrorsFrame()
+	self:CreateGUIGameMenuButton()
 	self:CreateHelmCloakToggle()
 	self:CreateImprovedMail()
-	self:CreateMenuButton_Add()
 	self:CreateMouseTrail()
 	self:CreateMuteSounds()
+	self:CreatePetHappiness()
 	self:CreatePulseCooldown()
 	self:CreateQuestSizeUpdate()
 	self:CreateRaidMarker()
@@ -448,6 +556,7 @@ function Module:OnEnable()
 	self:CreateTradeTargetInfo()
 
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
+	K:RegisterEvent("COMBAT_TEXT_UPDATE", SetupAutoTrackRep)
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then

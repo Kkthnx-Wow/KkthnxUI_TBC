@@ -20,6 +20,8 @@ local helpCommands = {
 	["rl"] = "|cff669DFF/rl|r - Reload your user interface quickly",
 	["ticket"] = "|cff669DFF/ticket|r - Write a ticket to Blizzard for help",
 	["trackingdebuffs"] = "|cff669DFF/tracking|r or |cff669DFF/kt|r - Add/remove debuff tracking for auras on raid",
+	["volume"] = "|cff669DFF/vol 0 - 1|r or |cff669DFF/volume 0 - 1|r - Adjust your volume on the fly",
+	["gui"] = "|cff669DFF/kkconfig|r or |cff669DFF/kkgui|r - Toggle the KkthnxUI options/gui menu",
 }
 
 local Help = CreateFrame("Frame", "KKUI_HelpInfo", UIParent)

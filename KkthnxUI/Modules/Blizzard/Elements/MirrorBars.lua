@@ -43,7 +43,7 @@ function Module:CreateMirrorBars()
 		statusBar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		statusBar.Spark:SetBlendMode("ADD")
 		statusBar.Spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
-		statusBar.Spark:SetAlpha(0.9)
+		statusBar.Spark:SetAlpha(0.5)
 
 		text:Hide()
 

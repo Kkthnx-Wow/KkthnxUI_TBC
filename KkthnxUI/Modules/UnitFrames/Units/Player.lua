@@ -3,25 +3,19 @@ local Module = K:GetModule("Unitframes")
 
 local _G = _G
 local select = _G.select
-local string_format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
 
 local playerWidth = C["Unitframe"].PlayerFrameWidth
 
 function Module.PostUpdateAddPower(element, _, cur, max)
-	-- if element.Text and max > 0 then
 	if max > 0 then
 		local perc = cur / max * 100
 		if perc == 100 then
-			--perc = ""
 			element:SetAlpha(0)
 		else
-			--perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
 		end
-
-		-- element.Text:SetText(perc)
 	end
 end
 
@@ -265,7 +259,7 @@ function Module:CreatePlayer()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(HealPredictionTexture)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -274,7 +268,7 @@ function Module:CreatePlayer()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(HealPredictionTexture)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {
@@ -374,26 +368,26 @@ function Module:CreatePlayer()
 
 	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
-		-- self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		-- self.GCD:SetWidth(playerWidth - portraitSize)
-		-- self.GCD:SetHeight(self.Health:GetHeight())
-		-- self.GCD:SetFrameStrata("HIGH")
-		-- self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
+		self.GCD:SetWidth(playerWidth - portraitSize)
+		self.GCD:SetHeight(self.Health:GetHeight())
+		self.GCD:SetFrameStrata("HIGH")
+		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 
-		-- self.GCD.Color = {1, 1, 1}
-		-- self.GCD.Height = 26
-		-- self.GCD.Width = 128
+		self.GCD.Color = {1, 1, 1}
+		self.GCD.Height = 26
+		self.GCD.Width = 128
 	end
 
-	-- if C["Unitframe"].EnergyTick then
-	if K.Class ~= "WARRIOR" then
-		self.EnergyManaRegen = CreateFrame("StatusBar", nil, self.Power)
-		self.EnergyManaRegen:SetAlpha(0.6)
-		self.EnergyManaRegen:SetFrameLevel(self.Power:GetFrameLevel())
-		self.EnergyManaRegen:SetAllPoints()
-		self.EnergyManaRegen.Spark = self.EnergyManaRegen:CreateTexture(nil, 'OVERLAY')
+	if C["Unitframe"].EnergyTick then
+		if K.Class ~= "WARRIOR" then
+			self.EnergyManaRegen = CreateFrame("StatusBar", nil, self.Power)
+			self.EnergyManaRegen:SetAlpha(0.6)
+			self.EnergyManaRegen:SetFrameLevel(self.Power:GetFrameLevel())
+			self.EnergyManaRegen:SetAllPoints()
+			self.EnergyManaRegen.Spark = self.EnergyManaRegen:CreateTexture(nil, 'OVERLAY')
+		end
 	end
-	-- end
 
 	if C["Unitframe"].CombatText then
 		if IsAddOnLoaded("MikScrollingBattleText") or IsAddOnLoaded("Parrot") or IsAddOnLoaded("xCT") or IsAddOnLoaded("sct") then
@@ -418,101 +412,85 @@ function Module:CreatePlayer()
 		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
 		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-
-		-- Turn off Blizzard's default combat text.
-		-- SetCVar("enableFloatingCombatText", 0)
-		-- SetCVar("floatingCombatTextCombatHealing", 0)
-		-- SetCVar("floatingCombatTextCombatDamage", 0)
-		-- SHOW_COMBAT_TEXT = "0"
-		-- if (CombatText_UpdateDisplayedMessages) then
-		-- 	CombatText_UpdateDisplayedMessages()
-		-- end
-		--K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	-- Swing timer
 	if C["Unitframe"].Swingbar then
-		local bar = CreateFrame("Frame", nil, self)
+		self.Swing = CreateFrame("Frame", nil, self)
 		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
-		bar:SetSize(width, 13)
+		self.Swing:SetSize(width, 13)
 		if C["Unitframe"].PlayerCastbar then
-			bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
+			self.Swing:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
 		else
-			bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
+			self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
 		end
 
-		local two = CreateFrame("StatusBar", nil, bar)
-		two:Hide()
-		two:SetAllPoints()
-		two:SetStatusBarTexture(UnitframeTexture)
-		two:SetStatusBarColor(0.31, 0.45, 0.63)
-		two:CreateBorder()
+		self.Swing.Twohand = CreateFrame("StatusBar", nil, self.Swing)
+		self.Swing.Twohand:Hide()
+		self.Swing.Twohand:SetAllPoints()
+		self.Swing.Twohand:SetStatusBarTexture(UnitframeTexture)
+		self.Swing.Twohand:SetStatusBarColor(0.31, 0.45, 0.63)
+		self.Swing.Twohand:CreateBorder()
 
-		local twospark = two:CreateTexture(nil, "OVERLAY")
-		twospark:SetTexture(C["Media"].Textures.Spark16Texture)
-		twospark:SetHeight(C["DataBars"].Height)
-		twospark:SetBlendMode("ADD")
-		twospark:SetPoint("CENTER", two:GetStatusBarTexture(), "RIGHT", 0, 0)
+		self.Swing.Twohand.Spark = self.Swing.Twohand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Twohand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
+		self.Swing.Twohand.Spark:SetHeight(C["DataBars"].Height)
+		self.Swing.Twohand.Spark:SetBlendMode("ADD")
+		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-		local bg = two:CreateTexture(nil, "BACKGROUND", nil, 1)
-		bg:Hide()
-		bg:SetPoint("TOPRIGHT")
-		bg:SetPoint("BOTTOMRIGHT")
-		bg:SetColorTexture(0.2, 0.2, 0.2, 0.6)
+		self.Swing.Background = self.Swing.Twohand:CreateTexture(nil, "BACKGROUND", nil, 1)
+		self.Swing.Background:Hide()
+		self.Swing.Background:SetPoint("TOPRIGHT")
+		self.Swing.Background:SetPoint("BOTTOMRIGHT")
+		self.Swing.Background:SetColorTexture(0.2, 0.2, 0.2, 0.6)
 
-		local main = CreateFrame("StatusBar", nil, bar)
-		main:Hide()
-		main:SetAllPoints()
-		main:SetStatusBarTexture(UnitframeTexture)
-		main:SetStatusBarColor(0.31, 0.45, 0.63)
-		main:CreateBorder()
+		self.Swing.Mainhand = CreateFrame("StatusBar", nil, self.Swing)
+		self.Swing.Mainhand:Hide()
+		self.Swing.Mainhand:SetAllPoints()
+		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
+		self.Swing.Mainhand:SetStatusBarColor(0.31, 0.45, 0.63)
+		self.Swing.Mainhand:CreateBorder()
 
-		local mainspark = main:CreateTexture(nil, "OVERLAY")
-		mainspark:SetTexture(C["Media"].Textures.Spark16Texture)
-		mainspark:SetHeight(C["DataBars"].Height)
-		mainspark:SetBlendMode("ADD")
-		mainspark:SetPoint("CENTER", main:GetStatusBarTexture(), "RIGHT", 0, 0)
+		self.Swing.Mainhand.Spark = self.Swing.Mainhand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Mainhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
+		self.Swing.Mainhand.Spark:SetHeight(C["DataBars"].Height)
+		self.Swing.Mainhand.Spark:SetBlendMode("ADD")
+		self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-		local off = CreateFrame("StatusBar", nil, bar)
-		off:Hide()
-		off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -3)
-		off:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, -6)
-		off:SetStatusBarTexture(UnitframeTexture)
-		off:SetStatusBarColor(0.78, 0.25, 0.25)
-		off:CreateBorder()
+		self.Swing.Offhand = CreateFrame("StatusBar", nil, self.Swing)
+		self.Swing.Offhand:Hide()
+		self.Swing.Offhand:SetPoint("TOPLEFT", self.Swing, "BOTTOMLEFT", 0, -3)
+		self.Swing.Offhand:SetPoint("BOTTOMRIGHT", self.Swing, "BOTTOMRIGHT", 0, -6)
+		self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
+		self.Swing.Offhand:SetStatusBarColor(0.78, 0.25, 0.25)
+		self.Swing.Offhand:CreateBorder()
 
-		local offspark = off:CreateTexture(nil, "OVERLAY")
-		offspark:SetTexture(C["Media"].Textures.Spark16Texture)
-		offspark:SetHeight(C["DataBars"].Height)
-		offspark:SetBlendMode("ADD")
-		offspark:SetPoint("CENTER", off:GetStatusBarTexture(), "RIGHT", 0, 0)
+		self.Swing.Offhand.Spark = self.Swing.Offhand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Offhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
+		self.Swing.Offhand.Spark:SetHeight(C["DataBars"].Height)
+		self.Swing.Offhand.Spark:SetBlendMode("ADD")
+		self.Swing.Offhand.Spark:SetPoint("CENTER", self.Swing.Offhand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		if C["Unitframe"].SwingbarTimer then
-			bar.Text = K.CreateFontString(bar, 12, "", "")
-			bar.TextMH = K.CreateFontString(main, 12, "", "")
-			bar.TextOH = K.CreateFontString(off, 12, "", "", false, "CENTER", 1, -5)
+			self.Swing.Text = K.CreateFontString(self.Swing, 12, "", "")
+			self.Swing.TextMH = K.CreateFontString(self.Swing.Mainhand, 12, "", "")
+			self.Swing.TextOH = K.CreateFontString(self.Swing.Offhand, 12, "", "", false, "CENTER", 1, -5)
 		end
 
-		self.Swing = bar
-		self.Swing.Twohand = two
-		self.Swing.Mainhand = main
-		self.Swing.Offhand = off
-		self.Swing.bg = bg
 		self.Swing.hideOoc = true
-
-		-- K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
 
-	if C["Unitframe"].PvPIndicator then
-		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		self.PvPIndicator:SetSize(30, 33)
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-			self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
-		else
-			self.PvPIndicator:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
-		end
-		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
-	end
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.LeaderIndicator:SetSize(12, 12)
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.AssistantIndicator:SetSize(12, 12)
+
+	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.MasterLooterIndicator:SetPoint("LEFT", self.LeaderIndicator, "RIGHT")
+	self.MasterLooterIndicator:SetSize(12, 12)
 
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(20, 20)
@@ -555,14 +533,6 @@ function Module:CreatePlayer()
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
-	end
-
-	if C["Unitframe"].GlobalCooldown then
-		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		self.GlobalCooldown:SetWidth(playerWidth)
-		self.GlobalCooldown:SetHeight(28)
-		self.GlobalCooldown:SetFrameStrata("HIGH")
-		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 	end
 
 	self.CombatFade = C["Unitframe"].CombatFade

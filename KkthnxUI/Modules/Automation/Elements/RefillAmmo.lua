@@ -101,7 +101,7 @@ StaticPopupDialogs["KKUI_REFILLAMMO"] = {
     hideOnEscape = 1
 }
 
-function Module:CreateRefillAmmo()
+function Module:CreateAutoRefillAmmo()
 	if K.Class ~= "HUNTER" then
 		return
 	end

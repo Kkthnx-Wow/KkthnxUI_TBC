@@ -62,7 +62,7 @@ A default texture will be applied to the Texture widgets if they don't have a te
 local _, ns = ...
 local oUF = ns.oUF
 local myGUID = UnitGUID('player')
-local HealComm = LibStub("LibHealComm-4.0")
+local HealComm = LibStub("LibHealComm-4.0-KkthnxUI")
 
 local function Update(self, event, unit)
 	if(self.unit ~= unit) then return end

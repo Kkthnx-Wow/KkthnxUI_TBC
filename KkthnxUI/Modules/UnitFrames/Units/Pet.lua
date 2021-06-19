@@ -97,13 +97,20 @@ function Module:CreatePet()
 		end
 	end
 
-	self.HappinessIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.HappinessIndicator:SetSize(19, 19)
+	self.HappinessIndicator = self.Overlay:CreateTexture(nil, "ARTWORK") CreateFrame("Frame", self:GetName().."_PetHappiness", self)
+	self.HappinessIndicator:SetSize(20, 20)
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		self.HappinessIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -4, 0)
 	else
 		self.HappinessIndicator:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
 	end
+
+	self.HappinessIndicator.IconBorder = self.HappinessIndicator.IconBorder or CreateFrame("Frame", self:GetName().."_PetHappiness", self)
+	self.HappinessIndicator.IconBorder:EnableMouse(true)
+	self.HappinessIndicator.IconBorder:SetFrameLevel(5)
+	self.HappinessIndicator.IconBorder:SetPoint("TOPLEFT", self.HappinessIndicator, 2, -2)
+	self.HappinessIndicator.IconBorder:SetPoint("BOTTOMRIGHT", self.HappinessIndicator, -2, 2)
+	self.HappinessIndicator.IconBorder:CreateBorder()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	if C["Unitframe"].PetPower then

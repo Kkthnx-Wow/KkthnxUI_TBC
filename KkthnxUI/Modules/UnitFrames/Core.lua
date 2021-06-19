@@ -88,23 +88,6 @@ function Module:UpdatePortraitColor(unit, min, max)
 	end
 end
 
-function Module:PostUpdatePvPIndicator(unit, status)
-	local factionGroup = UnitFactionGroup(unit)
-
-	if UnitIsPVPFreeForAll(unit) and status == "ffa" then
-		self:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA")
-		self:SetTexCoord(0, 0.65625, 0, 0.65625)
-	elseif factionGroup and UnitIsPVP(unit) and status ~= nil then
-		self:SetTexture("Interface\\QUESTFRAME\\objectivewidget")
-
-		if factionGroup == "Alliance" then
-			self:SetTexCoord(0.00390625, 0.136719, 0.511719, 0.671875)
-		else
-			self:SetTexCoord(0.00390625, 0.136719, 0.679688, 0.839844)
-		end
-	end
-end
-
 function Module:UpdateThreat(_, unit)
 	if unit ~= self.unit or C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return

@@ -54,7 +54,7 @@ function Module:CreateItemTexture(slot, relF, x, y)
 	icon:SetSize(14, 14)
 	icon:SetTexCoord(unpack(K.TexCoords))
 
-	icon.bg = CreateFrame("Frame", nil, slot)
+	icon.bg = icon.bg or CreateFrame("Frame", nil, slot)
 	icon.bg:SetAllPoints(icon)
 	icon.bg:SetFrameLevel(slot:GetFrameLevel())
 	icon.bg:CreateBorder()
@@ -67,10 +67,9 @@ function Module:CreateColorBorder()
 	local frame = CreateFrame("Frame", nil, self)
 	frame:SetAllPoints()
 
-	self.colorBG = CreateFrame("Frame", nil, self)
+	self.colorBG = self.colorBG or CreateFrame("Frame", nil, self)
 	self.colorBG:SetAllPoints(frame)
 	self.colorBG:SetFrameLevel(self:GetFrameLevel())
-	--self.colorBG:SetFrameLevel(5)
 	self.colorBG:CreateBorder()
 end
 
@@ -82,7 +81,7 @@ function Module:CreateItemString(frame, strType)
 	for index, slot in pairs(inspectSlots) do
 		if index ~= 4 then
 			local slotFrame = _G[strType..slot.."Slot"]
-			slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE")
+			slotFrame.iLvlText = slotFrame.iLvlText or K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.iLvlText:ClearAllPoints()
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
 			local relF, x, y = Module:GetSlotAnchor(index)
@@ -151,6 +150,7 @@ function Module:RefreshButtonInfo()
 						slotFrame.iLvlText:SetTextColor(color.r, color.g, color.b)
 					end
 					Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
+					Module:UpdateInspectILvl()
 
 					pending[index] = nil
 				end
@@ -168,10 +168,11 @@ function Module:RefreshButtonInfo()
 end
 
 function Module:ItemLevel_SetupLevel(frame, strType, unit)
-	if not UnitExists(unit) then return end
+	if not UnitExists(unit) then
+		return
+	end
 
 	Module:CreateItemString(frame, strType)
-
 	for index, slot in pairs(inspectSlots) do
 		if index ~= 4 then
 			local slotFrame = _G[strType..slot.."Slot"]
@@ -214,19 +215,36 @@ function Module:ItemLevel_UpdatePlayer()
 	Module:ItemLevel_SetupLevel(CharacterFrame, "Character", "player")
 end
 
+function Module:UpdateInspectILvl()
+	if not Module.InspectILvl then
+		return
+	end
+
+	Module:UpdateUnitILvl(InspectFrame.unit, Module.InspectILvl)
+	Module.InspectILvl:SetFormattedText("iLvl %s", Module.InspectILvl:GetText())
+end
+
 local isHidden
 local function HideInspectRotate()
-	if isHidden then return end
+	if isHidden then
+		return
+	end
 	InspectModelFrameRotateRightButton:Hide()
 	InspectModelFrameRotateLeftButton:Hide()
+
+	Module.InspectILvl = Module.InspectILvl or K.CreateFontString(InspectFrame, 14)
+	Module.InspectILvl:ClearAllPoints()
+	Module.InspectILvl:SetPoint("TOP", InspectLevelText, "BOTTOM", 0, -6)
+
 	isHidden = true
 end
 
 function Module:ItemLevel_UpdateInspect(...)
 	local guid = ...
 	if InspectFrame and InspectFrame.unit and UnitGUID(InspectFrame.unit) == guid then
-		Module:ItemLevel_SetupLevel(InspectFrame, "Inspect", InspectFrame.unit)
 		HideInspectRotate()
+		Module:ItemLevel_SetupLevel(InspectFrame, "Inspect", InspectFrame.unit)
+		Module:UpdateInspectILvl()
 	end
 end
 

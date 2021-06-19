@@ -239,7 +239,7 @@ function Module:CreateFocus()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(HealPredictionTexture)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -248,7 +248,7 @@ function Module:CreateFocus()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(HealPredictionTexture)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {

@@ -2,8 +2,11 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Tooltip")
 
 local _G = _G
+local math_floor = _G.math.floor
 local select = _G.select
+local string_find = _G.string.find
 local string_format = _G.string.format
+local string_gsub = _G.string.gsub
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 
@@ -12,11 +15,15 @@ local BANK = _G.BANK
 local CURRENCY = _G.CURRENCY
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
-local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
+local GetMouseFocus = _G.GetMouseFocus
 local GetUnitName = _G.GetUnitName
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
 local hooksecurefunc = _G.hooksecurefunc
+
+local SELL_PRICE_TEXT = string_format("|cffffffff%s%s%%s|r", SELL_PRICE, HEADER_COLON)
+local ITEM_LEVEL_STR = string_gsub(ITEM_LEVEL_PLUS, "%+", "")
+ITEM_LEVEL_STR = string_format("|cffffd100%s|r|n%%s", ITEM_LEVEL_STR)
 
 local types = {
 	spell = SPELLS.."ID:",
@@ -26,6 +33,62 @@ local types = {
 	achievement = ACHIEVEMENTS.."ID:",
 	currency = CURRENCY.."ID:",
 	azerite = L["Trait"].."ID:",
+}
+
+local function createIcon(index)
+	return string_format(" |TInterface\\MoneyFrame\\UI-%sIcon:14:14:0:0|t", index)
+end
+
+local function setupMoneyString(money)
+	local g, s, c = math_floor(money / 1e4), math_floor(money / 100) % 100, money % 100
+	local str = ""
+	if g > 0 then
+		str = str.." "..g..createIcon("Gold")
+	end
+
+	if s > 0 then
+		str = str.." "..s..createIcon("Silver")
+	end
+
+	if c > 0 then
+		str = str.." "..c..createIcon("Copper")
+	end
+
+	return str
+end
+
+function Module:UpdateItemSellPrice()
+	local frame = GetMouseFocus()
+	if frame and frame.GetName then
+		if frame:IsForbidden() then -- Forbidden on blizz store
+			return
+		end
+
+		local name = frame:GetName()
+		if not MerchantFrame:IsShown() or name and (string_find(name, "Character") or string_find(name, "TradeSkill")) then
+			local link = select(2, self:GetItem())
+			if link then
+				local price = select(11, GetItemInfo(link))
+				if price and price > 0 then
+					local object = frame:GetObjectType()
+					local count
+					if object == "Button" then -- ContainerFrameItem, QuestInfoItem, PaperDollItem
+						count = frame.count
+					elseif object == "CheckButton" then -- MailItemButton or ActionButton
+						count = frame.count or frame.Count:GetText()
+					end
+
+					local cost = (tonumber(count) or 1) * price
+					self:AddLine(string_format(SELL_PRICE_TEXT, setupMoneyString(cost)))
+				end
+			end
+		end
+	end
+end
+
+local iLvlItemClassIDs = {
+	[LE_ITEM_CLASS_ARMOR] = true,
+	[LE_ITEM_CLASS_WEAPON] = true,
 }
 
 function Module:AddLineForID(id, linkType, noadd)
@@ -41,6 +104,10 @@ function Module:AddLineForID(id, linkType, noadd)
 		end
 	end
 
+	if linkType == types.item then
+		Module.UpdateItemSellPrice(self)
+	end
+
 	if not noadd then
 		self:AddLine(" ")
 	end
@@ -48,7 +115,7 @@ function Module:AddLineForID(id, linkType, noadd)
 	if linkType == types.item then
 		local bagCount = GetItemCount(id)
 		local bankCount = GetItemCount(id, true) - bagCount
-		local itemStackCount = select(8, GetItemInfo(id))
+		local name, _, _, itemLevel, _, _, _, itemStackCount, _, _, _, classID = GetItemInfo(id)
 		if bankCount > 0 then
 			self:AddDoubleLine(BAGSLOT.."/"..BANK..":", K.InfoColor..bagCount.."/"..bankCount)
 		elseif bagCount > 0 then
@@ -57,6 +124,23 @@ function Module:AddLineForID(id, linkType, noadd)
 
 		if itemStackCount and itemStackCount > 1 then
 			self:AddDoubleLine(L["Stack Cap"]..":", K.InfoColor..itemStackCount)
+		end
+
+		-- iLvl info like retail
+		if name and itemLevel and itemLevel > 1 and iLvlItemClassIDs[classID] then
+			for i = 1, self:NumLines() do
+				local line = _G[self:GetName().."TextLeft"..i]
+				local lineText = line and line:GetText()
+				if string_find(lineText, name) then
+					local nextLine = _G[self:GetName().."TextLeft"..(i+1)]
+					local nextText = nextLine and nextLine:GetText()
+					if nextText then
+						nextLine:SetFormattedText(ITEM_LEVEL_STR, itemLevel, nextText)
+						nextLine:SetJustifyH("LEFT")
+					end
+					break
+				end
+			end
 		end
 	end
 
@@ -88,7 +172,7 @@ end
 function Module:SetItemID()
 	local link = select(2, self:GetItem())
 	if link then
-		local id = GetItemInfoFromHyperlink(link)
+		local id = string_match(link, "item:(%d+):")
 		local keystone = string_match(link, "|Hkeystone:([0-9]+):")
 		if keystone then
 			id = tonumber(keystone)

@@ -1,9 +1,10 @@
--- Credit Baudzilla
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
+-- Credit Baudzilla
+
 local _G = _G
-local sin, cos, rad = _G.math.sin, _G.math.cos, _G.rad -- sin~=math.sin, cos~=math.cos, rad==math.rad; why? who knows? :P
+local sin, cos, rad = _G.math.sin, _G.math.cos, _G.rad
 
 local CreateFrame = _G.CreateFrame
 local GetNumGroupMembers = _G.GetNumGroupMembers
@@ -16,12 +17,13 @@ local PlaySound = _G.PlaySound
 local SetRaidTarget = _G.SetRaidTarget
 local SetRaidTargetIconTexture = _G.SetRaidTargetIconTexture
 local UIErrorsFrame = _G.UIErrorsFrame
--- GLOBALS: RaidMark_HotkeyPressed
 
 local ButtonIsDown
 
 function Module:RaidMarkCanMark()
-	if not self.RaidMarkFrame then return false end
+	if not self.RaidMarkFrame then
+		return false
+	end
 
 	if GetNumGroupMembers() > 0 then
 		if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
@@ -48,7 +50,7 @@ function Module:RaidMarkShowIcons()
 end
 
 function RaidMark_HotkeyPressed(keystate)
-	ButtonIsDown = (keystate=="down") and Module:RaidMarkCanMark()
+	ButtonIsDown = (keystate == "down") and Module:RaidMarkCanMark()
 	if ButtonIsDown and Module.RaidMarkFrame then
 		Module:RaidMarkShowIcons()
 	elseif Module.RaidMarkFrame then
@@ -75,12 +77,16 @@ end
 
 function Module:RaidMarkButton_OnClick(arg1)
 	PlaySound(1115) --U_CHAT_SCROLL_BUTTON
-	SetRaidTarget("target", (arg1~="RightButton") and self:GetID() or 0)
+	SetRaidTarget("target", (arg1 ~= "RightButton") and self:GetID() or 0)
 	self:GetParent():Hide()
 end
 
 local ANG_RAD = rad(360) / 7
 function Module:CreateRaidMarker()
+	if not C["Misc"].EasyMarking then
+		return
+	end
+
 	local marker = CreateFrame("Frame", nil, UIParent)
 	marker:EnableMouse(true)
 	marker:SetFrameStrata("DIALOG")

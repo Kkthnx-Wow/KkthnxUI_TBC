@@ -80,6 +80,11 @@ local stats = {
 	"Group quests is a means to make new friends",
 	"Normal flying mount training costs |cffffffff225|r|cffffd700g|r",
 	"You can jump down from the Scryer elevator without dying",
+	"|cffffffffPhase 1:|r|nKarazhan, Gruul’s Lair, and Magtheridon’s Lair Raids will open",
+	"|cffffffffPhase 2:|r|nSerpentshrine Cavern, Tempest Keep, and Arena Season 1",
+	"|cffffffffPhase 3:|r|nHyjal, Black Temple, Arena Season 2",
+	"|cffffffffPhase 4:|r|nZul’Aman and Arena Season 3",
+	"|cffffffffPhase 5:|r|nThe Sunwell and Arena Season 4",
 }
 
 local function IsIn(val, ...)

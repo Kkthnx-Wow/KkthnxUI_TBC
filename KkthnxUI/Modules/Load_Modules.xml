@@ -50,6 +50,7 @@
    <Script file="ActionBars\Elements\Vehicle.lua" />
    <Script file="ActionBars\Elements\BlizzArt.lua" />
    <Script file="ActionBars\Elements\Fader.lua" />
+   <Script file="ActionBars\Elements\AspectBar.lua" />
    <Script file="ActionBars\ButtonRange.lua" />
    <Script file="ActionBars\Keybind.lua" />
    <Script file="ActionBars\ButtonStyle.lua" />
@@ -73,7 +74,6 @@
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
    <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
    <Script file="UnitFrames\Plugins\oUF_EnergyManaRegen.lua" />
-   <Script file="UnitFrames\Plugins\oUF_GCD.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
    <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
@@ -99,7 +99,6 @@
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
-   <Script file="Tooltip\Elements\VendorPrice.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
@@ -133,6 +132,7 @@
    <Script file="Automation\Elements\AutoOpen.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
+   <Script file="Automation\Elements\CounterSpitters.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />
    <Script file="Automation\Elements\Disenchant.lua" />
    <Script file="Automation\Elements\Invite.lua" />
@@ -166,27 +166,18 @@
    <Include file="Skins\Blizzard\Talent.lua" />
    <Include file="Skins\Blizzard\TradeSkill.lua" />
    <!-- Skins AddOns -->
+   <Include file="Skins\Addons\AtlasLoot.lua" />
    <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\Dominos.lua" />
+   <Include file="Skins\Addons\LFGBulletinBoard.lua" />
    <Include file="Skins\Addons\Pawn.lua" />
    <Include file="Skins\Addons\TradeSkillFrame.lua" />
 
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\Bartender4.lua" />
-   <Include file="Skins\Addons\RareScanner.lua" />
-   <Include file="Skins\Addons\TinyInspect.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
-   <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\BigWigs.lua" />
-   <Include file="Skins\Addons\ChocolateBar.lua" />
-   <Include file="Skins\Addons\Immersion.lua" />
-   <Include file="Skins\Addons\OPie.lua" />
-   <Include file="Skins\Addons\RaiderIO.lua" />
-   <Include file="Skins\Addons\Skada.lua" />
-   <Include file="Skins\Addons\Spy.lua" />
-   <Include file="Skins\Addons\Hekili.lua" />
-   <Include file="Skins\Addons\TellMeWhen.lua" />
-   <Include file="Skins\Addons\TitanPanel.lua" /> -->
+   <Include file="Skins\Addons\Skada.lua" /> -->
 </Ui>

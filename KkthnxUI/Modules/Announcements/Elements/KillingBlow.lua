@@ -25,6 +25,7 @@ function Module:SetupKillingBlow()
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER) -- Don't ask me, it's some dark magic. If bit mask for this is positive, it means a player was killed
 		if Caster == K.Name and (mask > 0) then -- If this is my kill and target is a player (world)
 			DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
+			PlaySoundFile("Interface\\AddOns\\KkthnxUI\\Media\\Sounds\\KillingBlow.ogg", "Master")
 		end
 	end
 end

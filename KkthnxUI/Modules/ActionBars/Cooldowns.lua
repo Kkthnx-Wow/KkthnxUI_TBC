@@ -32,7 +32,6 @@ end
 
 function Module:OnSizeChanged(width, height)
 	local cooldownFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
-
 	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == self.fontScale then
 		return
@@ -199,7 +198,9 @@ function Module:OnEnable()
 
 	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
+
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
 	if _G["ActionBarButtonEventsFrame"].frames then
@@ -207,7 +208,7 @@ function Module:OnEnable()
 			Module.RegisterActionButton(frame)
 		end
 	end
-	--hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
+	hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide Default Cooldown
 	if not InCombatLockdown() then

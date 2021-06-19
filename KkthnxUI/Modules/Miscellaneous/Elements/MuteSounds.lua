@@ -11,8 +11,10 @@ local UnmuteSoundFile = _G.UnmuteSoundFile
 -- /run PlaySoundFile(2006030)
 
 local muteSounds = {
-    -- Notifaction Sound When Someone Comes Online?
-    567518, -- sound/interface/friendjoin.ogg
+    -- Some annoying as fuck bow pullback that I can not stand. Fuck this sound!
+    567675, -- sound/item/weapons/bow/bowpullback02.ogg
+    567676, -- sound/item/weapons/bow/bowpullback03.ogg
+    567677, -- sound/item/weapons/bow/bowpullback.ogg
 }
 
 function Module:CreateMuteSounds()

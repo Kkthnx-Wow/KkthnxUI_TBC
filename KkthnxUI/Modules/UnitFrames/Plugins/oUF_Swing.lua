@@ -140,7 +140,7 @@ do
 				end
 			end
 
-			self.__owner.bg:SetShown(rangeing)
+			self.__owner.Background:SetShown(rangeing)
 		end
 	end
 end
@@ -274,7 +274,7 @@ local function Ranged(self, _, unit, _, spellID)
 	swing:Show()
 	UpdateBarMinMaxValues(swing)
 	swing:SetScript("OnUpdate", OnDurationUpdate)
-	bar.bg:SetWidth(AUTO_CAST_TIME / (swing.max - swing.min) * bar:GetWidth())
+	bar.Background:SetWidth(AUTO_CAST_TIME / (swing.max - swing.min) * bar:GetWidth())
 
 	swingMH:Hide()
 	swingMH:SetScript("OnUpdate", nil)

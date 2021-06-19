@@ -27,9 +27,15 @@ local hooksecurefunc = _G.hooksecurefunc
 
 -- Button types
 local function hookActionButton(self)
-	local pet = self.commandName and string_find(self.commandName, "^BONUSACTION") and "PET"
-	local stance = self.commandName and string_find(self.commandName, "^SHAPESHIFT") and "STANCE"
-	Module:Bind_Update(self, pet or stance or nil)
+	Module:Bind_Update(self)
+end
+
+local function hookStanceButton(self)
+	Module:Bind_Update(self, "STANCE")
+end
+
+local function hookPetButton(self)
+	Module:Bind_Update(self, "PET")
 end
 
 local function hookMacroButton(self)
@@ -41,8 +47,18 @@ local function hookSpellButton(self)
 end
 
 function Module:Bind_RegisterButton(button)
-	if button.IsProtected and button.IsObjectType and button:IsObjectType("CheckButton") and button:IsProtected() then
-		button:HookScript("OnEnter", hookActionButton)
+	local stance = StanceButton1:GetScript("OnClick")
+	local pet = PetActionButton1:GetScript("OnClick")
+
+	if button.IsProtected and button.IsObjectType and button.GetScript and button:IsObjectType("CheckButton") and button:IsProtected() then
+		local script = button:GetScript("OnClick")
+		if script == stance then
+			button:HookScript("OnEnter", hookStanceButton)
+		elseif script == pet then
+			button:HookScript("OnEnter", hookPetButton)
+		else
+			button:HookScript("OnEnter", hookActionButton)
+		end
 	end
 end
 
@@ -247,6 +263,7 @@ function Module:Bind_Listener(key)
 	K.Print((frame.tipName or frame.name).." |cff00ff00"..L["Key Bound To"].."|r "..alt..ctrl..shift..key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
+	frame:GetScript("OnEnter")(self)
 end
 
 function Module:Bind_HideFrame()

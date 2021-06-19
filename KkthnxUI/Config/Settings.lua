@@ -8,6 +8,8 @@ local PLAYER = _G.PLAYER
 
 -- Actionbar
 C["ActionBar"] = {
+	["AspectBar"] = false,
+	["AspectSize"] = 24,
 	["Cooldowns"] = true,
 	["Count"] = true,
 	["CustomBar"] = false,
@@ -32,6 +34,7 @@ C["ActionBar"] = {
 	["RightButtonSize"] = 34,
 	["StanceBar"] = true,
 	["StancePetSize"] = 30,
+	["VerticleAspect"] = false,
 	["Layout"] = {
 		["Options"] = {
 			["Mainbar 2x3x4"] = "3x4 Boxed arrangement",
@@ -44,19 +47,27 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
-	["AlertInInstance"] = true,
-	["BrokenSpell"] = false,
 	["HealthAlert"] = false,
-	["Interrupt"] = false,
 	["ItemAlert"] = false,
 	["OnlyCompleteRing"] = false,
-	["OwnInterrupt"] = true,
 	["PullCountdown"] = true,
 	["PvPEmote"] = false,
 	["QuestNotifier"] = false,
 	["QuestProgress"] = false,
 	["ResetInstance"] = true,
 	["SaySapped"] = false,
+	["Interrupt"] = {
+		["Options"] = {
+			["Disabled"] = "NONE",
+			["Emote"] = "EMOTE",
+			["Party / Raid"] = "RAID",
+			["Party Only"] = "PARTY",
+			["Raid Only"] = "RAID_ONLY",
+			["Say"] = "SAY",
+			["Yell"] = "YELL",
+		},
+		["Value"] = "RAID"
+	},
 }
 
 -- Automation
@@ -76,6 +87,7 @@ C["Automation"] = {
 	["AutoSkipCinematic"] = false,
 	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
+	["CounterSpitters"] = false,
 	["NoBadBuffs"] = false,
 	["RefillAmmo"] = false,
 	["WhisperInvite"] = "inv+",
@@ -180,11 +192,14 @@ C["Chat"] = {
 
 -- DataBars
 C["DataBars"] = {
+	["AutoTrackReputation"] = false,
 	["Enable"] = true,
-	["ExperienceColor"] = {0, 0.4, 1, .8},
+	["ExperienceColor"] = {0, .4, 1, .8},
 	["Height"] = 14,
 	["MouseOver"] = false,
-	["RestedColor"] = {1, 0, 1, 0.2},
+	["PetExperience"] = false,
+	["PetExperienceColor"] = {1, 1, 0.41, 0.8},
+	["RestedColor"] = {1, 0, 1, .4},
 	["Width"] = 180,
 	["Text"] = {
 		["Options"] = {
@@ -313,6 +328,7 @@ C["Misc"] = {
 	["MouseTrail"] = false,
 	["MouseTrailColor"] = {1, 1, 1, 0.6},
 	["MuteSounds"] = false,
+	["PetHappiness"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
@@ -341,7 +357,7 @@ C["Nameplate"] = {
 	["CustomColor"] = {0, 0.8, 0.3},
 	["CustomUnitColor"] = true,
 	["CustomUnitList"] = "",
-	["Distance"] = 42,
+	["Distance"] = 41,
 	["Enable"] = true,
 	["ExecuteRatio"] = 0,
 	["FriendlyCC"] = false,
@@ -356,7 +372,6 @@ C["Nameplate"] = {
 	["NameOnly"] = true,
 	["NameTextSize"] = 13,
 	["NameplateClassPower"] = true,
-	["OffTankColor"] = {0.2, 0.7, 0.5},
 	["PPGCDTicker"] = true,
 	["PPHeight"] = 5,
 	["PPHideOOC"] = true,
@@ -425,24 +440,19 @@ C["PulseCooldown"] = {
 
 -- Skins
 C["Skins"] = {
+	["AtlasLoot"] = false,
 	["Bartender4"] = false,
 	["BigWigs"] = false,
 	["BlizzardFrames"] = true,
 	["ChatBubbleAlpha"] = 0.9,
 	["ChatBubbles"] = true,
-	["ChocolateBar"] = false,
 	["DeadlyBossMods"] = false,
 	["Details"] = false,
 	["Dominos"] = false,
 	["EnhancedQuestLog"] = false,
 	["EnhancedTradeSkill"] = false,
-	["Hekili"] = false,
-	["RareScanner"] = false,
+	["LFGBulletinBoard"] = false,
 	["Skada"] = false,
-	["Spy"] = false,
-	["TellMeWhen"] = false,
-	["TinyInspect"] = false,
-	["TitanPanel"] = false,
 	["WeakAuras"] = false,
 }
 
@@ -459,7 +469,6 @@ C["Tooltip"] = {
 	["Icons"] = true,
 	["ShowIDs"] = false,
 	["TargetBy"] = true,
-	["VendorPrice"] = true,
 }
 
 -- Fonts
@@ -508,6 +517,7 @@ C["Unitframe"] = {
 	["CombatText"] = false,
 	["DebuffHighlight"] = true,
 	["Enable"] = true,
+	["EnergyTick"] = true,
 	["FCTOverHealing"] = false,
 	["FocusFrameHeight"] = 40,
 	["FocusFrameWidth"] = 210,
@@ -515,7 +525,6 @@ C["Unitframe"] = {
 	["FocusTargetFrameHeight"] = 20,
 	["FocusTargetFrameWidth"] = 110,
 	["FocusTargetPower"] = true,
-	["GlobalCooldown"] = true,
 	["HidePetLevel"] = true,
 	["HidePetName"] = true,
 	["HideTargetOfTargetLevel"] = false,
@@ -536,7 +545,6 @@ C["Unitframe"] = {
 	["PlayerFrameWidth"] = 218,
 	["PlayerPower"] = true,
 	["PlayerPowerPrediction"] = true,
-	["PvPIndicator"] = true,
 	["ResurrectSound"] = false,
 	["ShowHealPrediction"] = true,
 	["ShowPlayerLevel"] = true,
@@ -618,13 +626,19 @@ C["Arena"] = {
 -- Raidframe
 C["Raid"] = {
 	-- ["SpecRaidPos"] = false,
+	["AuraTrackIcons"] = true,
+	["AuraTrackSpellTextures"] = true,
+	["AuraTrackThickness"] = 5,
+	["DebuffWatch"] = true,
+	["DebuffWatchDefault"] = true,
+	["DesaturateBuffs"] = false,
 	["Enable"] = true,
 	["Height"] = 40,
 	["HorizonRaid"] = false,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["NumGroups"] = 6,
-	["RaidUtility"] = true,
+	["RaidUtility"] = false,
 	["ReverseRaid"] = false,
 	["ShowHealPrediction"] = true,
 	["ShowNotHereTimer"] = true,
@@ -633,10 +647,6 @@ C["Raid"] = {
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
 	["Width"] = 66,
-
-	["DebuffWatch"] = true,
-	["DebuffWatchDefault"] = true,
-	["DesaturateBuffs"] = false,
 	["RaidBuffsStyle"] = {
 		["Options"] = {
 			["Aura Track"] = "Aura Track",
@@ -653,10 +663,6 @@ C["Raid"] = {
 		},
 		["Value"] = "Self",
 	},
-	["AuraTrackIcons"] = true,
-	["AuraTrackSpellTextures"] = true,
-	["AuraTrackThickness"] = 5,
-
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",

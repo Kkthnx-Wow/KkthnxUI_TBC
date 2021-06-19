@@ -46,7 +46,7 @@ local noteString = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:16|t %s"
 local r, g, b = K.r, K.g, K.b
 
 local menuList = {
-	[1] = {text = "Join or Invite", isTitle = true, notCheckable = true}
+	[1] = {text = L["Join or Invite"], isTitle = true, notCheckable = true}
 }
 
 local function sortFriends(a, b)
@@ -324,7 +324,7 @@ local function buttonOnEnter(self)
 		GameTooltip:AddLine(" ")
 
 		local name, level, class, area = unpack(self.data)
-		local classColor = K.RGBToHex(K.ClassColor(class))
+		local classColor = K.RGBToHex(K.ColorClass(class))
 		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
 		GameTooltip:AddLine(string_format("%s%s", inactiveZone, area))
 	end

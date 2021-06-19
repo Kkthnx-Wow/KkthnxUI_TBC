@@ -1,84 +1,86 @@
 local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Automation")
 
 -- Auto opening of items in bag (kAutoOpen by Kellett)
 
 local _G = _G
 
-local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
-local IsModifiedClick = _G.IsModifiedClick
-local AUTOLOOTTOGGLE = _G.AUTOLOOTTOGGLE
-local SetCVar = _G.SetCVar
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local OPENING = _G.OPENING
 local GetContainerItemLink = _G.GetContainerItemLink
 
-local KKUI_StopModule = false
-local KKUI_Blacklist = {}
+local atBank, atMail, atMerchant
 
-local AutoOpen = CreateFrame("Frame")
-AutoOpen:RegisterEvent("BAG_UPDATE")
-AutoOpen:RegisterEvent("MERCHANT_SHOW")
-AutoOpen:RegisterEvent("MERCHANT_CLOSED")
-AutoOpen:RegisterEvent("BANKFRAME_OPENED")
-AutoOpen:RegisterEvent("BANKFRAME_CLOSED")
-AutoOpen:SetScript("OnEvent", function(self, event, ...)
-	if not C["Automation"].AutoOpenItems then
+local function BankOpened()
+	atBank = true
+end
+
+local function BankClosed()
+	atBank = false
+end
+
+local function GuildBankOpened()
+	atBank = true
+end
+
+local function GuildBankClosed()
+	atBank = false
+end
+
+local function MailOpened()
+	atMail = true
+end
+
+local function MailClosed()
+	atMail = false
+end
+
+local function MerchantOpened()
+	atMerchant = true
+end
+
+local function MerchantClosed()
+	atMerchant = false
+end
+
+local function BagDelayedUpdate()
+	if atBank or atMail or atMerchant then
 		return
 	end
 
-	return self[event] and self[event](self, ...)
-end)
-
-function AutoOpen:MERCHANT_SHOW()
-	KKUI_StopModule = true
-end
-
-function AutoOpen:MERCHANT_CLOSED()
-	KKUI_StopModule = false
-end
-
-function AutoOpen:BANKFRAME_OPENED()
-	KKUI_StopModule = true
-end
-
-function AutoOpen:BANKFRAME_CLOSED()
-	KKUI_StopModule = false
-end
-
-function AutoOpen:BAG_UPDATE(bag)
-	if KKUI_StopModule then return end
-
-	if UnitCastingInfo("player") then
-		C_Timer.After(3.2, function()
-			--local bag = bag
-			AutoOpen:BAG_UPDATE(bag)
-		end)
-	end
-
-
-	for slot = 1, GetContainerNumSlots(bag) do
-		local _, _, locked, _, _, lootable, itemLink = GetContainerItemInfo(bag, slot)
-		local itemName = itemLink and string.match(itemLink, "%[(.*)%]") or nil
-
-		if lootable and not locked and not string.find(itemLink:lower(), "lockbox") and not string.find(itemLink, "Junkbox") and not KKUI_Blacklist[itemName] then -- make sure its not a lockbox or in blacklist
-			local autolootDefault = GetCVar("autoLootDefault")
-
-			if autolootDefault then -- autolooting
-				if IsModifiedClick(AUTOLOOTTOGGLE) then -- currently holding autoloot mod key
-					SetCVar("autoLootDefault", 0) -- swap the autoloot behaviour so it autoloots even with mod key held
-					UseContainerItem(bag, slot)
-					K.Print(K.SystemColor.._G.USE.." "..GetContainerItemLink(bag, slot))
-					SetCVar("autoLootDefault", 1) -- swap back
-				else -- not holding autoloot mod key
-					UseContainerItem(bag, slot)
-					K.Print(K.SystemColor.._G.USE.." "..GetContainerItemLink(bag, slot))
-				end
-			else -- not autolooting
-				SetCVar("autoLootDefault", 1)
+	for bag = 0, 4 do
+		for slot = 0, GetContainerNumSlots(bag) do
+			local _, _, locked, _, _, lootable, _, _, _, id = GetContainerItemInfo(bag, slot)
+			if lootable and not locked and id and C.AutoOpenItems[id] then
+				K.Print(K.SystemColor..OPENING..":|r "..GetContainerItemLink(bag, slot))
 				UseContainerItem(bag, slot)
-				K.Print(K.SystemColor.._G.USE.." "..GetContainerItemLink(bag, slot))
-				SetCVar("autoLootDefault", 0)
+				return
 			end
-			return
 		end
+	end
+end
+
+function Module:CreateAutoOpenItems()
+	if C["Automation"].AutoOpenItems then
+		K:RegisterEvent("BANKFRAME_OPENED", BankOpened)
+		K:RegisterEvent("BANKFRAME_CLOSED", BankClosed)
+		K:RegisterEvent("GUILDBANKFRAME_OPENED", GuildBankOpened)
+		K:RegisterEvent("GUILDBANKFRAME_CLOSED", GuildBankClosed)
+		K:RegisterEvent("MAIL_SHOW", MailOpened)
+		K:RegisterEvent("MAIL_CLOSED", MailClosed)
+		K:RegisterEvent("MERCHANT_SHOW", MerchantOpened)
+		K:RegisterEvent("MERCHANT_CLOSED", MerchantClosed)
+		K:RegisterEvent("BAG_UPDATE_DELAYED", BagDelayedUpdate)
+	else
+		K:UnregisterEvent("BANKFRAME_OPENED", BankOpened)
+		K:UnregisterEvent("BANKFRAME_CLOSED", BankClosed)
+		K:UnregisterEvent("GUILDBANKFRAME_OPENED", GuildBankOpened)
+		K:UnregisterEvent("GUILDBANKFRAME_CLOSED", GuildBankClosed)
+		K:UnregisterEvent("MAIL_SHOW", MailOpened)
+		K:UnregisterEvent("MAIL_CLOSED", MailClosed)
+		K:UnregisterEvent("MERCHANT_SHOW", MerchantOpened)
+		K:UnregisterEvent("MERCHANT_CLOSED", MerchantClosed)
+		K:UnregisterEvent("BAG_UPDATE_DELAYED", BagDelayedUpdate)
 	end
 end

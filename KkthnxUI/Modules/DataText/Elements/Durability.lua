@@ -64,9 +64,9 @@ end
 local function OnEvent()
 	local numSlots = getItemDurability()
 	if numSlots > 0 then
-		Module.DurabilityDataTextFrame.Text:SetText(string_format(string_gsub("[color]%d|r%% ".."Dur", "%[color%]", (gradientColor(math_floor(localSlots[1][3] * 100) / 100))), math_floor(localSlots[1][3] * 100)))
+		Module.DurabilityDataTextFrame.Text:SetText(string_format(string_gsub("[color]%d|r%% "..DURABILITY, "%[color%]", (gradientColor(math_floor(localSlots[1][3] * 100) / 100))), math_floor(localSlots[1][3] * 100)))
 	else
-		Module.DurabilityDataTextFrame.Text:SetText("Dur"..": "..K.MyClassColor..NONE)
+		Module.DurabilityDataTextFrame.Text:SetText(DURABILITY..": "..K.MyClassColor..NONE)
 	end
 end
 
@@ -107,11 +107,10 @@ function Module:CreateDurabilityDataText()
 		return
 	end
 
-	Module.DurabilityDataTextFrame = Module.DurabilityDataTextFrame or CreateFrame("Frame", nil, UIParent)
-    Module.DurabilityDataTextFrame:SetParent(PaperDollFrame)
+	Module.DurabilityDataTextFrame = Module.DurabilityDataTextFrame or CreateFrame("Frame", nil, CharacterModelFrame)
 
 	Module.DurabilityDataTextFrame.Text = Module.DurabilityDataTextFrame.Text or Module.DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
-    Module.DurabilityDataTextFrame.Text:SetPoint("TOPLEFT", CharacterWristSlot, "BOTTOMRIGHT", -14, -10)
+    Module.DurabilityDataTextFrame.Text:SetPoint('TOP', CharacterModelFrame, 0, 0)
 	Module.DurabilityDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
     Module.DurabilityDataTextFrame:SetAllPoints(Module.DurabilityDataTextFrame.Text)

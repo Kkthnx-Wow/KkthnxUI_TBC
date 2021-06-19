@@ -44,18 +44,8 @@ local classify = {
 }
 
 -- Init
-function Module:PlateInsideView()
-	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
-	else
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
-	end
-end
-
 function Module:UpdatePlateRange()
-	SetCVar("nameplateMaxDistance", 41)
+	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 end
 
 function Module:UpdatePlateScale()
@@ -66,6 +56,7 @@ end
 function Module:UpdatePlateAlpha()
 	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
 	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateNotSelectedAlpha", C["Nameplate"].MinAlpha)
 end
 
 function Module:UpdatePlateSpacing()
@@ -74,7 +65,6 @@ end
 
 function Module:SetupCVars()
 	Module:UpdatePlateRange()
-	Module:PlateInsideView()
 	SetCVar("nameplateOverlapH", 0.8)
 	Module:UpdatePlateSpacing()
 	Module:UpdatePlateAlpha()
@@ -801,7 +791,7 @@ function Module:CreatePlates()
 		myBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarTexture(C["UITextures"].HealPredictionTextures)
-		myBar:SetStatusBarColor(0, 1, 0, .5)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
 		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self)
@@ -810,7 +800,7 @@ function Module:CreatePlates()
 		otherBar:SetPoint("BOTTOM", self.Health, "BOTTOM")
 		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarTexture(C["UITextures"].HealPredictionTextures)
-		otherBar:SetStatusBarColor(0, 1, 1, .5)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.25)
 		otherBar:Hide()
 
 		self.HealthPrediction = {

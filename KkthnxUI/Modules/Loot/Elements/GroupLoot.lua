@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Loot")
 K.GroupLoot = Module
 
@@ -209,21 +209,21 @@ function Module:CreateRollFrame()
 	spark:SetBlendMode("ADD")
 	status.spark = spark
 
-	local need, needtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Dice-Up', 'Interface\\Buttons\\UI-GroupLoot-Dice-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Dice-Down', 1, NEED, 'LEFT', frame.button, 'RIGHT', 5, -1)
-	local greed, greedtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Coin-Up', 'Interface\\Buttons\\UI-GroupLoot-Coin-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Coin-Down', 2, GREED, 'LEFT', need, 'RIGHT', 0, -1)
-	local pass, passtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Pass-Up', nil, 'Interface\\Buttons\\UI-GroupLoot-Pass-Down', 0, PASS, 'LEFT', greed, 'RIGHT', 0, 2)
+	local need, needtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Dice-Up', 'Interface\\Buttons\\UI-GroupLoot-Dice-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Dice-Down', 1, NEED, 'LEFT', frame.button, 'RIGHT', 8, -1)
+	local greed, greedtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Coin-Up', 'Interface\\Buttons\\UI-GroupLoot-Coin-Highlight', 'Interface\\Buttons\\UI-GroupLoot-Coin-Down', 2, GREED, 'LEFT', need, 'RIGHT', 2, -1)
+	local pass, passtext = CreateRollButton(frame, 'Interface\\Buttons\\UI-GroupLoot-Pass-Up', nil, 'Interface\\Buttons\\UI-GroupLoot-Pass-Down', 0, PASS, 'LEFT', greed, 'RIGHT', 2, 2)
 	frame.needbutt, frame.greedbutt = need, greed
 	frame.need, frame.greed, frame.pass = needtext, greedtext, passtext
 
 	local bind = frame:CreateFontString()
-	bind:SetPoint("LEFT", pass, "RIGHT", 3, 1)
+	bind:SetPoint("LEFT", pass, "RIGHT", 2, 1)
 	bind:FontTemplate(nil, nil, "OUTLINE")
 	frame.fsbind = bind
 
 	local loot = frame:CreateFontString(nil, "ARTWORK")
 	loot:FontTemplate(nil, nil, "OUTLINE")
 	loot:SetPoint("LEFT", bind, "RIGHT", 0, 0)
-	loot:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
+	loot:SetPoint("RIGHT", frame, "RIGHT", -4, 0)
 	loot:SetSize(200, 10)
 	loot:SetJustifyH("LEFT")
 	frame.fsloot = loot
@@ -242,9 +242,9 @@ local function GetFrame()
 
 	local f = Module:CreateRollFrame()
 	if pos == "TOP" then
-		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "BOTTOM", 0, -4)
+		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.KKUI_GroupLootHolder, "BOTTOM", 0, -4)
 	else
-		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "TOP", 0, 4)
+		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.KKUI_GroupLootHolder, "TOP", 0, 4)
 	end
 
 	table.insert(Module.RollBars, f)
@@ -294,7 +294,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 		f.greedbutt.tiptext = _G['LOOT_ROLL_INELIGIBLE_REASON'..reasonGreed]
 	end
 
-	f.fsbind:SetText(bop and "BoP" or "BoE")
+	f.fsbind:SetText(bop and L["BoP"] or L["BoE"])
 	f.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
 
 	local color = ITEM_QUALITY_COLORS[quality]
@@ -369,3 +369,36 @@ function Module:CreateGroupLoot()
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
+
+SlashCmdList.TESTROLL = function()
+	local f = GetFrame()
+	local items = {32837, 34196, 33820}
+	if f:IsShown() then
+		f:Hide()
+	else
+		local item = items[math.random(1, #items)]
+		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
+		local r, g, b = GetItemQualityColor(quality or 1)
+
+		f.button.icon:SetTexture(texture)
+		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+		f.fsloot:SetText(GetItemInfo(item))
+		f.fsloot:SetVertexColor(r, g, b)
+
+		f.status:SetMinMaxValues(0, 100)
+		f.status:SetValue(math.random(50, 90))
+		f.status:SetStatusBarColor(r, g, b, 0.7)
+
+		f.KKUI_Border:SetVertexColor(r, g, b)
+		f.button.KKUI_Border:SetVertexColor(r, g, b)
+
+		f.need:SetText(0)
+		f.greed:SetText(0)
+		f.pass:SetText(0)
+
+		f.button.link = "item:"..item..":0:0:0:0:0:0:0"
+		f:Show()
+	end
+end
+SLASH_TESTROLL1 = "/testroll"

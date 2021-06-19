@@ -27,7 +27,6 @@ local GetRaidTargetIndex = _G.GetRaidTargetIndex
 local ICON_LIST = _G.ICON_LIST
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LEVEL = _G.LEVEL
@@ -284,20 +283,6 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
-		if K.Class == "HUNTER" and unit == "pet" then
-			local Happiness, DamagePercentage, LoyaltyRate = GetPetHappiness()
-			if Happiness then
-				local Hex = K.RGBToHex(unpack(K.Colors.happiness[Happiness]))
-				local Happy = ({"Unhappy", "Content", "Happy"})[Happiness]
-				local Loyalty = LoyaltyRate > 0 and "gaining" or "losing"
-
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Pet is "..Hex..Happy.."|r", 1, 1, 1)
-				GameTooltip:AddLine("Pet is doing "..Hex..DamagePercentage.."%|r damage", 1, 1, 1)
-				GameTooltip:AddLine("Pet is "..Hex..Loyalty.."|r loyalty", 1, 1, 1)
-			end
-		end
-
 		if alive then
 			self.StatusBar:SetStatusBarColor(K.UnitColor(unit))
 		else
@@ -524,7 +509,6 @@ function Module:OnEnable()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
-	self:CreateVendorPrice()
 end
 
 -- Tooltip Skin Registration
@@ -618,6 +602,18 @@ Module:RegisterTooltips("KkthnxUI", function()
 
 		if CharNoteTooltip then
 			Module.ReskinTooltip(CharNoteTooltip)
+		end
+
+		if AceGUITooltip then
+			Module.ReskinTooltip(AceGUITooltip)
+		end
+
+		if AceConfigDialogTooltip then
+			Module.ReskinTooltip(AceConfigDialogTooltip)
+		end
+
+		if WhatsTrainingTooltip then
+			Module.ReskinTooltip(WhatsTrainingTooltip)
 		end
 	end)
 end)

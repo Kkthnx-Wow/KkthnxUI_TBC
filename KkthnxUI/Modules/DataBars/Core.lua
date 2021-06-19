@@ -9,10 +9,11 @@ local string_format = _G.string.format
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
+local GetPetExperience = _G.GetPetExperience
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
+local HasPetUI = _G.HasPetUI
 local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
-local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
@@ -22,12 +23,21 @@ local UnitXPMax = _G.UnitXPMax
 -- Experience
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
+-- Pet Experience
+local PetCurrentXP, PetXPToLevel
+local PetPercentXP, PetRemainXP, PetRemainTotal, PetRemainBars
 -- Reputation
-local backupColor = _G.FACTION_BAR_COLORS[1]
-
-function Module:ExperienceBar_ShouldBeVisible()
-	return K.Level ~= _G.MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-end
+local KKUI_FACTION_BAR_COLORS = {
+	[1] = {r = .8, g = .3, b = .22},
+	[2] = {r = .8, g = .3, b = .22},
+	[3] = {r = .75, g = .27, b = 0},
+	[4] = {r = .9, g = .7, b = 0},
+	[5] = {r = 0, g = .6, b = .1},
+	[6] = {r = 0, g = .6, b = .1},
+	[7] = {r = 0, g = .6, b = .1},
+	[8] = {r = 0, g = .6, b = .1},
+	[9] = {r = 0, g = .6, b = .1},
+}
 
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KKUI_ExperienceBar", self.Container)
@@ -61,6 +71,29 @@ function Module:SetupExperience()
 	expbar.Text = etext
 end
 
+function Module:SetupPetExperience()
+	local petExpbar = CreateFrame("StatusBar", "KKUI_PetExperienceBar", self.Container)
+	petExpbar:SetStatusBarTexture(self.DatabaseTexture)
+	petExpbar:SetStatusBarColor(C["DataBars"].PetExperienceColor[1], C["DataBars"].PetExperienceColor[2], C["DataBars"].PetExperienceColor[3], C["DataBars"].PetExperienceColor[4])
+	petExpbar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+	petExpbar:CreateBorder()
+
+	local pspark = petExpbar:CreateTexture(nil, "OVERLAY")
+	pspark:SetTexture(C["Media"].Textures.Spark16Texture)
+	pspark:SetHeight(C["DataBars"].Height)
+	pspark:SetBlendMode("ADD")
+	pspark:SetPoint("CENTER", petExpbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+	local ptext = petExpbar:CreateFontString(nil, "OVERLAY")
+	ptext:SetFontObject(self.DatabaseFont)
+	ptext:SetFont(select(1, ptext:GetFont()), 11, select(3, ptext:GetFont()))
+	ptext:SetPoint("LEFT", petExpbar, "RIGHT", -3, 0)
+	ptext:SetPoint("RIGHT", petExpbar, "LEFT", 3, 0)
+
+	self.Bars.PetExperience = petExpbar
+	petExpbar.Text = ptext
+end
+
 function Module:SetupReputation()
 	local reputation = CreateFrame("StatusBar", "KKUI_ReputationBar", self.Container)
 	reputation:SetStatusBarTexture(self.DatabaseTexture)
@@ -89,7 +122,7 @@ end
 function Module:UpdateExperience()
 	local expBar = self.Bars.Experience
 
-	if (not Module:ExperienceBar_ShouldBeVisible()) then
+	if IsPlayerAtEffectiveMaxLevel() then
 		expBar:Hide()
 		return
 	else
@@ -107,12 +140,12 @@ function Module:UpdateExperience()
 	PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
 	local displayString, textFormat = "", C["DataBars"].Text.Value
-	if not Module:ExperienceBar_ShouldBeVisible() then
+	if IsPlayerAtEffectiveMaxLevel() then
 		expBar:SetMinMaxValues(0, 1)
 		expBar:SetValue(1)
 
 		if textFormat ~= 0 then
-			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
+			displayString = "Max Level"
 		end
 	else
 		expBar:SetMinMaxValues(0, XPToLevel)
@@ -149,15 +182,61 @@ function Module:UpdateExperience()
 				displayString = string_format("%s R:%s", displayString, K.ShortValue(RestedXP))
 			end
 		end
-
-		if C["DataBars"].showXPLevel then
-			displayString = string_format("%s %s : %s", LEVEL, K.Level, displayString)
-		end
-
 		expBar.RestBar:SetShown(isRested)
 	end
 
 	expBar.Text:SetText(displayString)
+end
+
+function Module:UpdatePetExperience()
+	if K.Class ~= "HUNTER" or not C["DataBars"].PetExperience then
+		if self.Bars.PetExperience then
+			self.Bars.PetExperience:Hide()
+		end
+		return
+	end
+
+	local petExpBar = self.Bars.PetExperience
+	local _, hunterPet = HasPetUI()
+	local hideBar = not hunterPet or (UnitLevel("pet") == 70 and true)
+
+	if hideBar then
+		petExpBar:Hide()
+	elseif not hideBar then
+		petExpBar:Show()
+
+		PetCurrentXP, PetXPToLevel = GetPetExperience()
+		if PetXPToLevel <= 0 then
+			PetXPToLevel = 1
+		end
+
+		local petremainXP = PetXPToLevel - PetCurrentXP
+		local petremainPercent = petremainXP / PetXPToLevel
+		PetRemainTotal, PetRemainBars = petremainPercent * 100, petremainPercent * 20
+		PetPercentXP, PetRemainXP = (PetCurrentXP / PetXPToLevel) * 100, K.ShortValue(petremainXP)
+
+		local displayString, textFormat = "", C["DataBars"].Text.Value
+		petExpBar:SetMinMaxValues(0, PetXPToLevel)
+		petExpBar:SetValue(PetCurrentXP)
+
+		if textFormat == 1 then
+			displayString = string_format("%.2f%%", PetPercentXP)
+		elseif textFormat == 2 then
+			displayString = string_format("%s - %s", K.ShortValue(PetCurrentXP), K.ShortValue(PetXPToLevel))
+		elseif textFormat == 3 then
+			displayString = string_format("%s - %.2f%%", K.ShortValue(PetCurrentXP), PetPercentXP)
+		elseif textFormat == 4 then
+			displayString = string_format("%s", K.ShortValue(PetCurrentXP))
+		elseif textFormat == 5 then
+			displayString = string_format("%s", PetRemainXP)
+		elseif textFormat == 6 then
+			displayString = string_format("%s - %s", K.ShortValue(PetCurrentXP), PetRemainXP)
+		elseif textFormat == 7 then
+			displayString = string_format("%s - %.2f%% (%s)", K.ShortValue(PetCurrentXP), PetPercentXP, PetRemainXP)
+		end
+
+		petExpBar.Text:SetText(displayString)
+	end
 end
 
 function Module:UpdateReputation()
@@ -173,7 +252,7 @@ function Module:UpdateReputation()
 
 	local displayString, textFormat = "", C["DataBars"].Text.Value
 	local isCapped, standingLabel
-	local color = FACTION_BAR_COLORS[reaction] or backupColor
+	local color = KKUI_FACTION_BAR_COLORS[reaction] or _G.FACTION_BAR_COLORS[reaction]
 
 	if reaction == _G.MAX_REPUTATION_REACTION then
 		Min, Max, value = 0, 1, 1
@@ -228,7 +307,7 @@ function Module:OnEnter()
 		UIFrameFadeIn(Module.Container, 0.2, Module.Container:GetAlpha(), 1)
 	end
 
-	if Module:ExperienceBar_ShouldBeVisible() then
+	if not IsPlayerAtEffectiveMaxLevel() then
 		GameTooltip:AddLine(L["Experience"])
 		GameTooltip:AddDoubleLine(LEVEL, string_format("%s", K.Level), 1, 1, 1)
 		GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%.2f%%)", CurrentXP, XPToLevel, PercentXP), 1, 1, 1)
@@ -237,16 +316,19 @@ function Module:OnEnter()
 		if RestedXP and RestedXP > 0 then
 			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
 		end
+	end
 
-		if K.Class == "HUNTER" and HasPetUI() then
-			local cur, max = GetPetExperience()
-			if max ~= 0 then
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Pet Experience")
-				GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-				GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
-			end
+	local _, hunterPet = HasPetUI()
+	local showPetInfo = hunterPet and (UnitLevel("pet") ~= 70 and true)
+	if showPetInfo and K.Class == "HUNTER" and C["DataBars"].PetExperience then
+		if not IsPlayerAtEffectiveMaxLevel() then
+			GameTooltip:AddLine(" ")
 		end
+
+		GameTooltip:AddLine("Pet Experience")
+		GameTooltip:AddDoubleLine(LEVEL, string_format("%s", UnitLevel('pet')), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%.2f%%)", PetCurrentXP, PetXPToLevel, PetPercentXP), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %d "..L["Bars"]..")", PetRemainXP, PetRemainTotal, PetRemainBars), 1, 1, 1)
 	end
 
 	if GetWatchedFactionInfo() then
@@ -280,6 +362,7 @@ end
 
 function Module:OnUpdate()
 	Module:UpdateExperience()
+	Module:UpdatePetExperience()
 	Module:UpdateReputation()
 
 	if C["DataBars"].MouseOver then
@@ -309,6 +392,7 @@ end
 
 function Module:UpdateDataBarsSize()
 	KKUI_ExperienceBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+	KKUI_PetExperienceBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	KKUI_ReputationBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 
 	local num_bars = 0
@@ -339,25 +423,21 @@ function Module:OnEnable()
 	self.Container:HookScript("OnLeave", self.OnLeave)
 
 	self:SetupExperience()
+	self:SetupPetExperience()
 	self:SetupReputation()
 	self:OnUpdate()
 
-	-- Experience
-	if Module:ExperienceBar_ShouldBeVisible() then
-		K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
-		K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
-		K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
-		K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
-	else
-		K:UnregisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
-		K:UnregisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
-		K:UnregisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
-		K:UnregisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
-	end
-
-	-- Reputation
-	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
 	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
+	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
+	K:RegisterEvent("PLAYER_LEVEL_UP", self.OnUpdate)
+	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
+	K:RegisterEvent("UNIT_PET", self.OnUpdate)
+	K:RegisterEvent("UNIT_PET_EXPERIENCE", self.OnUpdate)
+	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
 
 	if not self.Container.mover then
 		self.Container.mover = K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})

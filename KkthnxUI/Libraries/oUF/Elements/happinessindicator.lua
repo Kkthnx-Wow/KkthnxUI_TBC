@@ -29,7 +29,28 @@ local oUF = ns.oUF
 local GetPetHappiness = GetPetHappiness
 local HasPetUI = HasPetUI
 
-local function Update(self, event, unit)
+-- Changed tooltip for KkthnxUI
+local function UpdateTooltip()
+	local happiness, damage_percentage = GetPetHappiness()
+	if happiness then
+		GameTooltip:SetText(_G["PET_HAPPINESS"..happiness])
+		if damage_percentage then
+			GameTooltip:AddLine(format(PET_DAMAGE_PERCENTAGE, damage_percentage), "", 1, 1, 1)
+		end
+		GameTooltip:Show()
+	end
+end
+
+local function OnEnter(element)
+	GameTooltip:SetOwner(element, "ANCHOR_BOTTOM", 0, -5) -- KkthnxUI
+	UpdateTooltip()
+end
+
+local function OnLeave()
+	GameTooltip:Hide()
+end
+
+local function Update(self, _, unit)
 	if(not unit or self.unit ~= unit) then return end
 
 	local element = self.HappinessIndicator
@@ -49,15 +70,19 @@ local function Update(self, event, unit)
 	if(hunterPet and happiness) then
 		if(happiness == 1) then
 			element:SetTexCoord(0.375, 0.5625, 0, 0.359375)
+			element.IconBorder.KKUI_Border:SetVertexColor(0.87, 0.37, 0.37)
 		elseif(happiness == 2) then
 			element:SetTexCoord(0.1875, 0.375, 0, 0.359375)
+			element.IconBorder.KKUI_Border:SetVertexColor(0.85, 0.77, 0.36)
 		elseif(happiness == 3) then
 			element:SetTexCoord(0, 0.1875, 0, 0.359375)
+			element.IconBorder.KKUI_Border:SetVertexColor(0.29, 0.67, 0.30)
 		end
 
 		element:Show()
+		element.IconBorder:Show()
 	else
-		return element:Hide()
+		return element:Hide(), element.IconBorder:Hide()
 	end
 
 	--[[ Callback: HappinessIndicator:PostUpdate(role)
@@ -100,6 +125,18 @@ local function Enable(self)
 			element:SetTexture([[Interface\PetPaperDollFrame\UI-PetHappiness]])
 		end
 
+		if(element.IconBorder and element.IconBorder:IsMouseEnabled()) then
+			element.tooltipAnchor = element.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+
+			if(not element.IconBorder:GetScript('OnEnter')) then
+				element.IconBorder:SetScript('OnEnter', OnEnter)
+			end
+
+			if(not element.IconBorder:GetScript('OnLeave')) then
+				element.IconBorder:SetScript('OnLeave', OnLeave)
+			end
+		end
+
 		return true
 	end
 end
@@ -108,6 +145,7 @@ local function Disable(self)
 	local element = self.HappinessIndicator
 	if(element) then
 		element:Hide()
+		element.IconBorder:Hide()
 
 		self:UnregisterEvent('UNIT_HAPPINESS', Path)
 	end

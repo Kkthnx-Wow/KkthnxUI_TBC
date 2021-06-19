@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 
 local _G = _G
 local print = _G.print
+local string_format = _G.string.format
 local string_lower = _G.string.lower
 local string_trim = _G.string.trim
 local tonumber = _G.tonumber
@@ -13,7 +14,6 @@ local ConvertToRaid = _G.ConvertToRaid
 local DoReadyCheck = _G.DoReadyCheck
 local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
 local GetContainerItemLink = _G.GetContainerItemLink
-local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
@@ -25,15 +25,20 @@ local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
--- SlashCmdList["KKUI_TRACKING"] = function()
--- 	if (C.Unitframe.Enable) and (C.Raid.Enable) then
--- 		K:GetModule("Unitframes").TrackingToggle()
--- 	else
--- 		K.Print("Sorry, our raid module is currently disabled")
--- 	end
--- end
--- _G.SLASH_KKUI_TRACKING1 = "/kt"
--- _G.SLASH_KKUI_TRACKING2 = "/tracking"
+SlashCmdList["KKUI_VOLUME"] = function(val)
+	local new = tonumber(val)
+	local old = tonumber(GetCVar("Sound_MasterVolume"))
+	if new == old then
+		K.Print(string_format("Volume is already set to |cffa0f6aa%s|r.", old))
+	elseif new and 0 <= new and new <= 1 then
+		SetCVar("Sound_MasterVolume", new)
+		K.Print(string_format("Volume is now set to |cffa0f6aa%.2f|r, was |cffa0f6aa%.2f|r.", new, old))
+	else
+		K.Print(string_format("Volume is currently set to |cffa0f6aa%.2f|r.", old))
+	end
+end
+_G.SLASH_KKUI_VOLUME1 = "/vol"
+_G.SLASH_KKUI_VOLUME2 = "/volume"
 
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()
@@ -94,21 +99,6 @@ SlashCmdList["KKUI_DELETEQUESTITEMS"] = function()
 end
 _G.SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
 _G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
-
-SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
-	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local name = GetContainerItemLink(bag,slot)
-			if name and string.find(name,"00ccff") then
-				print(name)
-				_G.PickupContainerItem(bag,slot)
-				_G.DeleteCursorItem()
-			end
-		end
-	end
-end
-_G.SLASH_KKUI_DELETEHEIRLOOMS1 = "/deleteheirlooms"
-_G.SLASH_KKUI_DELETEHEIRLOOMS2 = "/deletelooms"
 
 SlashCmdList["KKUI_RESETINSTANCE"] = function()
 	_G.ResetInstances()
@@ -187,24 +177,17 @@ end
 _G.SLASH_CLEARCHAT1 = "/clearchat"
 _G.SLASH_CLEARCHAT2 = "/chatclear"
 
-SlashCmdList["KKUI_STATPRIORITY"] = function(msg)
-	local command = msg:match("^(%S*)%s*(.-)$")
-	if command == "show" then
-		if KKUI_StatPriorityFrame and not KKUI_StatPriorityFrame:IsShown() then
-			KKUI_StatPriorityFrame:Show()
-		end
-		KkthnxUIDB.StatPriority["show"] = true
-	elseif command == "hide" then
-		if KKUI_StatPriorityFrame and KKUI_StatPriorityFrame:IsShown() then
-			KKUI_StatPriorityFrame:Hide()
-		end
-		KkthnxUIDB.StatPriority["show"] = false
-	elseif command == "reset" then
-		KkthnxUIDB.StatPriority = nil
-		ReloadUI()
-	else -- help
-		K.Print(K.SystemColor.."show/hide|r:"..K.GreyColor.." show/hide stat priority module.|r")
-		K.Print(K.SystemColor.."reset|r:"..K.GreyColor.." reset database for stat priority module.|r")
+-- Clear chat
+SlashCmdList["KKUI_GUI"] = function()
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+		return
 	end
+
+	K["GUI"]:Toggle()
+	HideUIPanel(GameMenuFrame)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 end
-_G.SLASH_KKUI_STATPRIORITY1 = "/ksp"
+_G.SLASH_KKUI_GUI1 = "/kkgui"
+_G.SLASH_KKUI_GUI2 = "/kkconfig"
+_G.SLASH_KKUI_GUI3 = "/kkoptions"

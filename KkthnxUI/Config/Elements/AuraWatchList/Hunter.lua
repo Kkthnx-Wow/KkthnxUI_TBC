@@ -4,6 +4,7 @@ local Module = K:GetModule("AurasTable")
 -- 猎人的法术监控
 local list = {
 	["Player Aura"] = {		-- 玩家光环组
+		{AuraID = 1539, UnitID = "pet"},		-- 喂养宠物
 		{AuraID = 3662, UnitID = "pet"},		-- 治疗宠物
 		{AuraID = 5118, UnitID = "player"},		-- 猎豹守护
 		{AuraID = 13161, UnitID = "player"},	-- 野兽守护
@@ -28,7 +29,6 @@ local list = {
 	["Special Aura"] = {	-- 玩家重要光环组
 		{AuraID = 3045, UnitID = "player"},		-- 急速射击
 		{AuraID = 6150, UnitID = "player"},		-- 快速射击
-		{AuraID = 13159, UnitID = "pet"},		-- 豹群守护
 		{AuraID = 19574, UnitID = "pet"},		-- 狂野怒火
 		{AuraID = 19577, UnitID = "pet"},		-- 胁迫
 	},

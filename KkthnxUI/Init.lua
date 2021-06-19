@@ -45,12 +45,13 @@ Engine[3] = {} -- L, Locales
 local K, C, L = unpack(Engine)
 
 do
-	K.Base64 = LibStub("LibBase64-1.0")
-	K.Deflate = LibStub("LibDeflate")
-	K.HideButtonGlow = LibStub("LibButtonGlow-1.0", true).HideOverlayGlow
-	K.Serialize = LibStub("LibSerialize")
-	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0", true).ShowOverlayGlow
-	K.Unfit = LibStub("Unfit-1.0")
+	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
+	K.Deflate = LibStub("LibDeflate-KkthnxUI")
+	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow
+	K.Serialize = LibStub("LibSerialize-KkthnxUI")
+	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
+	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
+	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
 end

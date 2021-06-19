@@ -7,7 +7,6 @@ local next = _G.next
 local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
-local GetActionTexture = _G.GetActionTexture
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
@@ -150,4 +149,5 @@ function Module:OnEnable()
 	self:CreateStancebar()
 	self:HideBlizz()
 	self:CreateBarSkin()
+	self:CreateAspectBar()
 end

@@ -158,7 +158,9 @@ do
 
 	SlashCmdList["KKTHNXUI_VER_CHECK"] = function(msg)
 		local channel
-		if IsInRaid() then
+		if IsInGroup() then
+			channel = "PARTY"
+		elseif IsInRaid() then
 			channel = "RAID"
 		elseif IsInGuild() then
 			channel = "GUILD"
@@ -314,13 +316,6 @@ SlashCmdList.TEST_UF = function()
 				_G["oUF_Arena"..i]:SetAttribute("unit", "player")
 			end
 		end
-
-		if C["Boss"].Enable then
-			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_Boss"..i].oldunit = _G["oUF_Boss"..i].unit
-				_G["oUF_Boss"..i]:SetAttribute("unit", "player")
-			end
-		end
 		moving = true
 	else
 		if C["Arena"].Enable then
@@ -328,12 +323,6 @@ SlashCmdList.TEST_UF = function()
 				_G["oUF_Arena"..i].Trinket.Hide = nil
 				_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].oldunit)
 				_G["oUF_Arena"..i.."Target"]:SetAttribute("unit", _G["oUF_Arena"..i.."Target"].oldunit)
-			end
-		end
-
-		if C["Boss"].Enable then
-			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_Boss"..i]:SetAttribute("unit", _G["oUF_Boss"..i].oldunit)
 			end
 		end
 		moving = false

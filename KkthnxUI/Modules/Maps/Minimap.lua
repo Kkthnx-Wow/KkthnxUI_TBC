@@ -4,14 +4,9 @@ local Module = K:NewModule("Minimap")
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
-local string_format = _G.string.format
-local table_insert = _G.table.insert
 
--- local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetUnitName = _G.GetUnitName
 local InCombatLockdown = _G.InCombatLockdown
-local IsInGuild = _G.IsInGuild
 local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
@@ -186,48 +181,16 @@ function Module:ReskinRegions()
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 12)
 		else
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -12)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -2)
 		end
-		MiniMapMailIcon:SetTexture("Interface\\MINIMAP\\TRACKING\\Mailbox")
-		MiniMapMailFrame:SetScale(1.2)
-		MiniMapMailIcon:SetRotation(rad(-34.5))
-		MiniMapMailFrame:SetHitRectInsets(11, 11, 11, 15)
+		MiniMapMailIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\mail.blp")
+		MiniMapMailIcon:SetSize(28, 28)
+		MiniMapMailFrame:SetHitRectInsets(11, 2, 13, 7)
+		MiniMapMailIcon:SetVertexColor(unpack(C["DataText"].IconColor))
+		MiniMapMailIcon:SetAlpha(0.9)
 	end
-
-	-- Invites Icon
-	if GameTimeCalendarInvitesTexture then
-		GameTimeCalendarInvitesTexture:ClearAllPoints()
-		GameTimeCalendarInvitesTexture:SetParent("Minimap")
-		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
-	end
-
-	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
-	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
-	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
-	inviteNotification:Hide()
-
-	K.CreateFontString(inviteNotification, 12, K.InfoColor.."Pending Calendar Invite(s)!", "")
-
-	local function updateInviteVisibility()
-		--inviteNotification:SetShown(C_Calendar_GetNumPendingInvites() > 0)
-	end
-	-- K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateInviteVisibility)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
-
-	inviteNotification:SetScript("OnClick", function(_, btn)
-		inviteNotification:Hide()
-
-		if btn == "LeftButton" and not InCombatLockdown() then
-			ToggleCalendar()
-		end
-
-		-- K:UnregisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateInviteVisibility)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
-	end)
 end
 
 function Module:CreatePing()
@@ -316,17 +279,6 @@ function Module:Minimap_OnMouseUp(btn)
 	end
 end
 
-function Module:SetupHybridMinimap()
-	HybridMinimap.CircleMask:SetTexture("Interface\\BUTTONS\\WHITE8X8")
-end
-
-function Module:HybridMinimapOnLoad(addon)
-	if addon == "Blizzard_HybridMinimap" then
-		Module:SetupHybridMinimap()
-		K:UnregisterEvent(self, Module.HybridMinimapOnLoad)
-	end
-end
-
 function Module:UpdateBlipTexture()
 	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
 end
@@ -373,8 +325,6 @@ function Module:OnEnable()
 	end
 
 	MinimapCluster:EnableMouse(false)
-	-- Minimap:SetArchBlobRingScalar(0)
-	-- Minimap:SetQuestBlobRingScalar(0)
 
 	-- Add Elements
 	self:CreatePing()
@@ -382,6 +332,8 @@ function Module:OnEnable()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
 
-	-- HybridMinimap
-	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
+	if LibDBIcon10_TownsfolkTracker then
+		LibDBIcon10_TownsfolkTracker:DisableDrawLayer("OVERLAY")
+		LibDBIcon10_TownsfolkTracker:DisableDrawLayer("BACKGROUND")
+	end
 end

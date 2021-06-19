@@ -56,7 +56,6 @@ function Module:CreateBar2()
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarBottomLeft:SetParent(frame)
 	_G.MultiBarBottomLeft:EnableMouse(false)
-	-- _G.MultiBarBottomLeft.QuickKeybindGlow:SetTexture("")
 
 	if layout == "3x4 Boxed arrangement" then
 		for i = 1, num do

@@ -26,7 +26,6 @@ local GetSpellCharges = _G.GetSpellCharges
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellTexture = _G.GetSpellTexture
 local GetTime = _G.GetTime
-local HasLFGRestrictions = _G.HasLFGRestrictions
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -34,16 +33,12 @@ local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
-local IsLFGComplete = _G.IsLFGComplete
-local IsPartyLFG = _G.IsPartyLFG
 local LeaveParty = _G.LeaveParty
 local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local NO = _G.NO
 local RAID_BUFF_2 = _G.RAID_BUFF_2
 local RAID_BUFF_3 = _G.RAID_BUFF_3
-local RAID_CONTROL = _G.RAID_CONTROL
 local READY_CHECK = _G.READY_CHECK
-local ROLE_POLL = _G.ROLE_POLL
 local RUNES = _G.RUNES
 local SPELL_STAT4_NAME = _G.SPELL_STAT4_NAME
 local SendChatMessage = _G.SendChatMessage
@@ -430,18 +425,13 @@ function Module:RaidTool_BuffChecker(parent)
 			end
 		end
 
-		-- if not C["Misc"]["RMRune"] then
-		-- 	NoBuff[numGroups] = {}
-		-- end
-
 		if #NoBuff[1] == 0 and #NoBuff[2] == 0 and #NoBuff[3] == 0 and #NoBuff[4] == 0 and #NoBuff[5] == 0 and #NoBuff[6] == 0 then
 			sendMsg(L["All Buffs Ready"])
 		else
 			sendMsg(L["Raid Buff Checker"])
-			for i = 1, 5 do sendResult(i) end
-			-- if C["Misc"]["RMRune"] then
-			-- 	sendResult(numGroups)
-			-- end
+			for i = 1, 5 do
+				sendResult(i)
+			end
 		end
 	end
 
@@ -526,7 +516,7 @@ end
 function Module:RaidTool_CreateMenu(parent)
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetPoint("TOP", parent, "BOTTOM", 0, -6)
-	frame:SetSize(194, 70)
+	frame:SetSize(194, 38)
 	frame:CreateBorder()
 	frame:Hide()
 
@@ -586,7 +576,7 @@ function Module:RaidTool_CreateMenu(parent)
 				end
 		end},
 
-		{CONVERT_TO_RAID, function()
+		{"CONVERT_TO_RAID", function()
 				if UnitIsGroupLeader("player") and GetNumGroupMembers() <= 5 then
 					if IsInRaid() then
 						ConvertToParty()
@@ -604,50 +594,17 @@ function Module:RaidTool_CreateMenu(parent)
 	local bu = {}
 	for i, j in pairs(buttons) do
 		bu[i] = CreateFrame("Button", nil, frame)
-		bu[i]:SetSize(89, 26)
+		bu[i]:SetSize(88, 26)
 		bu[i]:SkinButton()
 		bu[i].text = K.CreateFontString(bu[i], 12, j[1], "", true)
+		bu[i].text:SetWidth(88)
+		bu[i].text:SetWordWrap(true)
 		bu[i]:SetPoint(mod(i, 2) == 0 and "TOPRIGHT" or "TOPLEFT", mod(i, 2) == 0 and -5 or 5, i > 2 and -38 or -6)
 		bu[i]:SetScript("OnClick", j[2])
 	end
 
 	parent.menu = frame
 	parent.buttons = bu
-end
-
-function Module:RaidTool_EasyMarker()
-	local menuFrame = CreateFrame("Frame", "KKUI_EasyMarking", UIParent, "UIDropDownMenuTemplate")
-	local menuList = {
-		{text = RAID_TARGET_NONE, func = function() SetRaidTarget("target", 0) end},
-		{text = K.RGBToHex(1, .92, 0)..RAID_TARGET_1.." "..ICON_LIST[1].."12|t", func = function() SetRaidTarget("target", 1) end},
-		{text = K.RGBToHex(.98, .57, 0)..RAID_TARGET_2.." "..ICON_LIST[2].."12|t", func = function() SetRaidTarget("target", 2) end},
-		{text = K.RGBToHex(.83, .22, .9)..RAID_TARGET_3.." "..ICON_LIST[3].."12|t", func = function() SetRaidTarget("target", 3) end},
-		{text = K.RGBToHex(.04, .95, 0)..RAID_TARGET_4.." "..ICON_LIST[4].."12|t", func = function() SetRaidTarget("target", 4) end},
-		{text = K.RGBToHex(.7, .82, .875)..RAID_TARGET_5.." "..ICON_LIST[5].."12|t", func = function() SetRaidTarget("target", 5) end},
-		{text = K.RGBToHex(0, .71, 1)..RAID_TARGET_6.." "..ICON_LIST[6].."12|t", func = function() SetRaidTarget("target", 6) end},
-		{text = K.RGBToHex(1, .24, .168)..RAID_TARGET_7.." "..ICON_LIST[7].."12|t", func = function() SetRaidTarget("target", 7) end},
-		{text = K.RGBToHex(.98, .98, .98)..RAID_TARGET_8.." "..ICON_LIST[8].."12|t", func = function() SetRaidTarget("target", 8) end},
-	}
-
-	WorldFrame:HookScript("OnMouseDown", function(_, btn)
-		if not C["Misc"].EasyMarking then
-			return
-		end
-
-		if btn == "LeftButton" and IsControlKeyDown() and UnitExists("mouseover") then
-			if not IsInGroup() or (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
-				local ricon = GetRaidTargetIndex("mouseover")
-				for i = 1, 8 do
-					if ricon == i then
-						menuList[i + 1].checked = true
-					else
-						menuList[i + 1].checked = false
-					end
-				end
-				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 1)
-			end
-		end
-	end)
 end
 
 function Module:RaidTool_WorldMarker()
@@ -700,6 +657,7 @@ local markerTypeToRow = {
 	[3] = 1,
 	[4] = 3,
 }
+
 function Module:RaidTool_UpdateGrid()
 	local frame = _G["KKUI_WorldMarkers"]
 	if not frame then
@@ -729,28 +687,16 @@ function Module:RaidTool_UpdateGrid()
 	frame:SetShown(showType ~= 4)
 end
 
-function Module:RaidTool_Misc()
-	-- UIWidget reanchor
-	if not UIWidgetTopCenterContainerFrame:IsMovable() then -- can be movable for some addons, eg BattleInfo
-		UIWidgetTopCenterContainerFrame:ClearAllPoints()
-		UIWidgetTopCenterContainerFrame:SetPoint("TOP", 0, -35)
-	end
-end
-
 function Module:CreateRaidUtility()
+	Module:RaidTool_WorldMarker()
+
 	if not C["Raid"].RaidUtility then
 		return
 	end
 
 	local frame = Module:RaidTool_Header()
-	-- Module:RaidTool_RoleCount(frame)
-	-- Module:RaidTool_CombatRes(frame)
+
 	Module:RaidTool_ReadyCheck(frame)
-	-- Module:RaidTool_Marker(frame)
 	Module:RaidTool_BuffChecker(frame)
 	Module:RaidTool_CreateMenu(frame)
-
-	Module:RaidTool_EasyMarker()
-	Module:RaidTool_WorldMarker()
-	--Module:RaidTool_Misc()
 end

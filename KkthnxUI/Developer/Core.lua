@@ -1,81 +1,67 @@
-local K = unpack(select(2, ...))
-local Module = K:NewModule("DevCore")
+local K, C, L = unpack(select(2, ...))
+local Module = K:GetModule("Automation")
 
-local GUI = K["GUI"]
+local _G = _G
+local string_split = _G.string.split
+local math_random = _G.math.random
 
-function Module:OnEnable()
-	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
-	gui:SetText(K.InfoColor.."KkthnxUI|r")
-	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
-	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
-	end)
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local DoEmote = _G.DoEmote
+local GetSpellInfo = _G.GetSpellInfo
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
 
-	gui:SetScript("OnClick", function()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
+-- Build Spell list (this ignores ranks)
+local AutoBuffThanksSpells = {
+    [1243] = true, -- Power Word: Fortitude
+    [1459] = true, -- Arcane Intellect
+    [19742] = true, -- Blessing Of Wisdom
+    [19834] = true, -- Blessing Of Might
+    [20217] = true, -- Blessing Of Kings
+    [467] = true, -- Thorns
+    [1126] = true, -- Mark of the Wild
+    [5697] = true, -- Unending Breath
+}
 
-		GUI:Toggle()
-		HideUIPanel(GameMenuFrame)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	end)
+local AutoBuffThanksEmotes = {
+    "THANK",
+    "FLEX",
+    "CHEER",
+}
+
+local AutoAlreadyThanked = {}
+
+function Module:SetupAutoBuffThanksAnnounce()
+    local _, event, _, _, sourceName, _, _, _, destName, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+    -- local now = GetTime()
+    -- if Module._enter and now - Module._enter < 2 then
+    --     return
+    -- end
+
+    --  -- clear expired thank cooldowns
+    --  for key,value in pairs(AutoAlreadyThanked) do
+    --     if value < now then
+    --         AutoAlreadyThanked[key] = nil
+    --     end
+    -- end
+
+    for key, value in pairs(AutoBuffThanksSpells) do
+        if spellID == key and value == true and destName == K.Name and sourceName ~= K.Name and not (UnitInParty(sourceName) or UnitInRaid(sourceName)) and event == "SPELL_CAST_SUCCESS" then
+            K.Delay(1.4, function() -- Give this more time to say emote, so we do not look like we are bots.
+                DoEmote(AutoBuffThanksEmotes[math_random(1, #AutoBuffThanksEmotes)], sourceName)
+            end)
+        end
+    end
 end
 
-do
-	if IsAddOnLoaded("Anti-Deluxe") then
-		local function FuckYou_AntiDeluxe() -- Dont let others hook and change this
-			local buffs, i = { }, 1
-			local buff = UnitBuff("target", i)
-			local check = ""
-			local setEmotes = {"CHEER", "HUG", "CLAP", "CONGRATS", "GLAD"} -- make it interesting
+function Module:CreateAutoBuffThanksAnnounce()
+    if IsAddOnLoaded("TFTB") or C["Automation"].BuffThanks ~= true then
+        return
+    end
 
-			while buff do
-				buffs[#buffs + 1] = buff
-				i = i + 1
-				buff = UnitBuff("target", i)
-			end
-
-			buffs = table.concat(buffs, ", ")
-			if string.match(buffs, "Reawakened") then
-				Check = "False"
-				DeluxeAndy = GetUnitName("target")
-
-				if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
-					return
-				end
-
-				for _, v in pairs(MountOwners) do
-					if v == DeluxeAndy then
-						Check = "True"
-						break
-					end
-				end
-
-				if Check == "False" then -- No Need to keep emoting the same person
-					DoEmote(setEmotes[math.random(1, #setEmotes)])
-					table.insert(MountOwners, DeluxeAndy)
-				end
-			end
-		end
-
-		BuffCheck = FuckYou_AntiDeluxe -- Hook this shitty addon to fix the shitty choices this dev has made
-	end
+    K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.SetupAutoBuffThanksAnnounce)
 end
 
--- do
--- 	local SpitterEmotes = {
--- 		"VIOLIN", "CHUCKLE", "FLEX", "PITY", "SLAP", "BONK"
--- 	}
-
--- 	local function EmoteOnSpitters(_, _, msg, spitter)
--- 		if string.find(msg, "spits on you") then
--- 			DoEmote(SpitterEmotes[math.random(1, #SpitterEmotes)], spitter)
--- 		end
--- 	end
-
--- 	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", EmoteOnSpitters)
--- 	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", EmoteOnSpitters)
--- end
+Module:CreateAutoBuffThanksAnnounce()
