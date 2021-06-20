@@ -102,10 +102,6 @@ function Module:ItemBorderSetColor(slotFrame, r, g, b)
 	if slotFrame.colorBG then
 		slotFrame.colorBG.KKUI_Border:SetVertexColor(r, g, b)
 	end
-
-	if slotFrame.bg then
-		slotFrame.bg.KKUI_Border:SetVertexColor(r, g, b)
-	end
 end
 
 local pending = {}

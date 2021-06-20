@@ -337,14 +337,17 @@ local function ToggleStatPanel(texture)
 end
 
 function M:CharacterStatePanel()
-	local statPanel = CreateFrame("Frame", "KKUI_StatePanel", PaperDollFrame)
-	statPanel:SetSize(200, 418)
-	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -16)
-	statPanel:CreateBorder()
+	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "BasicFrameTemplateWithInset")
+	statPanel:SetSize(204, 422)
+	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -14)
 	M.StatPanel = statPanel
+
+	K.CreateFontString(statPanel, 12, K.Name.." Stats", "", false, "TOP", 0, -6)
 
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetAllPoints()
+	scrollFrame:SetPoint("TOPLEFT", statPanel, "TOPLEFT", -0, -28)
+    scrollFrame:SetPoint("BOTTOMRIGHT", statPanel, "BOTTOMRIGHT", -0, 10)
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
 
@@ -388,6 +391,11 @@ function M:CharacterStatePanel()
 	local bu = CreateFrame("Button", nil, PaperDollFrame)
 	bu:SetPoint("RIGHT", CharacterFrameCloseButton, "LEFT", 2, 0)
 	K.ReskinArrow(bu, "right", false)
+
+	statPanel.CloseButton:SetScript("OnClick", function()
+		ExpandStat = not ExpandStat
+		ToggleStatPanel(bu.__texture)
+	end)
 
 	bu:SetScript("OnClick", function(self)
 		ExpandStat = not ExpandStat
