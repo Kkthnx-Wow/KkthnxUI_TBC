@@ -12,7 +12,9 @@ local function IconBgOnUpdate(self)
 end
 
 local function UpdateIconTexCoord(icon)
-	if icon.isCutting then return end
+	if icon.isCutting then
+		return
+	end
 	icon.isCutting = true
 
 	local width, height = icon:GetSize()
@@ -20,7 +22,7 @@ local function UpdateIconTexCoord(icon)
 		local left, right, top, bottom = unpack(K.TexCoords) -- normal icon
 		local ratio = width/height
 		if ratio > 1 then -- fat icon
-			local offset = (1 - 1/ratio) / 2
+			local offset = (1 - 1 / ratio) / 2
 			top = top + offset
 			bottom = bottom - offset
 		elseif ratio < 1 then -- thin icon
@@ -39,7 +41,7 @@ local function Skin_WeakAuras(f, fType)
 		if not f.styled then
 			UpdateIconTexCoord(f.icon)
 			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
-			f.bg = CreateFrame("Frame", nil, f)
+			f.bg = f.bg or CreateFrame("Frame", nil, f)
 			f.bg:SetAllPoints(f)
 			f.bg:SetFrameLevel(f:GetFrameLevel())
 			f.bg:CreateBorder()
@@ -50,7 +52,7 @@ local function Skin_WeakAuras(f, fType)
 		end
 	elseif fType == "aurabar" then
 		if not f.styled then
-			f.bg = CreateFrame("Frame", nil, f.bar)
+			f.bg = f.bg or CreateFrame("Frame", nil, f.bar)
 			f.bg:SetAllPoints(f.bar)
 			f.bg:SetFrameLevel(f.bar:GetFrameLevel())
 			f.bg:CreateBorder()

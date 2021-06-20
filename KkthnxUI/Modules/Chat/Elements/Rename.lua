@@ -46,8 +46,8 @@ function Module:SetupChannelNames(text, ...)
 	end
 
 	if C["Chat"].OldChatNames then
-		text = string_gsub(text, "|h%[(%d+)%. 大脚世界频道%]|h", "|h%[%1%. 世界%]|h")
-		text = string_gsub(text, "|h%[(%d+)%. 大腳世界頻道%]|h", "|h%[%1%. 世界%]|h")
+		text = string_gsub(text, "|h%[(%d+)%. World Channel%]|h", "|h%[%1%. world%]|h")
+		text = string_gsub(text, "|h%[(%d+)%. World Channel%]|h", "|h%[%1%. world%]|h")
 		return self.oldAddMsg(self, text, r, g, b)
 	else
 		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
@@ -94,10 +94,6 @@ function Module:CreateChatRename()
 	_G.CHAT_PARTY_GET = "|Hchannel:PARTY|h[P]|h %s "
 	_G.CHAT_PARTY_LEADER_GET = "|Hchannel:PARTY|h[PL]|h %s "
 	_G.CHAT_PARTY_GUIDE_GET = "|Hchannel:PARTY|h[PG]|h %s "
-
-	-- Instance
-	_G.CHAT_INSTANCE_CHAT_GET = "|Hchannel:INSTANCE|h[I]|h %s "
-	_G.CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:INSTANCE|h[IL]|h %s "
 
 	-- Flags
 	_G.CHAT_FLAG_AFK = "[AFK] "

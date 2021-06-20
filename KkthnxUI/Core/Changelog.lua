@@ -15,33 +15,7 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added /vol # or /volume # command to adjust sound on the fly",
-	"Added atlasloot/lfg bulletin board skins",
-	"Added blacklist to autosell internally controlled at the moment",
-	"Added counter spitters module (Fuck you spitters <3)",
-	"Added hacky mouseover for pet happniess icon on pet frame",
-	"Added hunter aspect bar",
-	"Added hunter pet experience bar",
-	"Added new fps/ms icon textures",
-	"Added reminder of hunter pets happniess status",
-	"Added the ability to zoom in/out in dressup frame",
-	"Fixed an issue with grouploot module",
-	"Fixed auras/hots being outside raid frame",
-	"Fixed auto accept/turnin questing module filters for ignorenpcs",
-	"Fixed bags not following custom junk/favorite rules",
-	"Fixed libs conflicting with other addon libs",
-	"Fixed minimap buttons so you can click them without disappearing",
-	"Updated actionbar style module code",
-	"Updated and cleaned up minimap code",
-	"Updated and rewrote auto open module code",
-	"Updated and rewrote micromenu bar",
-	"Updated cooldowns module code",
-	"Updated durability position in character frame",
-	"Updated keybind module code",
-	"Updated raid utility module",
-	"Updated sell/vendor price module code",
-	"Various locale cleanups",
-	"Various media texture cleanups",
+	"Added weakauras skin back",
 }
 
 local changelogFrame

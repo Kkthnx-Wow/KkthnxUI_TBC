@@ -147,13 +147,17 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 end
 
 function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, lineID, guid)
-	if lineID ~= prevLineID then
+	if lineID == 0 or lineID ~= prevLineID then
 		prevLineID = lineID
 
 		local name = Ambiguate(author, "none")
 		filterResult = Module:GetFilterResult(event, msg, name, flag, guid)
-		if filterResult then
+		if filterResult and filterResult ~= 0 then
 			C.BadBoys[name] = (C.BadBoys[name] or 0) + 1
+		end
+
+		if filterResult == 0 then
+			filterResult = true
 		end
 	end
 
