@@ -15,21 +15,34 @@ local UnitName = _G.UnitName
 
 local lastTime = 0
 local itemList = {
-	[185709] = true,
-	[226241] = true,
-	[256230] = true,
-	[259409] = true,
-	[259410] = true,
-	[265116] = true,
-	[276972] = true,
-	[286050] = true,
-	[307157] = true,
-	[308458] = true,
-	[308462] = true,
-	[324029] = true,
-	[345130] = true,
-	[54710] = true,
-	[67826] = true,
+	[13379] = true, -- Piccolo of the Flaming Fire
+	[17512] = true, -- Piccolo of the Flaming Fire
+	[18232] = true, -- Field Repair Bot 74A
+	[18400] = true, -- Piccolo of the Flaming Fire
+	[22700] = true, -- Field Repair Bot 74A
+	[29893] = true, -- Ritual of Souls
+	[43987] = true, -- Ritual of Refreshment
+	[44389] = true, -- Field Repair Bot 110G
+	[49844] = true, -- Direbrew's Remote
+	[51508] = true, -- Party G.R.E.N.A.D.E.
+	[51510] = true, -- Party G.R.E.N.A.D.E.
+	[698] = true, -- Ritual of Summoning
+	-- Alliance
+	[10059] = true, -- Stormwind
+	[11416] = true, -- Ironforge
+	[11419] = true, -- Darnassus
+	[32266] = true, -- Exodar
+	[33691] = true, -- Shattrath
+	[49360] = true, -- Theramore
+	-- Horde
+	[11417] = true, -- Orgrimmar
+	[11418] = true, -- Undercity
+	[11420] = true, -- Thunder Bluff
+	[32267] = true, -- Silvermoon
+	[35717] = true, -- Shattrath
+	[49361] = true, -- Stonard
+	-- Alliance/Horde
+	[28148] = true, -- Karazhan
 }
 
 function Module:ItemAlert_Update(unit, _, spellID)

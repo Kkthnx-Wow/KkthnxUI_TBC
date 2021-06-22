@@ -47,7 +47,7 @@ function Module:OnEnable()
 
 	-- Add Skins
 	self:CreateQuestTracker()
-	self:CreateTradeSkillSkin()
+	self:CreateEnhancedTradeSkill()
 	self:ReskinAtlasLoot()
 	self:ReskinBugSack()
 	self:ReskinDeadlyBossMods()

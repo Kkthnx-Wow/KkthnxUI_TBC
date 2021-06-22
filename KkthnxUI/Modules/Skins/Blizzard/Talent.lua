@@ -21,5 +21,4 @@ C.themes["Blizzard_TalentUI"] = function()
 			rank:SetShadowOffset(0, 0)
 		end
 	end
-
 end

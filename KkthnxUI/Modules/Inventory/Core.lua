@@ -1134,7 +1134,7 @@ function Module:OnEnable()
 				buttons[9] = Module.CreateDeleteButton(self)
 			end
 		elseif name == "Bank" then
-			Module.CreateBagBar(self, settings, NUM_BANKBAGSLOTS)
+			Module.CreateBagBar(self, settings, NUM_BANKBAGSLOTS - 1) -- We only have 6... NUM_BANKBAGSLOTS returns 7?
 			buttons[2] = Module.CreateBagToggle(self)
 			buttons[3] = Module.CreateSortButton(self, name)
 		end

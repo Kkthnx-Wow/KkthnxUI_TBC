@@ -2,50 +2,106 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Announcements")
 
 local _G = _G
-local string_match = _G.string.match
-local string_format = _G.string_format
+local string_format = _G.string.format
 
-local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local GetSpellLink = _G.GetSpellLink
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
-local SendChatMessage = _G.SendChatMessage
-local UNKNOWN = _G.UNKNOWN
-local UnitGUID = _G.UnitGUID
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local AURA_TYPE_BUFF = _G.AURA_TYPE_BUFF
 
-local INTERRUPT_MSG = INTERRUPTED.." %s's [%s]!"
+local function msgChannel()
+	local inInstance, inRaid = IsInRaid(), IsInInstance()
+	local Value = C["Announcements"].InterruptChannel.Value
+	if Value == 1 then
+		return "PARTY"
+	elseif Value == 2 then
+		return inRaid and "RAID" or "PARTY"
+	elseif Value == 3 and inRaid then
+		return "RAID"
+	elseif Value == 4 and inInstance then
+		return "SAY"
+	elseif Value == 5 and inInstance then
+		return "YELL"
+	elseif Value == 6 then
+		return "EMOTE"
+	end
+end
 
-local function SetupInterruptAnnounce()
-	local inGroup, inRaid = IsInGroup(), IsInRaid()
-	if not inGroup then -- not in group, exit.
+local infoType = {
+	["SPELL_AURA_BROKEN_SPELL"] = L["BrokenSpell"],
+	["SPELL_DISPEL"] = L["Dispel"],
+	["SPELL_INTERRUPT"] = L["Interrupt"],
+	["SPELL_STOLEN"] = L["Steal"],
+}
+
+local blackList = {
+	[122] = true, -- Frost Nova
+	[1776] = true, -- Gouge
+	[1784] = true, -- Stealth
+	[31661] = true, -- Dragon's Breath
+	[33395] = true, -- Freeze
+	[5246] = true, -- Intimidating Shout
+	[8122] = true, -- Psychic Scream
+	[99] = true, -- Demoralizing Roar
+}
+
+function Module:IsAllyPet(sourceFlags)
+	if K.IsMyPet(sourceFlags) or (not C["Announcements"].OwnInterrupt and (sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags)) then
+		return true
+	end
+end
+
+function Module:InterruptAlert_Update(...)
+	if C["Announcements"].AlertInInstance and (not IsInInstance()) then
 		return
 	end
 
-	local _, event, _, sourceGUID, _, _, _, _, destName, _, _, _, _, _, _, spellName = CombatLogGetCurrentEventInfo()
-	if not (string_match(event, "_INTERRUPT") and (sourceGUID == K.GUID or sourceGUID == UnitGUID("pet"))) then -- No announce-able interrupt from player or pet, exit.
+	local _, eventType, _, sourceGUID, sourceName, sourceFlags, _, _, destName, _, _, spellID, _, _, extraskillID, _, _, auraType = ...
+	if not sourceGUID or sourceName == destName then
 		return
 	end
 
-	local interruptAnnounce, msg = C["Announcements"].Interrupt.Value, string_format(INTERRUPT_MSG, destName or UNKNOWN, spellName or UNKNOWN)
-	if interruptAnnounce == "PARTY" then
-		SendChatMessage(msg, "PARTY")
-	elseif interruptAnnounce == "RAID" then
-		SendChatMessage(msg, (inRaid and "RAID" or "PARTY"))
-	elseif interruptAnnounce == "RAID_ONLY" and inRaid then
-		SendChatMessage(msg, "RAID")
-	elseif interruptAnnounce == "SAY" and IsInInstance() then
-		SendChatMessage(msg, "SAY")
-	elseif interruptAnnounce == "YELL" and IsInInstance() then
-		SendChatMessage(msg, "YELL")
-	elseif interruptAnnounce == "EMOTE" then
-		SendChatMessage(msg, "EMOTE")
+	if UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
+		local infoText = infoType[eventType]
+		if infoText then
+			if infoText == L["BrokenSpell"] then
+				if not C["Announcements"].BrokenSpell then
+					return
+				end
+
+				if auraType and auraType == AURA_TYPE_BUFF or blackList[spellID] then
+					return
+				end
+				SendChatMessage(string_format(infoText, sourceName..GetSpellLink(extraskillID), destName..GetSpellLink(spellID)), msgChannel())
+			else
+				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
+					return
+				end
+				SendChatMessage(string_format(infoText, sourceName..GetSpellLink(spellID), destName..GetSpellLink(extraskillID)), msgChannel())
+			end
+		end
+	end
+end
+
+function Module:InterruptAlert_CheckGroup()
+	if IsInGroup() then
+		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
+	else
+		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	end
 end
 
 function Module:CreateInterruptAnnounce()
-	if C["Announcements"].Interrupt.Value == "NONE" then
-		return
+	if C["Announcements"].Interrupt then
+		self:InterruptAlert_CheckGroup()
+		K:RegisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
+		K:RegisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
+	else
+		K:UnregisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	end
-
-	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", SetupInterruptAnnounce)
 end

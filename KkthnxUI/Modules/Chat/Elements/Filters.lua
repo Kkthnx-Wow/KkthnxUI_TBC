@@ -68,15 +68,16 @@ end
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
 		return
-	elseif guid and C["Chat"].AllowFriends and (IsGuildMember(guid) or BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
+	elseif guid and (IsGuildMember(guid) or BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
 		return
 	end
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
+		Module.MuteThisTime = true
 		return true
 	end
 
-	if C.BadBoys[name] and C.BadBoys[name] >= 5 then
+	if C["Chat"].BlockSpammer and C.BadBoys[name] and C.BadBoys[name] >= 5 then
 		return true
 	end
 
@@ -131,11 +132,12 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		msgTable[2][i] = filterMsg:byte(i)
 	end
 
+	local chatLines = chatLines
 	local chatLinesSize = #chatLines
 	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
+		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
 			table_remove(chatLines, i)
 			return true
 		end
@@ -147,7 +149,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 end
 
 function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, lineID, guid)
-	if lineID == 0 or lineID ~= prevLineID then
+	if lineID ~= prevLineID then
 		prevLineID = lineID
 
 		local name = Ambiguate(author, "none")
@@ -191,6 +193,8 @@ function Module:UpdateAddOnBlocker(event, msg, author)
 				Module:ToggleChatBubble()
 			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
 				Module:ToggleChatBubble(true)
+			elseif event == "CHAT_MSG_WHISPER" then
+				Module.MuteThisTime = true
 			end
 			return true
 		end

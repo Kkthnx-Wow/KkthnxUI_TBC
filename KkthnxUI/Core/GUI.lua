@@ -27,8 +27,8 @@ end
 local Font = C["Media"].Fonts.KkthnxUIFont
 local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
 -- local Blank = C["Media"].Textures.BlankTexture
-local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
-local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
+local ArrowUp = C["Media"].Textures.ArrowTexture
+local ArrowDown = C["Media"].Textures.ArrowTexture
 
 local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t".."|CFFC41F3B"
 local DemonHunterIconColor = "".."|CFFA330C9"
@@ -1134,15 +1134,16 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	Dropdown.Button.ArrowDown = Dropdown.ArrowAnchor:CreateTexture(nil, "OVERLAY")
 	Dropdown.Button.ArrowDown:SetSize(16, 16)
-	Dropdown.Button.ArrowDown:SetPoint("CENTER", Dropdown.ArrowAnchor, 0, -3)
+	Dropdown.Button.ArrowDown:SetPoint("CENTER", Dropdown.ArrowAnchor, 0, 0)
 	Dropdown.Button.ArrowDown:SetTexture(ArrowDown)
-	--Dropdown.Button.ArrowDown:SetVertexColor(R, G, B)
+	Dropdown.Button.ArrowDown:SetRotation(rad(180))
+	Dropdown.Button.ArrowDown:SetVertexColor(0.85, 0.77, 0.36)
 
 	Dropdown.Button.ArrowUp = Dropdown.ArrowAnchor:CreateTexture(nil, "OVERLAY")
 	Dropdown.Button.ArrowUp:SetSize(16, 16)
-	Dropdown.Button.ArrowUp:SetPoint("CENTER", Dropdown.ArrowAnchor, 0, 5)
+	Dropdown.Button.ArrowUp:SetPoint("CENTER", Dropdown.ArrowAnchor, 0, 0)
 	Dropdown.Button.ArrowUp:SetTexture(ArrowUp)
-	--Dropdown.Button.ArrowUp:SetVertexColor(R, G, B)
+	Dropdown.Button.ArrowUp:SetVertexColor(0.85, 0.77, 0.36)
 	Dropdown.Button.ArrowUp:SetAlpha(0)
 
 	Dropdown.Button.ArrowDown.Fade = CreateAnimationGroup(Dropdown.Button.ArrowDown):CreateAnimation("Fade")

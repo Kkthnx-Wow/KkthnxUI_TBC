@@ -47,26 +47,29 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
+	["AlertInInstance"] = true,
+	["BrokenSpell"] = false,
 	["HealthAlert"] = false,
+	["Interrupt"] = false,
 	["ItemAlert"] = false,
 	["OnlyCompleteRing"] = false,
+	["OwnInterrupt"] = true,
 	["PullCountdown"] = true,
 	["PvPEmote"] = false,
 	["QuestNotifier"] = false,
 	["QuestProgress"] = false,
 	["ResetInstance"] = true,
 	["SaySapped"] = false,
-	["Interrupt"] = {
+	["InterruptChannel"] = {
 		["Options"] = {
-			["Disabled"] = "NONE",
-			["Emote"] = "EMOTE",
-			["Party / Raid"] = "RAID",
-			["Party Only"] = "PARTY",
-			["Raid Only"] = "RAID_ONLY",
-			["Say"] = "SAY",
-			["Yell"] = "YELL",
+			[EMOTE] = 6,
+			[PARTY.." / "..RAID] = 2,
+			[PARTY] = 1,
+			[RAID] = 3,
+			[SAY] = 4,
+			[YELL] = 5,
 		},
-		["Value"] = "RAID"
+		["Value"] = 2
 	},
 }
 
@@ -155,7 +158,7 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	["AllowFriends"] = true,
+	["BlockSpammer"] = true,
 	["Background"] = true,
 	["BlockAddonAlert"] = false,
 	["BlockStranger"] = false,

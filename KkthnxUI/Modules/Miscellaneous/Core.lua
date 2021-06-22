@@ -67,17 +67,21 @@ function Module:CreateBossEmote()
 	end
 end
 
-local function CreateErrorFrameToggle(event)
-	if not C["General"].NoErrorFrame then
-		return
-	end
-
+local function SetupErrorFrameToggle(event)
 	if event == "PLAYER_REGEN_DISABLED" then
 		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", CreateErrorFrameToggle)
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", SetupErrorFrameToggle)
 	else
 		_G.UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
-		K:UnregisterEvent(event, CreateErrorFrameToggle)
+		K:UnregisterEvent(event, SetupErrorFrameToggle)
+	end
+end
+
+function Module:CreateErrorFrameToggle()
+	if C["General"].NoErrorFrame then
+		K:RegisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
+	else
+		K:UnregisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
 	end
 end
 
@@ -304,107 +308,105 @@ function Module:CreateEnhanceAuctionDressup()
 	end)
 end
 
-do
-	-- Sourced: https://www.curseforge.com/wow/addons/questframefixer
-	if not IsAddOnLoaded("QuestFrameFixer") then
-		local ACTIVE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\ActiveQuestIcon")
-		local AVAILABLE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\AvailableQuestIcon")
+-- Sourced: https://www.curseforge.com/wow/addons/questframefixer
+if not IsAddOnLoaded("QuestFrameFixer") then
+	local ACTIVE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\ActiveQuestIcon")
+	local AVAILABLE_QUEST_ICON_FILEID = GetFileIDFromPath("Interface\\GossipFrame\\AvailableQuestIcon")
 
-		local titleLines = {}
-		local questIconTextures = {}
+	local titleLines = {}
+	local questIconTextures = {}
 
-		for i = 1, MAX_NUM_QUESTS do
-			local titleLine = _G["QuestTitleButton" .. i]
-			table_insert(titleLines, titleLine)
-			table_insert(questIconTextures, _G[titleLine:GetName() .. "QuestIcon"])
-		end
-
-		QuestFrameGreetingPanel:HookScript("OnShow", function()
-			for i, titleLine in ipairs(titleLines) do
-				if (titleLine:IsVisible()) then
-					local bulletPointTexture = questIconTextures[i]
-					if (titleLine.isActive == 1) then
-						bulletPointTexture:SetTexture(ACTIVE_QUEST_ICON_FILEID)
-					else
-						bulletPointTexture:SetTexture(AVAILABLE_QUEST_ICON_FILEID)
-					end
-				end
-			end
-		end)
+	for i = 1, MAX_NUM_QUESTS do
+		local titleLine = _G["QuestTitleButton" .. i]
+		table_insert(titleLines, titleLine)
+		table_insert(questIconTextures, _G[titleLine:GetName() .. "QuestIcon"])
 	end
 
-	-- Sourced: https://www.curseforge.com/wow/addons/quest-icon-desaturation
-	if not IsAddOnLoaded("QuestIconDesaturation") then
-		local escapes = {
-			["|c%x%x%x%x%x%x%x%x"] = "", -- color start
-			["|r"] = "" -- color end
-		}
-
-		local function unescape(str)
-			for k, v in pairs(escapes) do
-				str = string_gsub(str, k, v)
-			end
-
-			return str
-		end
-
-		local completedActiveQuests = {}
-		local function getCompletedQuestsInLog()
-			table_wipe(completedActiveQuests)
-			local numEntries = GetNumQuestLogEntries()
-			local questLogTitleText, isComplete, questId, _
-			for i = 1, numEntries, 1 do
-				_, _, _, _, _, isComplete, _, questId = GetQuestLogTitle(i)
-				if (isComplete == 1 or IsQuestComplete(questId)) then
-					questLogTitleText = C_QuestLog_GetQuestInfo(questId)
-					completedActiveQuests[questLogTitleText] = true
-				end
-			end
-
-			return completedActiveQuests
-		end
-
-		local function setDesaturation(maxLines, lineMap, iconMap, activePred)
-			local completedQuests = getCompletedQuestsInLog()
-			for i = 1, maxLines do
-				local line = lineMap[i]
-				local icon = iconMap[i]
-				icon:SetDesaturated(nil)
-				if (line:IsVisible() and activePred(line)) then
-					local questName = unescape(line:GetText())
-					if (not completedQuests[questName]) then
-						icon:SetDesaturated(1)
-					end
+	QuestFrameGreetingPanel:HookScript("OnShow", function()
+		for i, titleLine in ipairs(titleLines) do
+			if (titleLine:IsVisible()) then
+				local bulletPointTexture = questIconTextures[i]
+				if (titleLine.isActive == 1) then
+					bulletPointTexture:SetTexture(ACTIVE_QUEST_ICON_FILEID)
+				else
+					bulletPointTexture:SetTexture(AVAILABLE_QUEST_ICON_FILEID)
 				end
 			end
 		end
+	end)
+end
 
-		local function getLineAndIconMaps(maxLines, titleIdent, iconIdent)
-			local lines = {}
-			local icons = {}
-			for i = 1, maxLines do
-				local titleLine = _G[titleIdent .. i]
-				table_insert(lines, titleLine)
-				table_insert(icons, _G[titleLine:GetName() .. iconIdent])
-			end
+-- Sourced: https://www.curseforge.com/wow/addons/quest-icon-desaturation
+if not IsAddOnLoaded("QuestIconDesaturation") then
+	local escapes = {
+		["|c%x%x%x%x%x%x%x%x"] = "", -- color start
+		["|r"] = "" -- color end
+	}
 
-			return lines, icons
+	local function unescape(str)
+		for k, v in pairs(escapes) do
+			str = string_gsub(str, k, v)
 		end
 
-		local questFrameTitleLines, questFrameIconTextures = getLineAndIconMaps(MAX_NUM_QUESTS, "QuestTitleButton", "QuestIcon")
-		QuestFrameGreetingPanel:HookScript("OnShow", function()
-			setDesaturation(MAX_NUM_QUESTS, questFrameTitleLines, questFrameIconTextures, function(line)
-				return line.isActive == 1
-			end)
-		end)
-
-		local gossipFrameTitleLines, gossipFrameIconTextures = getLineAndIconMaps(NUMGOSSIPBUTTONS, "GossipTitleButton", "GossipIcon")
-		hooksecurefunc("GossipFrameUpdate", function()
-			setDesaturation(NUMGOSSIPBUTTONS, gossipFrameTitleLines, gossipFrameIconTextures, function(line)
-				return line.type == "Active"
-			end)
-		end)
+		return str
 	end
+
+	local completedActiveQuests = {}
+	local function getCompletedQuestsInLog()
+		table_wipe(completedActiveQuests)
+		local numEntries = GetNumQuestLogEntries()
+		local questLogTitleText, isComplete, questId, _
+		for i = 1, numEntries, 1 do
+			_, _, _, _, _, isComplete, _, questId = GetQuestLogTitle(i)
+			if (isComplete == 1 or IsQuestComplete(questId)) then
+				questLogTitleText = C_QuestLog_GetQuestInfo(questId)
+				completedActiveQuests[questLogTitleText] = true
+			end
+		end
+
+		return completedActiveQuests
+	end
+
+	local function setDesaturation(maxLines, lineMap, iconMap, activePred)
+		local completedQuests = getCompletedQuestsInLog()
+		for i = 1, maxLines do
+			local line = lineMap[i]
+			local icon = iconMap[i]
+			icon:SetDesaturated(nil)
+			if (line:IsVisible() and activePred(line)) then
+				local questName = unescape(line:GetText())
+				if (not completedQuests[questName]) then
+					icon:SetDesaturated(1)
+				end
+			end
+		end
+	end
+
+	local function getLineAndIconMaps(maxLines, titleIdent, iconIdent)
+		local lines = {}
+		local icons = {}
+		for i = 1, maxLines do
+			local titleLine = _G[titleIdent .. i]
+			table_insert(lines, titleLine)
+			table_insert(icons, _G[titleLine:GetName() .. iconIdent])
+		end
+
+		return lines, icons
+	end
+
+	local questFrameTitleLines, questFrameIconTextures = getLineAndIconMaps(MAX_NUM_QUESTS, "QuestTitleButton", "QuestIcon")
+	QuestFrameGreetingPanel:HookScript("OnShow", function()
+		setDesaturation(MAX_NUM_QUESTS, questFrameTitleLines, questFrameIconTextures, function(line)
+			return line.isActive == 1
+		end)
+	end)
+
+	local gossipFrameTitleLines, gossipFrameIconTextures = getLineAndIconMaps(NUMGOSSIPBUTTONS, "GossipTitleButton", "GossipIcon")
+	hooksecurefunc("GossipFrameUpdate", function()
+		setDesaturation(NUMGOSSIPBUTTONS, gossipFrameTitleLines, gossipFrameIconTextures, function(line)
+			return line.type == "Active"
+		end)
+	end)
 end
 
 function Module:CreateGUIGameMenuButton()
@@ -428,64 +430,75 @@ function Module:CreateGUIGameMenuButton()
 	end)
 end
 
-do
-	if IsAddOnLoaded("Anti-Deluxe") then
-		local function FuckYou_AntiDeluxe() -- Dont let others hook and change this
-			local buffs, i = { }, 1
-			local buff = UnitBuff("target", i)
-			local check = ""
-			local setEmotes = {"CHEER", "HUG", "CLAP", "CONGRATS", "GLAD"} -- make it interesting
+if IsAddOnLoaded("Anti-Deluxe") then
+	local function FuckYou_AntiDeluxe() -- Dont let others hook and change this
+		local buffs, i = { }, 1
+		local buff = UnitBuff("target", i)
+		local check = ""
+		local setEmotes = {"CHEER", "HUG", "CLAP", "CONGRATS", "GLAD"} -- make it interesting
 
-			while buff do
-				buffs[#buffs + 1] = buff
-				i = i + 1
-				buff = UnitBuff("target", i)
-			end
-
-			buffs = table.concat(buffs, ", ")
-			if string.match(buffs, "Reawakened") then
-				Check = "False"
-				DeluxeAndy = GetUnitName("target")
-
-				if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
-					return
-				end
-
-				for _, v in pairs(MountOwners) do
-					if v == DeluxeAndy then
-						Check = "True"
-						break
-					end
-				end
-
-				if Check == "False" then -- No Need to keep emoting the same person
-					DoEmote(setEmotes[math.random(1, #setEmotes)])
-					table.insert(MountOwners, DeluxeAndy)
-				end
-			end
+		while buff do
+			buffs[#buffs + 1] = buff
+			i = i + 1
+			buff = UnitBuff("target", i)
 		end
 
-		BuffCheck = FuckYou_AntiDeluxe -- Hook this shitty addon to fix the shitty choices this dev has made
-	end
-end
+		buffs = table.concat(buffs, ", ")
+		if string.match(buffs, "Reawakened") then
+			Check = "False"
+			DeluxeAndy = GetUnitName("target")
 
-local function SetupAutoTrackRep(_, messagetype)
-	if not C["DataBars"].AutoTrackReputation then
-		return
-	end
+			if DeluxeAndy == K.Name then -- Dont cheer yourself -.-
+				return
+			end
 
-	if messagetype == "FACTION" then
-		local faction = GetCurrentCombatTextEventInfo()
-		if faction ~= "Guild" and faction ~= GetWatchedFactionInfo() then
-			ExpandAllFactionHeaders()
-
-			for i = 1, GetNumFactions() do
-				if faction == GetFactionInfo(i) then
-					SetWatchedFactionIndex(i)
+			for _, v in pairs(MountOwners) do
+				if v == DeluxeAndy then
+					Check = "True"
 					break
 				end
 			end
+
+			if Check == "False" then -- No Need to keep emoting the same person
+				DoEmote(setEmotes[math.random(1, #setEmotes)])
+				table.insert(MountOwners, DeluxeAndy)
+			end
 		end
+	end
+
+	BuffCheck = FuckYou_AntiDeluxe -- Hook this shitty addon to fix the shitty choices this dev has made
+end
+
+local increased	= gsub(gsub(FACTION_STANDING_INCREASED, "(%%s)", "(.+)"), "(%%d)", "(.+)")
+local decreased	= gsub(gsub(FACTION_STANDING_DECREASED, "(%%s)", "(.+)"), "(%%d)", "(.+)")
+local changed = gsub(gsub(FACTION_STANDING_CHANGED, "(%%s)", "(.+)"), "(%%d)", "(.+)")
+local function SetupAutoTrackRep(_, messagetype)
+	local startPos, _, faction = string.find(messagetype, increased)
+	if not startPos then
+		startPos, _, faction = string.find(messagetype, decreased)
+		if not startPos then
+			_, _, faction = string.find(messagetype, changed)
+		end
+	end
+
+	if faction and faction ~= GetWatchedFactionInfo() then
+		for factionIndex = 1, GetNumFactions() do
+			local name = GetFactionInfo(factionIndex)
+			if name == faction then
+				if not IsFactionInactive(factionIndex) then
+					SetWatchedFactionIndex(factionIndex)
+				end
+				break
+			end
+		end
+	end
+end
+
+function Module:CreateAutoTrackRep()
+	if C["DataBars"].AutoTrackReputation then
+		K:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", SetupAutoTrackRep)
+	else
+		K:UnregisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", SetupAutoTrackRep)
 	end
 end
 
@@ -534,11 +547,13 @@ end
 function Module:OnEnable()
 	self:CharacterStatePanel()
 	self:CreateAFKCam()
+	self:CreateAutoTrackRep()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossEmote()
 	self:CreateDurabilityFrameMove()
 	self:CreateEnhanceAuctionDressup()
 	self:CreateEnhanceNormalDressup()
+	self:CreateErrorFrameToggle()
 	self:CreateErrorsFrame()
 	self:CreateGUIGameMenuButton()
 	self:CreateHelmCloakToggle()
@@ -554,9 +569,6 @@ function Module:OnEnable()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
-
-	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
-	K:RegisterEvent("COMBAT_TEXT_UPDATE", SetupAutoTrackRep)
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then

@@ -122,7 +122,7 @@ function Module:TradeTabs_Update()
 	end
 end
 
-function Module:TradeTabs_Create(spellID)
+function Module:TradeTabs_Create(spellID, tradeName)
 	local name, _, texture = GetSpellInfo(spellID)
 	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
@@ -137,7 +137,9 @@ function Module:TradeTabs_Create(spellID)
 
 	local cover = CreateFrame("Frame", nil, tab)
 	cover:SetAllPoints()
-	cover:EnableMouse(true)
+	if tradeName ~= "Enchanting" then -- clickthru on enchant
+		cover:EnableMouse(true)
+	end
 	tab.cover = cover
 
 	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -33, -70 - (index - 1) * 45)
@@ -158,7 +160,7 @@ function Module:TradeTabs_OnLoad()
 			hasCooking = true
 		end
 
-		self:TradeTabs_Create(spellID)
+		self:TradeTabs_Create(spellID, tradeName)
 	end
 
 	if hasCooking then
@@ -168,6 +170,8 @@ function Module:TradeTabs_OnLoad()
 	Module:TradeTabs_Update()
 	K:RegisterEvent("TRADE_SKILL_SHOW", Module.TradeTabs_Update)
 	K:RegisterEvent("TRADE_SKILL_CLOSE", Module.TradeTabs_Update)
+	K:RegisterEvent("CRAFT_SHOW", Module.TradeTabs_Update)
+	K:RegisterEvent("CRAFT_CLOSE", Module.TradeTabs_Update)
 	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.TradeTabs_Update)
 end
 

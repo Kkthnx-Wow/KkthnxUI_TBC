@@ -79,7 +79,7 @@ function Module:CreateItemString(frame, strType)
 	end
 
 	for index, slot in pairs(inspectSlots) do
-		if index ~= 4 then
+		--if index ~= 4 then -- need color border for some shirts
 			local slotFrame = _G[strType..slot.."Slot"]
 			slotFrame.iLvlText = slotFrame.iLvlText or K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.iLvlText:ClearAllPoints()
@@ -92,7 +92,7 @@ function Module:CreateItemString(frame, strType)
 				slotFrame["textureIcon"..i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
 			end
 			Module.CreateColorBorder(slotFrame)
-		end
+		-- end
 	end
 
 	frame.fontCreated = true
@@ -170,7 +170,7 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 
 	Module:CreateItemString(frame, strType)
 	for index, slot in pairs(inspectSlots) do
-		if index ~= 4 then
+		-- if index ~= 4 then
 			local slotFrame = _G[strType..slot.."Slot"]
 			slotFrame.iLvlText:SetText("")
 			for i = 1, 5 do
@@ -203,7 +203,7 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 					Module.QualityUpdater:Show()
 				end
 			end
-		end
+		-- end
 	end
 end
 
@@ -228,7 +228,7 @@ local function HideInspectRotate()
 	InspectModelFrameRotateRightButton:Hide()
 	InspectModelFrameRotateLeftButton:Hide()
 
-	Module.InspectILvl = Module.InspectILvl or K.CreateFontString(InspectFrame, 14)
+	Module.InspectILvl = Module.InspectILvl or K.CreateFontString(InspectPaperDollFrame, 14)
 	Module.InspectILvl:ClearAllPoints()
 	Module.InspectILvl:SetPoint("TOP", InspectLevelText, "BOTTOM", 0, -6)
 

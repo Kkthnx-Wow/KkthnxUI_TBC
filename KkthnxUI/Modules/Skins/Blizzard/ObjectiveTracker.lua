@@ -1,17 +1,29 @@
 local K, C = unpack(select(2, ...))
-local S = K:GetModule("Skins")
+local Module = K:GetModule("Skins")
 
-local _G = getfenv(0)
-local pairs, tinsert, select = pairs, tinsert, select
-local GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches = GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches
-local IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool = IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool
-local GetQuestIndexForWatch, GetNumQuestLeaderBoards, GetQuestLogLeaderBoard = GetQuestIndexForWatch, GetNumQuestLeaderBoards, GetQuestLogLeaderBoard
-local FauxScrollFrame_GetOffset = FauxScrollFrame_GetOffset
+local _G = _G
+local pairs = _G.pairs
+local select = _G.select
+local tinsert = _G.tinsert
+
+local FauxScrollFrame_GetOffset = _G.FauxScrollFrame_GetOffset
+local GetCVarBool = _G.GetCVarBool
+local GetNumQuestLeaderBoards = _G.GetNumQuestLeaderBoards
+local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
+local GetNumQuestWatches = _G.GetNumQuestWatches
+local GetQuestIndexForWatch = _G.GetQuestIndexForWatch
+local GetQuestLogLeaderBoard = _G.GetQuestLogLeaderBoard
+local GetQuestLogTitle = _G.GetQuestLogTitle
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local RemoveQuestWatch = _G.RemoveQuestWatch
+local ShowUIPanel = _G.ShowUIPanel
 
 local cr, cg, cb = K.r, K.g, K.b
-local MAX_QUESTLOG_QUESTS = MAX_QUESTLOG_QUESTS or 20
-local MAX_WATCHABLE_QUESTS = MAX_WATCHABLE_QUESTS or 5
-local headerString = QUESTS_LABEL.." %s/%s"
+local MAX_QUESTLOG_QUESTS = _G.MAX_QUESTLOG_QUESTS or 20
+local MAX_WATCHABLE_QUESTS = _G.MAX_WATCHABLE_QUESTS or 5
+local headerString = _G.QUESTS_LABEL.." %s/%s"
+
+local frame
 
 -- Handle collapse
 local function updateCollapseTexture(texture, collapsed)
@@ -40,7 +52,7 @@ local function resetCollapseTexture(self, texture)
 	self.settingTexture = nil
 end
 
-function S:ReskinCollapse(isAtlas)
+function Module:ReskinCollapse(isAtlas)
 	self:SetHighlightTexture("")
 	self:SetPushedTexture("")
 	self:SetDisabledTexture("")
@@ -68,12 +80,10 @@ function S:ReskinCollapse(isAtlas)
 	end
 end
 
-local frame
-
-function S:EnhancedQuestLog()
+function Module:EnhancedQuestLog()
 	if IsAddOnLoaded("Leatrix_Plus") then
-        return
-    end
+		return
+	end
 
 	if not C["Skins"].EnhancedQuestLog then
 		return
@@ -192,17 +202,16 @@ function S:EnhancedQuestLog()
 	end
 end
 
-function S:QuestLogLevel()
+function Module:QuestLogLevel()
 	if IsAddOnLoaded("Leatrix_Plus") then
-        return
-    end
+		return
+	end
 
 	if not C["Skins"].EnhancedQuestLog then
 		return
 	end
 
 	local numEntries = GetNumQuestLogEntries()
-
 	for i = 1, QUESTS_DISPLAYED, 1 do
 		local questIndex = i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame)
 		if questIndex <= numEntries then
@@ -213,9 +222,9 @@ function S:QuestLogLevel()
 				questLogTitle:SetText("["..level.."] "..questLogTitleText)
 				if isComplete then
 					questLogTitle.r = 1
-					questLogTitle.g = .5
+					questLogTitle.g = 0.5
 					questLogTitle.b = 1
-					questTitleTag:SetTextColor(1, .5, 1)
+					questTitleTag:SetTextColor(1, 0.5, 1)
 				end
 			end
 
@@ -241,7 +250,7 @@ function S:QuestLogLevel()
 	end
 end
 
-function S:EnhancedQuestTracker()
+function Module:EnhancedQuestTracker()
 	local header = CreateFrame("Frame", nil, frame)
 	header:SetAllPoints()
 	header:SetParent(QuestWatchFrame)
@@ -261,7 +270,7 @@ function S:EnhancedQuestTracker()
 	bu:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up")
 	bu:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight")
 	bu:SetPoint("TOPRIGHT", 0, 14)
-	S.ReskinCollapse(bu)
+	Module.ReskinCollapse(bu)
 	bu:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up")
 	bu:SetShown(GetNumQuestWatches() > 0)
 
@@ -385,7 +394,9 @@ function S:EnhancedQuestTracker()
 		end
 
 		bu:SetShown(numWatches > 0)
-		if bu.collapse then QuestWatchFrame:Hide() end
+		if bu.collapse then
+			QuestWatchFrame:Hide()
+		end
 	end)
 
 	local function autoQuestWatch(_, questIndex)
@@ -398,13 +409,13 @@ function S:EnhancedQuestTracker()
 	K:RegisterEvent("QUEST_ACCEPTED", autoQuestWatch)
 end
 
-function S:CreateQuestTracker()
+function Module:CreateQuestTracker()
 	-- Mover for quest tracker
 	frame = CreateFrame("Frame", "KKUI_QuestMover", UIParent)
 	frame:SetSize(240, 50)
 	K.Mover(frame, "QuestTracker", "QuestTracker", {"TOPRIGHT", UIParent, "TOPRIGHT", -120, -318})
 
-	--QuestWatchFrame:SetHeight(GetScreenHeight()*.65)
+	-- QuestWatchFrame:SetHeight(GetScreenHeight()*.65)
 	QuestWatchFrame:SetClampedToScreen(false)
 	QuestWatchFrame:SetMovable(true)
 	QuestWatchFrame:SetUserPlaced(true)
@@ -427,7 +438,7 @@ function S:CreateQuestTracker()
 		end
 	end)
 
-	S:EnhancedQuestLog()
-	S:EnhancedQuestTracker()
-	hooksecurefunc("QuestLog_Update", S.QuestLogLevel)
+	Module:EnhancedQuestLog()
+	Module:EnhancedQuestTracker()
+	hooksecurefunc("QuestLog_Update", Module.QuestLogLevel)
 end

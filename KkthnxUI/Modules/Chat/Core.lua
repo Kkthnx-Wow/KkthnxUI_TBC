@@ -430,6 +430,11 @@ local whisperEvents = {
 }
 function Module:PlayWhisperSound(event)
 	if whisperEvents[event] then
+		if Module.MuteThisTime then
+			Module.MuteThisTime = nil
+			return
+		end
+
 		local currentTime = GetTime()
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
@@ -463,7 +468,7 @@ function Module:OnEnable()
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
-	hooksecurefunc("ChatFrame_ConfigEventHandler", Module.PlayWhisperSound)
+	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
 
 	-- Font size
 	for i = 1, 15 do
