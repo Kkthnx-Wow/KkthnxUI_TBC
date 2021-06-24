@@ -20,6 +20,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
+local GoldDataTextFrame
 local slotString = "Bags"..": %s%d"
 local profit = 0
 local spent = 0
@@ -62,13 +63,9 @@ local function getSlotString()
 end
 
 local function OnEvent(_, event, arg1)
-	if not IsLoggedIn() then
-		return
-	end
-
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
-		Module.GoldDataTextFrame:UnregisterEvent(event)
+		GoldDataTextFrame:UnregisterEvent(event)
 	elseif event == "BAG_UPDATE" then
 		if arg1 < 0 or arg1 > 4 then
 			return
@@ -85,12 +82,12 @@ local function OnEvent(_, event, arg1)
 
 	if C["DataText"].Gold then
 		if C["DataText"].HideText then
-			Module.GoldDataTextFrame.Text:SetText("")
+			GoldDataTextFrame.Text:SetText("")
 		else
 			if KkthnxUIDB.ShowSlots then
-				Module.GoldDataTextFrame.Text:SetText(getSlotString())
+				GoldDataTextFrame.Text:SetText(getSlotString())
 			else
-				Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+				GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
 			end
 		end
 	end
@@ -117,8 +114,8 @@ local function OnEvent(_, event, arg1)
 end
 
 local function OnEnter()
-	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint("BOTTOMLEFT", Module.GoldDataTextFrame, "TOPRIGHT", 2, 2)
+	GameTooltip:SetOwner(GoldDataTextFrame, "ANCHOR_NONE")
+	GameTooltip:SetPoint("BOTTOMLEFT", GoldDataTextFrame, "TOPRIGHT", 2, 2)
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
@@ -165,9 +162,9 @@ local function OnMouseUp(_, btn)
 		else
 			KkthnxUIDB.ShowSlots = not KkthnxUIDB.ShowSlots
 			if KkthnxUIDB.ShowSlots then
-				Module.GoldDataTextFrame:RegisterEvent("BAG_UPDATE")
+				GoldDataTextFrame:RegisterEvent("BAG_UPDATE")
 			else
-				Module.GoldDataTextFrame:UnregisterEvent("BAG_UPDATE")
+				GoldDataTextFrame:UnregisterEvent("BAG_UPDATE")
 			end
 			OnEvent()
 		end
@@ -191,35 +188,35 @@ function Module:CreateGoldDataText()
 		return
 	end
 
-	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
+	GoldDataTextFrame = GoldDataTextFrame or CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		Module.GoldDataTextFrame:SetSize(24, 24)
+		GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
+		GoldDataTextFrame:SetSize(24, 24)
 
-		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
-		Module.GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
-		Module.GoldDataTextFrame.Texture:SetSize(24, 24)
-		Module.GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		GoldDataTextFrame.Texture = GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
+		GoldDataTextFrame.Texture:SetPoint("LEFT", GoldDataTextFrame, "LEFT", 0, 0)
+		GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		GoldDataTextFrame.Texture:SetSize(24, 24)
+		GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
-		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		Module.GoldDataTextFrame.Text:SetPoint("LEFT", Module.GoldDataTextFrame.Texture, "RIGHT", 0, 0)
+		GoldDataTextFrame.Text = GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
+		GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+		GoldDataTextFrame.Text:SetPoint("LEFT", GoldDataTextFrame.Texture, "RIGHT", 0, 0)
 	end
 
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
+	GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
+	GoldDataTextFrame:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
+	GoldDataTextFrame:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
+	GoldDataTextFrame:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
+	GoldDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 
-	Module.GoldDataTextFrame:SetScript("OnEvent", OnEvent)
+	GoldDataTextFrame:SetScript("OnEvent", OnEvent)
 	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-		Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
-		Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
+		GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
+		GoldDataTextFrame:SetScript("OnEnter", OnEnter)
+		GoldDataTextFrame:SetScript("OnLeave", OnLeave)
 
-		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
+		K.Mover(GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
 	end
 end

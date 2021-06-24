@@ -32,13 +32,11 @@ local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
-local ITEM_STARTS_QUEST = _G.ITEM_STARTS_QUEST
 
 local bagsFont = K.GetFont(C["UIFonts"].InventoryFonts)
 local toggleButtons = {}
 local deleteEnable, favouriteEnable, splitEnable, customJunkEnable
 local sortCache = {}
-local questItemCache = {}
 
 _G.StaticPopupDialogs["KKUI_WIPE_JUNK_LIST"] = {
 	text = "Are you sure to wipe the custom junk list?",
@@ -702,30 +700,6 @@ function Module:CloseBags()
 	CloseAllBags()
 end
 
-function Module:IsAcceptableQuestItem(link)
-	if not link then
-		return
-	end
-
-	local canAccept = questItemCache[link]
-	if not canAccept then
-		K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-		K.ScanTooltip:SetHyperlink(link)
-
-		for i = 2, K.ScanTooltip:NumLines() do
-			local line = _G["KKUI_ScanTooltipTextLeft"..i]
-			local lineText = line and line:GetText()
-			if lineText and string_match(lineText, ITEM_STARTS_QUEST) then
-				canAccept = true
-				questItemCache[link] = true
-				break
-			end
-		end
-	end
-
-	return canAccept
-end
-
 function Module:OnEnable()
 	self:CreateInventoryBar()
 	self:CreateAutoRepair()
@@ -983,7 +957,7 @@ function Module:OnEnable()
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.rarity]
-				if item.isQuestItem then
+				if item.isQuestItem or item.id == 24504 then
 					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
 				elseif color and item.rarity and item.rarity > -1 then
 					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b)
@@ -1022,7 +996,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdateQuest(item)
-		if item.isQuestItem then
+		if item.isQuestItem or item.id == 24504 then
 			self.KKUI_Border:SetVertexColor(1, .82, .2)
 		elseif item.rarity and item.rarity > -1 then
 			local color = K.QualityColors[item.rarity]
@@ -1035,7 +1009,7 @@ function Module:OnEnable()
 			end
 		end
 
-		self.Quest:SetShown(item.isQuestItem and Module:IsAcceptableQuestItem(item.link))
+		self.Quest:SetShown(C.IsAcceptableQuestItem[item.id])
 	end
 
 	function MyContainer:OnContentsChanged()

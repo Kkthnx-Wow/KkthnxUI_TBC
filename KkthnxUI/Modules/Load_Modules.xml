@@ -175,6 +175,7 @@
    <Include file="Skins\Addons\Pawn.lua" />
    <Include file="Skins\Addons\TradeSkillFrame.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Addons\WIM.lua" />
 
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\Bartender4.lua" />

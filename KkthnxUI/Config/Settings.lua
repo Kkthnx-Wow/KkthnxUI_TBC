@@ -50,8 +50,13 @@ C["Announcements"] = {
 	["AlertInInstance"] = true,
 	["BrokenSpell"] = false,
 	["HealthAlert"] = false,
+	["HealthAlertEmote"] = false,
+	["HealthThreshold"] = 20,
 	["Interrupt"] = false,
 	["ItemAlert"] = false,
+	["ManaAlert"] = false,
+	["ManaAlertEmote"] = false,
+	["ManaThreshold"] = 20,
 	["OnlyCompleteRing"] = false,
 	["OwnInterrupt"] = true,
 	["PullCountdown"] = true,
@@ -319,6 +324,8 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
+	["ExpandStat"] = true,
+	["StatOrder"] = "12345",
 	["AFKCamera"] = false,
 	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
@@ -456,6 +463,7 @@ C["Skins"] = {
 	["EnhancedTradeSkill"] = false,
 	["LFGBulletinBoard"] = false,
 	["Skada"] = false,
+	["WIM"] = false,
 	["WeakAuras"] = false,
 }
 

@@ -105,18 +105,18 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self.Health)
+			self.Portrait = self.Portrait or CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-			self.Portrait = self.Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Portrait or self.Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
-			self.Portrait.Border = CreateFrame("Frame", nil, self)
+			self.Portrait.Border = self.Portrait.Border or CreateFrame("Frame", nil, self)
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
@@ -442,7 +442,7 @@ function Module:CreatePlayer()
 		self.Swing.Background:Hide()
 		self.Swing.Background:SetPoint("TOPRIGHT")
 		self.Swing.Background:SetPoint("BOTTOMRIGHT")
-		self.Swing.Background:SetColorTexture(0.78, 0.25, 0.25)
+		self.Swing.Background:SetColorTexture(0.87, 0.37, 0.37, 0.8)
 
 		self.Swing.Mainhand = CreateFrame("StatusBar", nil, self.Swing)
 		self.Swing.Mainhand:Hide()
@@ -481,16 +481,28 @@ function Module:CreatePlayer()
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.LeaderIndicator:SetPoint("TOPLEFT", self, 0, 8)
 	self.LeaderIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
 
 	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetPoint("TOPLEFT", self, 0, 8)
 	self.AssistantIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
 
 	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.MasterLooterIndicator:SetPoint("LEFT", self.LeaderIndicator, "RIGHT")
 	self.MasterLooterIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.MasterLooterIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
+	else
+		self.MasterLooterIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
+	end
 
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(20, 20)

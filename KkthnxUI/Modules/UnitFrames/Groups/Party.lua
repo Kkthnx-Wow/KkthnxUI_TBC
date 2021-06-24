@@ -236,7 +236,8 @@ function Module:CreateParty()
 	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	if (C["Party"].TargetHighlight) then
-		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight = self.TargetHighlight or CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight:SetFrameLevel(6)
 		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
@@ -256,15 +257,15 @@ function Module:CreateParty()
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.LeaderIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	self.LeaderIndicator:SetSize(12, 12)
 
 	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetPoint("TOPLEFT", self, 0, 8)
+	self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	self.AssistantIndicator:SetSize(12, 12)
 
 	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.MasterLooterIndicator:SetPoint("LEFT", self.LeaderIndicator, "RIGHT")
+	self.MasterLooterIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
 	self.MasterLooterIndicator:SetSize(12, 12)
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")

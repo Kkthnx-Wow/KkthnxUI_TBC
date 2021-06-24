@@ -86,9 +86,9 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
 			local relF, x, y = Module:GetSlotAnchor(index)
 			for i = 1, 5 do
-				local offset = (i - 1) * 20 + 5
+				local offset = (i - 1) * 20 + 2
 				local iconX = x > 0 and x + offset or x - offset
-				local iconY = index > 15 and 20 or 2
+				local iconY = index > 15 and 20 or 4
 				slotFrame["textureIcon"..i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
 			end
 			Module.CreateColorBorder(slotFrame)
@@ -217,7 +217,7 @@ function Module:UpdateInspectILvl()
 	end
 
 	Module:UpdateUnitILvl(InspectFrame.unit, Module.InspectILvl)
-	Module.InspectILvl:SetFormattedText("iLvl %s", Module.InspectILvl:GetText())
+	Module.InspectILvl:SetFormattedText(ITEM_LEVEL_ABBR.." %s", Module.InspectILvl:GetText())
 end
 
 local isHidden
@@ -231,6 +231,12 @@ local function HideInspectRotate()
 	Module.InspectILvl = Module.InspectILvl or K.CreateFontString(InspectPaperDollFrame, 14)
 	Module.InspectILvl:ClearAllPoints()
 	Module.InspectILvl:SetPoint("TOP", InspectLevelText, "BOTTOM", 0, -6)
+
+	Module.InspectILvl.Background = Module.InspectILvl.Background or InspectPaperDollFrame:CreateTexture(nil, "OVERLAY", 7)
+	Module.InspectILvl.Background:SetAtlas("UI-Character-Info-Line-Bounce", true)
+	Module.InspectILvl.Background:SetVertexColor(0.3, 0.3, 0.3)
+	Module.InspectILvl.Background:SetAlpha(0.7)
+	Module.InspectILvl.Background:SetPoint("CENTER", Module.InspectILvl)
 
 	isHidden = true
 end

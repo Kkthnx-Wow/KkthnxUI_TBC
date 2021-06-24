@@ -7,6 +7,13 @@ local CANCEL = _G.CANCEL
 local ReloadUI = _G.ReloadUI
 local StaticPopupDialogs = _G.StaticPopupDialogs
 
+StaticPopupDialogs["KKUI_CONFIRM_LOOT_DISTRIBUTION"] = {
+	text = CONFIRM_LOOT_DISTRIBUTION,
+	button1 = YES,
+	button2 = NO,
+	hideOnEscape = 1,
+}
+
 StaticPopupDialogs["KKUI_RESET_DATA"] = {
 	text = "Are you sure you want to reset all KkthnxUI Data?",
 	button1 = ACCEPT,

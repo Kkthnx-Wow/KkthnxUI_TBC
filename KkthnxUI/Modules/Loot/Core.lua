@@ -35,7 +35,7 @@ local coinTextureIDs = {
 	[133786] = true,
 	[133787] = true,
 	[133788] = true,
-	[133789] = true
+	[133789] = true,
 }
 
 -- Credit Haste
@@ -281,7 +281,7 @@ function Module.LOOT_OPENED(_, autoloot)
 		if color then
 			slot.name:SetTextColor(color.r, color.g, color.b)
 		end
-		slot.icon:SetTexture([[Interface\Icons\INV_Misc_Herb_AncientLichen]])
+		slot.icon:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
 
 		w = max(w, slot.name:GetStringWidth())
 
@@ -298,6 +298,14 @@ function Module.LOOT_OPENED(_, autoloot)
 	local color = ITEM_QUALITY_COLORS[m]
 	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, .8)
 	lootFrame:SetWidth(max(w, t))
+end
+
+function Module:OPEN_MASTER_LOOT_LIST()
+	ToggleDropDownMenu(1, nil, _G.GroupLootDropDown, lootFrame.slots[_G.LootFrame.selectedSlot], 0, 0)
+end
+
+function Module:UPDATE_MASTER_LOOT_LIST()
+	UIDropDownMenu_Refresh(_G.GroupLootDropDown)
 end
 
 function Module:OnEnable()
@@ -333,6 +341,8 @@ function Module:OnEnable()
 	K:RegisterEvent("LOOT_OPENED", self.LOOT_OPENED)
 	K:RegisterEvent("LOOT_SLOT_CLEARED", self.LOOT_SLOT_CLEARED)
 	K:RegisterEvent("LOOT_CLOSED", self.LOOT_CLOSED)
+	K:RegisterEvent("OPEN_MASTER_LOOT_LIST", self.OPEN_MASTER_LOOT_LIST)
+	K:RegisterEvent("UPDATE_MASTER_LOOT_LIST", self.UPDATE_MASTER_LOOT_LIST)
 
 	if (GetCVar("lootUnderMouse") == "0") then
 		K.Mover(lootFrameHolder, "LootFrame", "LootFrame", {"TOPLEFT", 36, -195})
@@ -340,6 +350,25 @@ function Module:OnEnable()
 
 	LootFrame:UnregisterAllEvents()
 	table_insert(UISpecialFrames, "KKUI_LootFrame")
+
+	function _G.GroupLootDropDown_GiveLoot()
+		local LootFrame = _G.LootFrame
+		if LootFrame.selectedQuality >= _G.MASTER_LOOT_THREHOLD then
+			local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName.._G.FONT_COLOR_CODE_CLOSE, self:GetText())
+			if dialog then
+				dialog.data = self.value
+			end
+		else
+			GiveMasterLoot(LootFrame.selectedSlot, self.value)
+		end
+		CloseDropDownMenus()
+	end
+
+	StaticPopupDialogs["KKUI_CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
+		GiveMasterLoot(_G.LootFrame.selectedSlot, data)
+	end
+
+	_G.StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].preferredIndex = 3
 
 	self:CreateAutoConfirm()
 	self:CreateAutoGreed()

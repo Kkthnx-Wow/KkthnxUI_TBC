@@ -54,6 +54,7 @@ function Module:OnEnable()
 	self:ReskinDominos()
 	self:ReskinLFGBulletinBoard()
 	self:ReskinPawn()
+	self:ReskinWIM()
 end
 
 function Module:LoadWithAddOn(addonName, value, func)

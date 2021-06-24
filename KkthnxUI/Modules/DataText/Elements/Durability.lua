@@ -102,15 +102,25 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
+local function NewSetLevelFunction()
+	CharacterLevelText:SetFormattedText(K.Name.." "..PLAYER_LEVEL, UnitLevel("player"), UnitRace("player"), K.MyClassColor..UnitClass("player").."|r")
+end
+
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then
 		return
 	end
 
+	if CharacterNameFrame then
+		CharacterNameFrame:Hide()
+	end
+
+	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction) -- Replace this function as we set our own style so we can set our durr stat
+
 	Module.DurabilityDataTextFrame = Module.DurabilityDataTextFrame or CreateFrame("Frame", nil, CharacterModelFrame)
 
 	Module.DurabilityDataTextFrame.Text = Module.DurabilityDataTextFrame.Text or Module.DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
-    Module.DurabilityDataTextFrame.Text:SetPoint('TOP', CharacterModelFrame, 0, 0)
+    Module.DurabilityDataTextFrame.Text:SetPoint('CENTER', CharacterNameFrame, 0, -1)
 	Module.DurabilityDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
     Module.DurabilityDataTextFrame:SetAllPoints(Module.DurabilityDataTextFrame.Text)

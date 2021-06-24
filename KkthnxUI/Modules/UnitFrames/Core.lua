@@ -19,7 +19,6 @@ local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
-local UnitFactionGroup = _G.UnitFactionGroup
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitIsConnected = _G.UnitIsConnected

@@ -1,13 +1,9 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local M = K:GetModule("Miscellaneous")
 
 local wipe, gmatch, tinsert, ipairs, pairs = wipe, gmatch, tinsert, ipairs, pairs
 local tonumber, tostring = tonumber, tostring
 local cr, cg, cb = K.r, K.g, K.b
-
--- Don't see a point in making these options
-local ExpandStat = true
-local StatOrder = "12345"
 
 local function SetCharacterStats(statsTable, category)
 	if category == "PLAYERSTAT_BASE_STATS" then
@@ -55,7 +51,7 @@ local orderList = {}
 local function BuildListFromValue()
 	wipe(orderList)
 
-	for number in gmatch(StatOrder, "%d") do
+	for number in gmatch(C["Misc"].StatOrder, "%d") do
 		tinsert(orderList, tonumber(number))
 	end
 end
@@ -89,7 +85,7 @@ local function BuildValueFromList()
 	for _, index in ipairs(orderList) do
 		str = str..tostring(index)
 	end
-	StatOrder = str
+	C["Misc"].StatOrder = str
 
 	UpdateCategoriesAnchor()
 end
@@ -122,7 +118,7 @@ local function Arrow_GoDown(bu)
 		if index == frameIndex then
 			if order < 5 then
 				local oldIndex = orderList[order+1]
-				orderList[order+1] = frameIndex
+				orderList[order + 1] = frameIndex
 				orderList[order] = oldIndex
 
 				BuildValueFromList()
@@ -149,13 +145,14 @@ end
 
 local function CreateHeaderArrow(parent, direct, func)
 	local onLeft = direct == "LEFT"
-	local xOffset = onLeft and 10 or -10
+	local xOffset = onLeft and 24 or -26
 	local arrowDirec = onLeft and "up" or "down"
 
 	local bu = CreateFrame("Button", nil, parent)
 	bu:SetPoint(direct, parent.header, xOffset, 0)
 	K.ReskinArrow(bu, arrowDirec, false)
 	bu:SetSize(14, 14)
+	bu:SetAlpha(0.6)
 	bu.__owner = parent
 	bu:SetScript("OnClick", func)
 end
@@ -168,15 +165,9 @@ local function CreatePlayerILvl(parent, category)
 
 	local header = CreateFrame("Frame", "$parentHeader", frame, "CharacterStatFrameCategoryTemplate")
 	header:SetPoint("TOP")
-	header.Background:Hide()
 	header.Title:SetText(category)
 	header.Title:SetTextColor(cr, cg, cb)
 	frame.header = header
-
-	local line = frame:CreateTexture(nil, "ARTWORK")
-	line:SetSize(180, K.Mult)
-	line:SetPoint("BOTTOM", header, 0, 6)
-	line:SetColorTexture(1, 1, 1, .25)
 
 	local iLvlFrame = CreateStatRow(frame, 1)
 	iLvlFrame:SetHeight(30)
@@ -259,18 +250,12 @@ local function CreateStatHeader(parent, index, category)
 
 	local header = CreateFrame("Frame", "$parentHeader", frame, "CharacterStatFrameCategoryTemplate")
 	header:SetPoint("TOP")
-	header.Background:Hide()
 	header.Title:SetText(_G[category])
 	header.Title:SetTextColor(cr, cg, cb)
 	frame.header = header
 
 	CreateHeaderArrow(frame, "LEFT", Arrow_GoUp)
 	CreateHeaderArrow(frame, "RIGHT", Arrow_GoDown)
-
-	local line = frame:CreateTexture(nil, "ARTWORK")
-	line:SetSize(180, K.Mult)
-	line:SetPoint("BOTTOM", header, 0, 6)
-	line:SetColorTexture(1, 1, 1, .25)
 
 	local statsTable = {}
 	for i = 1, maxLines do
@@ -284,9 +269,9 @@ local function CreateStatHeader(parent, index, category)
 end
 
 local function ToggleMagicRes()
-	if ExpandStat then
+	if C["Misc"].ExpandStat then
 		CharacterResistanceFrame:ClearAllPoints()
-		CharacterResistanceFrame:SetPoint("TOPLEFT", M.StatPanel.child, 26, -6)
+		CharacterResistanceFrame:SetPoint("TOPLEFT", M.StatPanel.child, 26, -5)
 		CharacterResistanceFrame:SetParent(M.StatPanel.child)
 		CharacterModelFrame:SetSize(231, 320)
 
@@ -324,7 +309,7 @@ local function UpdateStats()
 end
 
 local function ToggleStatPanel(texture)
-	if ExpandStat then
+	if C["Misc"].ExpandStat then
 		K.SetupArrow(texture, "left")
 		CharacterAttributesFrame:Hide()
 		M.StatPanel:Show()
@@ -337,17 +322,17 @@ local function ToggleStatPanel(texture)
 end
 
 function M:CharacterStatePanel()
-	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "BasicFrameTemplateWithInset")
-	statPanel:SetSize(204, 422)
+	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "KKUI_BasicFrameTemplateWithInset")
+	statPanel:SetSize(213, 423)
 	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -14)
 	M.StatPanel = statPanel
 
-	K.CreateFontString(statPanel, 12, K.Name.." Stats", "", false, "TOP", 0, -6)
+	K.CreateFontString(M.StatPanel, 12, RAID_BUFF_1, "", false, "TOP", -6, -5)
 
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetAllPoints()
-	scrollFrame:SetPoint("TOPLEFT", statPanel, "TOPLEFT", -0, -28)
-    scrollFrame:SetPoint("BOTTOMRIGHT", statPanel, "BOTTOMRIGHT", -0, 10)
+	scrollFrame:SetPoint("TOPLEFT", statPanel, "TOPLEFT", 6, -28)
+    scrollFrame:SetPoint("BOTTOMRIGHT", statPanel, "BOTTOMRIGHT", -0, 8)
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
 
@@ -365,7 +350,7 @@ function M:CharacterStatePanel()
 	end)
 
 	-- Player iLvl
-	CreatePlayerILvl(stat, "ItemLevel")
+	CreatePlayerILvl(stat, STAT_AVERAGE_ITEM_LEVEL)
 	hooksecurefunc("PaperDollFrame_UpdateStats", M.UpdatePlayerILvl)
 
 	local categories = {
@@ -393,12 +378,12 @@ function M:CharacterStatePanel()
 	K.ReskinArrow(bu, "right", false)
 
 	statPanel.CloseButton:SetScript("OnClick", function()
-		ExpandStat = not ExpandStat
+		C["Misc"].ExpandStat = not C["Misc"].ExpandStat
 		ToggleStatPanel(bu.__texture)
 	end)
 
 	bu:SetScript("OnClick", function(self)
-		ExpandStat = not ExpandStat
+		C["Misc"].ExpandStat = not C["Misc"].ExpandStat
 		ToggleStatPanel(self.__texture)
 	end)
 

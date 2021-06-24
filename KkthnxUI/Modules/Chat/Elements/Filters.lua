@@ -132,7 +132,6 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		msgTable[2][i] = filterMsg:byte(i)
 	end
 
-	local chatLines = chatLines
 	local chatLinesSize = #chatLines
 	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do

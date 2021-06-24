@@ -15,7 +15,22 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
+	"Added list for mount/quest items for bags",
+	"Added low health/mana module",
+	"Added masterloot dropdown for loot frame",
+	"Added options for character stat panel",
 	"Added weakauras skin back",
+	"Added wim addon skin",
+	"Fixed bank bag bar being too long?",
+	"Removed tooltip scanning for quest item starters",
+	"Updated arrow textures in GUI",
+	"Updated durability text position",
+	"Updated gems to show in linked items if has gem slot",
+	"Updated interrupt announce module",
+	"Updated item announce alert list",
+	"Updated masterloot/leader and assist icon postions",
+	"Updated sort bags module",
+	"Various misc code updated",
 }
 
 local changelogFrame

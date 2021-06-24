@@ -18,4 +18,167 @@
    <Include file="Modules\Load_Modules.xml" />
    <!-- Developer -->
    <Include file="Developer\Load_Developer.xml" />
+
+   <!-- All this just to fix an offset -.- -->
+   <Texture name="KKUI_UI-Frame-TopLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
+		<Size x="32" y="32"/>
+		<TexCoords left="0.63281250" right="0.88281250" top="0.28125000" bottom="0.53125000"/>
+	</Texture>
+
+   <Frame name="KKUI_BaseBasicFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopLeftCorner" inherits="KKUI_UI-Frame-TopLeftCorner">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightCorner" inherits="UI-Frame-TopCornerRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopBorder" inherits="_UI-Frame-TitleTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TitleText" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP" x="-6" y="-4" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="BotLeftCorner" inherits="UI-Frame-BotCornerLeft">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BotRightCorner" inherits="UI-Frame-BotCornerRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomBorder" inherits="_UI-Frame-Bot">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BotLeftCorner" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBorder" inherits="!UI-Frame-RightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BotRightCorner" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset x="4" y="5"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="KKUI_BasicFrameTemplate" inherits="KKUI_BaseBasicFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-1"/>
+						<Anchor point="TOPRIGHT" x="-25" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="KKUI_BasicFrameTemplateWithInset" inherits="KKUI_BasicFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="InsetBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-24" />
+						<Anchor point="BOTTOMRIGHT" x="-6" y="4" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBg"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBg"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBg" y="-1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="InsetBorderBottomRight" inherits="UI-Frame-InnerBotRight">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBg" y="-1"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderBottom" inherits="_UI-Frame-InnerBotTile">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InsetBorderRight" inherits="!UI-Frame-InnerRightTile">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

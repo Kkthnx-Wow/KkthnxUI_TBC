@@ -176,8 +176,16 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
 	self.LeaderIndicator:SetSize(12, 12)
-	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	self.AssistantIndicator:SetSize(12, 12)
+
+	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.MasterLooterIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
+	self.MasterLooterIndicator:SetSize(12, 12)
 
 	if C["Raid"].ShowNotHereTimer then
 		-- self.StatusIndicator = self:CreateFontString(nil, "OVERLAY")
@@ -259,6 +267,7 @@ function Module:CreateRaid()
 
 	if C["Raid"].TargetHighlight then
 		self.TargetHighlight = self.TargetHighlight or CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight:SetFrameLevel(6)
 		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
