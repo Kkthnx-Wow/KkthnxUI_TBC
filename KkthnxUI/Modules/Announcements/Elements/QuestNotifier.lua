@@ -17,15 +17,15 @@ local soundKitID = 6199 -- https://tbc.wowhead.com/sound=6199/b-peonbuildingcomp
 
 local function acceptText(link, daily)
 	if daily then
-		return string_format("%s: [%s]%s", "Accepted Quest", DAILY, link)
+		return string_format(K.KkthnxUIString.."%s: [%s]%s", "Accepted Quest", DAILY, link)
 	else
-		return string_format("%s: %s", "Accepted Quest", link)
+		return string_format(K.KkthnxUIString.."%s: %s", "Accepted Quest", link)
 	end
 end
 
 local function completeText(link)
 	PlaySound(soundKitID, "Master")
-	return string_format("%s (%s)", link, QUEST_COMPLETE)
+	return string_format(K.KkthnxUIString.."%s (%s)", link, QUEST_COMPLETE)
 end
 
 local function sendQuestMsg(msg)

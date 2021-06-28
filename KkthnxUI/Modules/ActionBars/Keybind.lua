@@ -91,11 +91,11 @@ function Module:Bind_Create()
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
+		GameTooltip:AddLine(frame.name, 0.6, 0.8, 1)
 
 		if #frame.bindings == 0 then
 			GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)
-			GameTooltip:AddLine(PRESS_KEY_TO_BIND)
+			GameTooltip:AddLine("Press to bind")
 		else
 			GameTooltip:AddDoubleLine(L["Key Index"], L["Key Binding"], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 			for i = 1, #frame.bindings do
@@ -171,7 +171,6 @@ function Module:Bind_Update(button, spellmacro)
 		if not frame.name then
 			return
 		end
-		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.id = tonumber(button:GetID())
 		if not frame.id or frame.id < 1 or frame.id > (spellmacro == "STANCE" and 10 or 12) then
@@ -185,7 +184,6 @@ function Module:Bind_Update(button, spellmacro)
 		if not frame.name then
 			return
 		end
-		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.action = tonumber(button.action)
 		if button.isCustomButton or not frame.action or frame.action < 1 or frame.action > 168 then
@@ -232,7 +230,7 @@ function Module:Bind_Listener(key)
 				SetBinding(frame.bindings[i])
 			end
 		end
-		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
+		K.Print(string_format(L["Clear Binds"], frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
 		return

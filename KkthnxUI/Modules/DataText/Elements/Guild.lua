@@ -386,7 +386,7 @@ local function GuildPanel_OnLeave()
 		return
 	end
 
-	C_Timer_After(.1, delayLeave)
+	C_Timer_After(0.1, delayLeave)
 end
 
 local function GuildPanel_OnMouseUp()

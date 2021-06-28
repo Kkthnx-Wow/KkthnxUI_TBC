@@ -324,6 +324,7 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
+	["EnhancedMail"] = true,
 	["ExpandStat"] = true,
 	["StatOrder"] = "12345",
 	["AFKCamera"] = false,
@@ -465,6 +466,7 @@ C["Skins"] = {
 	["Skada"] = false,
 	["WIM"] = false,
 	["WeakAuras"] = false,
+	["WorldMap"] = true,
 }
 
 -- Tooltip
@@ -518,6 +520,10 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["PlayerHealthTextSize"] = 12,
+	["PlayerPowerTextSize"] = 11,
+	["TargetHealthTextSize"] = 12,
+	["TargetPowerTextSize"] = 11,
 	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,
@@ -696,9 +702,11 @@ C["Raid"] = {
 -- Worldmap
 C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,
+	["AutoZoneChange"] = true,
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["MapRevealGlow"] = true,
 	["MapRevealGlowColor"] = {0.4, 0.61, 1},
+	["RememberZoom"] = true,
 	["SmallWorldMap"] = true,
 }

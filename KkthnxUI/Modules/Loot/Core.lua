@@ -323,6 +323,7 @@ function Module:OnEnable()
 	lootFrameHolder:SetHeight(22)
 
 	lootFrame = CreateFrame("Button", "KKUI_LootFrame", lootFrameHolder)
+	lootFrame:Hide()
 	lootFrame:SetClampedToScreen(true)
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
@@ -356,7 +357,7 @@ function Module:OnEnable()
 		if LootFrame.selectedQuality >= _G.MASTER_LOOT_THREHOLD then
 			local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName.._G.FONT_COLOR_CODE_CLOSE, self:GetText())
 			if dialog then
-				dialog.data = self.value
+				dialog.data = self.values
 			end
 		else
 			GiveMasterLoot(LootFrame.selectedSlot, self.value)
@@ -364,11 +365,15 @@ function Module:OnEnable()
 		CloseDropDownMenus()
 	end
 
-	StaticPopupDialogs["KKUI_CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
+	StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
 		GiveMasterLoot(_G.LootFrame.selectedSlot, data)
 	end
 
 	_G.StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].preferredIndex = 3
+
+	hooksecurefunc(MasterLooterFrame, 'Hide', function(self)
+		self:ClearAllPoints()
+	end)
 
 	self:CreateAutoConfirm()
 	self:CreateAutoGreed()

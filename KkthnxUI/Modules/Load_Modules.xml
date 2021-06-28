@@ -165,6 +165,7 @@
    <Include file="Skins\Blizzard\StaticPopup.lua" />
    <Include file="Skins\Blizzard\Talent.lua" />
    <Include file="Skins\Blizzard\TradeSkill.lua" />
+   <Include file="Skins\Blizzard\WorldMap.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\AtlasLoot.lua" />
    <Include file="Skins\Addons\BugSack.lua" />

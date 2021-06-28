@@ -255,6 +255,7 @@ function Module:EnhancedQuestTracker()
 	header:SetAllPoints()
 	header:SetParent(QuestWatchFrame)
 	header.Text = K.CreateFontString(header, 14, "", "", true, "TOPLEFT", 0, 15)
+	-- header.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
 
 	local bg = header:CreateTexture(nil, "ARTWORK")
 	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
@@ -275,6 +276,7 @@ function Module:EnhancedQuestTracker()
 	bu:SetShown(GetNumQuestWatches() > 0)
 
 	bu.Text = K.CreateFontString(bu, 14, TRACKER_HEADER_OBJECTIVE, "", "system", "RIGHT", -24, 3)
+	-- bu.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
 	bu.Text:Hide()
 
 	bu:SetScript("OnClick", function(self)
@@ -291,6 +293,12 @@ function Module:EnhancedQuestTracker()
 			end
 		end
 	end)
+
+	-- Change font of watched quests
+	for i = 1, 30 do
+		local QuestLine = _G["QuestWatchLine"..i]
+		QuestLine:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+	end
 
 	-- ModernQuestWatch, Ketho
 	local function onMouseUp(self)

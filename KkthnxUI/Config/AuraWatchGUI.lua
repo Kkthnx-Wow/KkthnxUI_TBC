@@ -279,7 +279,7 @@ local function CreatePanel()
 	end
 
 	-- Structure
-	f = CreateFrame("Frame", "KKUI_AuraWatchGUI", UIParent)
+	f = f or CreateFrame("Frame", "KKUI_AuraWatchGUI", UIParent)
 	f:SetPoint("CENTER")
 	f:SetSize(800, 500)
 	f:CreateBorder()

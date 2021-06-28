@@ -309,5 +309,5 @@ SlashCmdList["KKUI_TRACKING"] = function()
 		K.Print("Sorry, our raid module is currently disabled")
 	end
 end
-_G.SLASH_KKUI_TRACKING1 = "/kt"
-_G.SLASH_KKUI_TRACKING2 = "/tracking"
+_G.SLASH_KKUI_TRACKING1 = "/kkt"
+_G.SLASH_KKUI_TRACKING2 = "/kktracking"

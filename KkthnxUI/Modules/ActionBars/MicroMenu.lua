@@ -10,14 +10,13 @@ local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MainMenuBarPerformanceBar = _G.MainMenuBarPerformanceBar
 local MicroButtonPortrait = _G.MicroButtonPortrait
 local UIParent = _G.UIParent
-local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
 local hooksecurefunc = _G.hooksecurefunc
 
 local microBar
 
 local function onLeaveBar()
 	if C["ActionBar"].FadeMicroBar then
-		UIFrameFadeOut(microBar, 0.2, microBar:GetAlpha(), 0)
+		UIFrameFadeOut(microBar, 0.5, microBar:GetAlpha(), 0)
 	end
 end
 
@@ -40,7 +39,7 @@ local function onEnter(button)
 		if C["General"].ColorTextures then
 			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 		else
-			button.backdrop.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
+			button.backdrop.KKUI_Border:SetVertexColor(1, 1, 0)
 		end
 	end
 

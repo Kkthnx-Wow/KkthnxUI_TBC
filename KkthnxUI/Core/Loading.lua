@@ -161,7 +161,13 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE = {}
 	end
 
@@ -187,8 +193,22 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget then
+		KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget = {}
+	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver == nil then
+		KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver = false
 	end
 
 	-- Settings

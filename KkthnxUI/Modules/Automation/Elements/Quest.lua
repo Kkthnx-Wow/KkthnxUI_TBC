@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 
 local _G = _G
 local table_wipe = _G.table.wipe
@@ -59,9 +59,16 @@ local function SetupAutoQuestCheckButton()
 		return
 	end
 
-	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
-	AutoQuestCheckButton:SetSize(24, 24)
+	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
+	if C["Skins"].WorldMap then
+		AutoQuestCheckButton:SetPoint("TOPRIGHT", -160, -78)
+		AutoQuestCheckButton:SetSize(16, 16)
+		AutoQuestCheckButton:SkinCheckBox()
+		AutoQuestCheckButton:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel())
+	else
+		AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
+		AutoQuestCheckButton:SetSize(24, 24)
+	end
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)

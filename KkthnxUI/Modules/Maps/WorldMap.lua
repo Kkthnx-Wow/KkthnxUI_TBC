@@ -136,7 +136,7 @@ end
 
 local function CreateMapFader()
 	if C["WorldMap"].FadeWhenMoving then
-		PlayerMovementFrameFader.AddDeferredFrame(WorldMapFrame, .3, 1, .3, isMouseOverMap)
+		PlayerMovementFrameFader.AddDeferredFrame(WorldMapFrame, 0.3, 1, 0.3, isMouseOverMap)
 	else
 		PlayerMovementFrameFader.RemoveFrame(WorldMapFrame)
 	end
@@ -186,7 +186,7 @@ local function SetupMapAreaLabel(self)
 			end
 
 			if (playerFaction) then
-				local englishFaction = UnitFactionGroup("player")
+				local englishFaction = K.Faction
 				if (playerFaction == "Alliance") then
 					description = string.format(FACTION_CONTROLLED_TERRITORY, FACTION_ALLIANCE)
 				elseif (playerFaction == "Horde") then
@@ -201,7 +201,7 @@ local function SetupMapAreaLabel(self)
 			end
 
 			if (name and playerMinLevel and playerMaxLevel and (playerMinLevel > 0) and (playerMaxLevel > 0)) then
-				local playerLevel = UnitLevel("player")
+				local playerLevel = K.Level
 				local color
 				if (playerLevel < playerMinLevel) then
 					color = GetQuestDifficultyColor(playerMinLevel, playerLevel)
@@ -235,6 +235,65 @@ local function CreateZoneLevels()
 			provider.Label:SetScript("OnUpdate", SetupMapAreaLabel)
 		end
 	end
+end
+
+local function CreateRememberZoom()
+	if not C["WorldMap"].RememberZoom then
+		return
+	end
+
+	-- Store initial pan and zoom settings
+	local lastZoomLevel = WorldMapFrame.ScrollContainer:GetCanvasScale()
+	local lastHorizontal = WorldMapFrame.ScrollContainer:GetNormalizedHorizontalScroll()
+	local lastVertical = WorldMapFrame.ScrollContainer:GetNormalizedVerticalScroll()
+	local lastMapID = WorldMapFrame.mapID
+
+	-- Store pan and zoom settings when map is hidden
+	WorldMapFrame:HookScript("OnHide", function()
+		lastZoomLevel = WorldMapFrame.ScrollContainer:GetCanvasScale()
+		lastHorizontal = WorldMapFrame.ScrollContainer:GetNormalizedHorizontalScroll()
+		lastVertical = WorldMapFrame.ScrollContainer:GetNormalizedVerticalScroll()
+		lastMapID = WorldMapFrame.mapID
+	end)
+
+	-- Restore pan and zoom settings when map is shown
+	WorldMapFrame:HookScript("OnShow", function()
+		if WorldMapFrame.mapID == lastMapID then
+			WorldMapFrame.ScrollContainer:InstantPanAndZoom(lastZoomLevel, lastHorizontal, lastVertical)
+			WorldMapFrame.ScrollContainer:SetPanTarget(lastHorizontal, lastVertical)
+			WorldMapFrame.ScrollContainer:Hide(); WorldMapFrame.ScrollContainer:Show()
+		end
+	end)
+end
+
+local function CreateAutoZoneChange()
+	if not C["WorldMap"].AutoZoneChange then
+		return
+	end
+
+	local constMapZone, constPlayerZone
+
+	-- Store map zone and player zone when map changes
+	hooksecurefunc(WorldMapFrame, "OnMapChanged", function()
+		constMapZone = WorldMapFrame.mapID
+		constPlayerZone = C_Map.GetBestMapForUnit("player")
+	end)
+
+	-- If map zone was player zone before zone change, set map zone to player zone after zone change
+	local zoneEvent = CreateFrame("FRAME")
+	zoneEvent:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	zoneEvent:RegisterEvent("ZONE_CHANGED")
+	zoneEvent:RegisterEvent("ZONE_CHANGED_INDOORS")
+	zoneEvent:SetScript("OnEvent", function()
+		local newMapID = WorldMapFrame.mapID
+		local newPlayerZone = C_Map.GetBestMapForUnit("player")
+		if newMapID and newMapID > 0 and newPlayerZone and newPlayerZone > 0 and constPlayerZone and constPlayerZone > 0 and newMapID == constPlayerZone then
+			if C_Map.MapHasArt(newPlayerZone) then -- Needed for dungeons
+				WorldMapFrame:SetMapID(newPlayerZone)
+			end
+		end
+		constPlayerZone = C_Map.GetBestMapForUnit("player")
+	end)
 end
 
 function Module:OnEnable()
@@ -297,6 +356,8 @@ function Module:OnEnable()
 	CreateMapCoords()
 	CreateMapFader()
 	CreateZoneLevels()
+	CreateRememberZoom()
+	CreateAutoZoneChange()
 
 	self:CreateWorldMapReveal()
 	self:CreateWowHeadLinks()

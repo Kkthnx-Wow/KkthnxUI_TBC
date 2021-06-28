@@ -5,7 +5,6 @@ local _G = _G
 local next = _G.next
 
 local MouseIsOver = _G.MouseIsOver
-local SpellFlyout = _G.SpellFlyout
 local CreateFrame = _G.CreateFrame
 
 local function FaderOnFinished(self)
@@ -43,7 +42,8 @@ local function StartFadeIn(frame)
 	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeInAlpha or 1)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeInDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeInSmooth or "OUT")
-	--start right away
+
+	-- Start right away
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeInDelay or 0)
 	frame.fader.finAlpha = frame.faderConfig.fadeInAlpha
 	frame.fader.direction = "in"
@@ -60,7 +60,8 @@ local function StartFadeOut(frame)
 	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeOutAlpha or 0)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeOutDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeOutSmooth or "OUT")
-	--wait for some time before starting the fadeout
+
+	-- Wait for some time before starting the fadeout
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeOutDelay or 0)
 	frame.fader.finAlpha = frame.faderConfig.fadeOutAlpha
 	frame.fader.direction = "out"
@@ -71,18 +72,6 @@ local function IsMouseOverFrame(frame)
 	if MouseIsOver(frame) then
 		return true
 	end
-
-	-- if not SpellFlyout:IsShown() then
-	-- 	return false
-	-- end
-
-	-- if not SpellFlyout.__faderParent then
-	-- 	return false
-	-- end
-
-	-- if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
-	-- 	return true
-	-- end
 
 	return false
 end
@@ -102,37 +91,6 @@ local function OffFrameHandler(self)
 
 	FrameHandler(self.__faderParent)
 end
-
-local function SpellFlyoutOnShow(self)
-	local frame = self:GetParent():GetParent():GetParent()
-	if not frame.fader then
-		return
-	end
-
-	-- Set New Frame Parent
-	self.__faderParent = frame
-	if not self.__faderHook then
-		SpellFlyout:HookScript("OnEnter", OffFrameHandler)
-		SpellFlyout:HookScript("OnLeave", OffFrameHandler)
-		self.__faderHook = true
-	end
-
-	for i = 1, 13 do
-		local button = _G["SpellFlyoutButton"..i]
-		if not button then
-			break
-		end
-
-		button.__faderParent = frame
-
-		if not button.__faderHook then
-			button:HookScript("OnEnter", OffFrameHandler)
-			button:HookScript("OnLeave", OffFrameHandler)
-			button.__faderHook = true
-		end
-	end
-end
--- SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
 
 local function CreateFrameFader(frame, faderConfig)
 	if frame.faderConfig then

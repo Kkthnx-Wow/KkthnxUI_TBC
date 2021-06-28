@@ -135,6 +135,14 @@ local function ApplyNormalTexture(button, file)
 	hooksecurefunc(button, "SetNormalTexture", ResetNormalTexture)
 end
 
+local function ApplyBlend(texture, blend)
+	if not blend then
+		return
+	end
+
+	texture:SetBlendMode(blend)
+end
+
 local function SetupTexture(texture, cfg, func, button)
 	if not texture or not cfg then
 		return
@@ -144,6 +152,7 @@ local function SetupTexture(texture, cfg, func, button)
 	ApplyPoints(texture, cfg.points)
 	ApplyVertexColor(texture, cfg.color)
 	ApplyAlpha(texture, cfg.alpha)
+	ApplyBlend(texture, cfg.blend)
 
 	if func == "SetTexture" then
 		ApplyTexture(texture, cfg.file)
@@ -172,6 +181,10 @@ local function SetupCooldown(cooldown, cfg)
 	end
 
 	ApplyPoints(cooldown, cfg.points)
+end
+
+local function SetupBorder(icon)
+	icon:CreateBorder()
 end
 
 local keyButton = string_gsub(KEY_BUTTON4, "%d", "")
@@ -248,8 +261,6 @@ function Module:StyleActionButton(button, cfg)
 	local buttonName = button:GetName()
 	local icon = _G[buttonName.."Icon"]
 	local flash = _G[buttonName.."Flash"]
-	local flyoutBorder = _G[buttonName.."FlyoutBorder"]
-	local flyoutBorderShadow = _G[buttonName.."FlyoutBorderShadow"]
 	local hotkey = _G[buttonName.."HotKey"]
 	local count = _G[buttonName.."Count"]
 	local name = _G[buttonName.."Name"]
@@ -278,14 +289,11 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	-- Backdrop
-	button:CreateBorder()
-	button:StyleButton()
+	SetupBorder(icon)
 
 	-- Textures
 	SetupTexture(icon, cfg.icon, "SetTexture", icon)
 	SetupTexture(flash, cfg.flash, "SetTexture", flash)
-	SetupTexture(flyoutBorder, cfg.flyoutBorder, "SetTexture", flyoutBorder)
-	SetupTexture(flyoutBorderShadow, cfg.flyoutBorderShadow, "SetTexture", flyoutBorderShadow)
 	SetupTexture(border, cfg.border, "SetTexture", border)
 	SetupTexture(normalTexture, cfg.normalTexture, "SetNormalTexture", button)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
@@ -376,14 +384,6 @@ function Module:CreateBarSkin()
 			texCoord = K.TexCoords,
 		},
 
-		flyoutBorder = {
-			file = ""
-		},
-
-		flyoutBorderShadow = {
-			file = ""
-		},
-
 		border = {
 			file = ""
 		},
@@ -397,15 +397,19 @@ function Module:CreateBarSkin()
 		},
 
 		pushedTexture = {
-			-- file = ""
+			file = "Interface\\Buttons\\ButtonHilight-Square",
+			color = {246/255, 196/255, 66/255},
+			blend = "ADD",
 		},
 
 		checkedTexture = {
-			-- file = ""
+			file = "Interface\\Buttons\\CheckButtonHilight",
+			blend = "ADD",
 		},
 
 		highlightTexture = {
-			-- file = ""
+			file = "Interface\\Buttons\\ButtonHilight-Square",
+			blend = "ADD",
 		},
 
 		cooldown = {

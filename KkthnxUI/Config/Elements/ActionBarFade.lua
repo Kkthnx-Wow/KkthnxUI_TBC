@@ -2,10 +2,10 @@ local _, C = unpack(select(2, ...))
 
 local ACTIONBAR_FADER = {
 	fadeInAlpha = 1, -- Transparency when displayed
-	fadeInDuration = 0.2, -- Display time-consuming
+	fadeInDuration = 0.3, -- Display time-consuming
 	fadeOutAlpha = 0, -- Transparency after fade
-	fadeOutDelay = 0, -- Delay fade
-	fadeOutDuration = 0.2, -- Fading time-consuming
+	fadeOutDelay = 0.1, -- Delay fade
+	fadeOutDuration = 0.8, -- Fading time-consuming
 }
 
 C.ActionBars = {

@@ -35,7 +35,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 		key = "AuraWatchMover"
 	end
 
-	local mover = CreateFrame("Button", nil, UIParent)
+	local mover = CreateFrame("Frame", nil, UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
 
@@ -225,7 +225,7 @@ local function CreateConsole()
 		return
 	end
 
-	f = CreateFrame("Frame", nil, UIParent)
+	f = f or CreateFrame("Frame", "KKUI_MoverFrame", UIParent)
 	f:SetPoint("CENTER", 0, 150)
 	f:SetSize(218, 90)
 	f:CreateBorder()

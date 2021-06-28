@@ -774,7 +774,7 @@ function Module:OnEnable()
 
 		f.main.keyring = MyContainer:New("Keyring", {Columns = bagsWidth, Parent = f.main})
 		f.main.keyring:SetFilter(filters.onlyKeyring, true)
-		f.main.keyring:SetPoint("TOPRIGHT", f.main, "BOTTOMRIGHT", 0, -5)
+		f.main.keyring:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -6, 0)
 		f.main.keyring:Hide()
 
 		AddNewContainer("Bank", 4, "BankFavourite", filters.bankFavourite)

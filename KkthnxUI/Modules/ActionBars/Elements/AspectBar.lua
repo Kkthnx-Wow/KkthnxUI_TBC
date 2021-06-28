@@ -2,12 +2,14 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local pairs, sort, tinsert = _G.pairs, _G.sort, _G.tinsert
+local pairs = _G.pairs
+local table_insert = _G.table.insert
+local table_sort = _G.table.sort
 
-local GetSpellInfo = _G.GetSpellInfo
 local GetSpellCooldown = _G.GetSpellCooldown
-local UnitAura = _G.UnitAura
+local GetSpellInfo = _G.GetSpellInfo
 local IsPlayerSpell = _G.IsPlayerSpell
+local UnitAura = _G.UnitAura
 
 local aspects = {
 	[1] = {spellID = 13165, known = false}, -- Eagle
@@ -65,17 +67,17 @@ function Module:CreateAspectButton(spellID, index)
 	button.cover:SetTexture("Interface\\Icons\\Spell_Nature_WispSplode")
 
 	knownAspect[name] = true
-	tinsert(aspectButtons, {button, index, name})
+	table_insert(aspectButtons, {button, index, name})
 end
 
-local function sortButtons(a, b)
+local function table_sortButtons(a, b)
 	if a and b then
 		return a[2] < b[2]
 	end
 end
 
 function Module:UpdateAspectAnchor()
-	sort(aspectButtons, sortButtons)
+	table_sort(aspectButtons, table_sortButtons)
 
 	local prevButton
 	for _, value in pairs(aspectButtons) do

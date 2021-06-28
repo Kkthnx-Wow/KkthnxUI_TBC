@@ -69,6 +69,7 @@ function Module:CreatePlayer()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), C["Unitframe"].PlayerHealthTextSize, select(3, self.Health.Value:GetFont()))
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self:Tag(self.Health.Value, "[hp]")
 
@@ -93,7 +94,7 @@ function Module:CreatePlayer()
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	self.Power.Value:SetFontObject(UnitframeFont)
-	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
+	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), C["Unitframe"].PlayerPowerTextSize, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
 	local portraitSize

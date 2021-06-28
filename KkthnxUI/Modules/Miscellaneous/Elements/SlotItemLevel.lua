@@ -84,6 +84,7 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.iLvlText = slotFrame.iLvlText or K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.iLvlText:ClearAllPoints()
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
+
 			local relF, x, y = Module:GetSlotAnchor(index)
 			for i = 1, 5 do
 				local offset = (i - 1) * 20 + 2

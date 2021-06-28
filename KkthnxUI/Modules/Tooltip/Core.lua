@@ -615,14 +615,18 @@ Module:RegisterTooltips("KkthnxUI", function()
 		if WhatsTrainingTooltip then
 			Module.ReskinTooltip(WhatsTrainingTooltip)
 		end
+
+		if GameCooltipFrame then
+			Module.ReskinTooltip(GameCooltipFrame)
+		end
 	end)
 end)
 
--- Module:RegisterTooltips("Blizzard_DebugTools", function()
--- 	Module.ReskinTooltip(FrameStackTooltip)
--- 	Module.ReskinTooltip(EventTraceTooltip)
+Module:RegisterTooltips("Blizzard_DebugTools", function()
+	Module.ReskinTooltip(FrameStackTooltip)
+	FrameStackTooltip:SetScale(UIParent:GetScale())
+end)
 
--- 	FrameStackTooltip:SetScale(UIParent:GetScale())
--- 	EventTraceTooltip:SetParent(UIParent)
--- 	EventTraceTooltip:SetFrameStrata("TOOLTIP")
--- end)
+Module:RegisterTooltips("Blizzard_EventTrace", function()
+	Module.ReskinTooltip(EventTraceTooltip)
+end)

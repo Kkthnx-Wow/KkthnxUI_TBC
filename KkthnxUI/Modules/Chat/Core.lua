@@ -238,6 +238,7 @@ function Module:SkinChat()
 	self.buttonFrame:Kill()
 	--self.ScrollBar:Kill()
 	self.ScrollToBottomButton:Kill()
+	Module:ToggleChatFrameTextures(self)
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
 
@@ -252,12 +253,23 @@ function Module:SkinChat()
 	self.styled = true
 end
 
+function Module:ToggleChatFrameTextures(frame)
+	if C["Chat"].Background then
+		frame:DisableDrawLayer("BORDER")
+		frame:DisableDrawLayer("BACKGROUND")
+	else
+		frame:EnableDrawLayer("BORDER")
+		frame:EnableDrawLayer("BACKGROUND")
+	end
+end
+
 function Module:ToggleChatBackground()
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
 		local frame = _G[chatFrameName]
 		if frame.__background then
 			frame.__background:SetShown(C["Chat"].Background)
 		end
+		Module:ToggleChatFrameTextures(frame)
 	end
 end
 

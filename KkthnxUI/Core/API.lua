@@ -80,7 +80,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	end
 
 	-- Create Our Background (true/false)
-	if UseBackground then
+	if UseBackground == true then
 		if not bFrame.KKUI_Background then
 			local kkui_background = bFrame:CreateTexture()
 			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)

@@ -134,9 +134,17 @@ function Module:CreateWorldMapReveal()
 		return
 	end
 
-	local bu = CreateFrame("CheckButton", nil, _G.WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	bu:SetPoint("TOPRIGHT", -260, 0)
-	bu:SetSize(24, 24)
+	local bu = CreateFrame("CheckButton", nil, _G.WorldMapFrame, "OptionsCheckButtonTemplate")
+
+	if C["Skins"].WorldMap then
+		bu:SetPoint("TOPRIGHT", -270, -78)
+		bu:SetSize(16, 16)
+		bu:SkinCheckBox()
+		bu:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel() + 2)
+	else
+		bu:SetPoint("TOPRIGHT", -260, 0)
+		bu:SetSize(24, 24)
+	end
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")

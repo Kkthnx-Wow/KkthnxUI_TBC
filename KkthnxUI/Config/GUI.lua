@@ -55,10 +55,6 @@ local function UpdateTargetDebuffs()
 	element:ForceUpdate()
 end
 
-local function toggleTaxiDismount()
-	K:GetModule("Automation"):CreateAutoDismount()
-end
-
 local function UpdateBagSortOrder()
 	SetSortBagsRightToLeft(C["Inventory"].BagSortMode.Value == 1)
 end
@@ -171,6 +167,46 @@ local function toggleAspectBar()
 	K:GetModule("ActionBar"):ToggleAspectBar()
 end
 
+local function updatePlayerHealthTextSize()
+	local frame = _G.oUF_Player.Health.Value
+	if not frame then
+		return
+	end
+
+	frame:SetFont(select(1, frame:GetFont()), C["Unitframe"].PlayerHealthTextSize, select(3, frame:GetFont()))
+end
+
+local function updatePlayerPowerTextSize()
+	local frame = _G.oUF_Player.Power.Value
+	if not frame then
+		return
+	end
+
+	frame:SetFont(select(1, frame:GetFont()), C["Unitframe"].PlayerPowerTextSize, select(3, frame:GetFont()))
+end
+
+local function updateTargetHealthTextSize()
+	local frame = _G.oUF_Target.Health.Value
+	if not frame then
+		return
+	end
+
+	frame:SetFont(select(1, frame:GetFont()), C["Unitframe"].TargetHealthTextSize, select(3, frame:GetFont()))
+end
+
+local function updateTargetPowerTextSize()
+	local frame = _G.oUF_Target.Power.Value
+	if not frame then
+		return
+	end
+
+	frame:SetFont(select(1, frame:GetFont()), C["Unitframe"].TargetPowerTextSize, select(3, frame:GetFont()))
+end
+
+local function refreshNameplates()
+	K:GetModule("Unitframes"):RefreshAllPlates()
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -258,7 +294,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
 	Window:CreateSwitch("Automation", "AutoDisenchant", L["Milling, Prospecting & Disenchanting by Alt + Click"])
-	Window:CreateSwitch("Automation", "AutoDismount", L["Dismount When Clicking On Taxi"], nil, toggleTaxiDismount)
+	Window:CreateSwitch("Automation", "AutoDismount", L["Dismount When Clicking On Taxi"])
 	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
@@ -491,6 +527,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "HelmCloakToggle", newFeatureIcon..L["Add Helm/Cloak Toggle Buttons To Character Frame"])
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide Boss Emotes"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
+	Window:CreateSwitch("Misc", "Mail", "Enhance Mail Frame With Many Useful Features")
 	Window:CreateSwitch("Misc", "MuteSounds", L["Mute Various Annoying Sounds In-Game"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
@@ -516,7 +553,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "ColoredTarget", L["Color Targeted Nameplate"])
 	Window:CreateSwitch("Nameplate", "CustomUnitColor", L["Colored Custom Units"])
 	Window:CreateSwitch("Nameplate", "FriendlyCC", L["Show Friendly ClassColor"])
-	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"])
+	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"], nil, refreshNameplates)
 	Window:CreateSwitch("Nameplate", "HostileCC", L["Show Hostile ClassColor"])
 	Window:CreateSwitch("Nameplate", "InsideView", L["Interacted Nameplate Stay Inside"])
 	Window:CreateSwitch("Nameplate", "NameOnly", L["Show Only Names For Friendly"])
@@ -524,23 +561,23 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "QuestIndicator", L["Quest Progress Indicator"])
 	Window:CreateSwitch("Nameplate", "Smooth", L["Smooth Bars Transition"])
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
-	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"])
-	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"])
+	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, refreshNameplates)
+	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, refreshNameplates)
 	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", L["TargetIndicator Texture"])
 	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], updateCustomUnitList)
 	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], updatePowerUnitList)
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1)
+	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "Distance", L["Nameplete MaxDistance"], 0, 41, 1)
 	Window:CreateSlider("Nameplate", "ExecuteRatio", L["Unit Execute Ratio"], 0, 90, 1, L["ExecuteRatioTip"])
-	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1)
-	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1)
+	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "MinAlpha", L["Non-Target Nameplate Alpha"], 0.1, 1, 0.1)
 	Window:CreateSlider("Nameplate", "MinScale", L["Non-Target Nameplate Scale"], 0.1, 3, 0.1)
-	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1)
-	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1)
-	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1)
+	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
 
 	Window:CreateSection("Player Nameplate Toggles")
@@ -550,9 +587,9 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "PPPowerText", L["Show Power Value"])
 
 	Window:CreateSection("Player Nameplate Values")
-	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1)
-	Window:CreateSlider("Nameplate", "PPIconSize", L["PlayerPlate IconSize"], 20, 40, 1)
-	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1)
+	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PPIconSize", L["PlayerPlate IconSize"], 20, 40, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, nil, refreshNameplates)
 
 	Window:CreateSection(COLORS)
 	Window:CreateColorSelection("Nameplate", "CustomColor", L["Custom Color"])
@@ -585,6 +622,7 @@ local Skins = function(self)
 	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
 	Window:CreateSwitch("Skins", "EnhancedQuestLog", L["Visually Enhance QuestLog"])
 	Window:CreateSwitch("Skins", "EnhancedTradeSkill", L["Visually Enhance TradeSkillFrame"])
+	Window:CreateSwitch("Skins", "WorldMap", "Visually Enhance World Map Frame")
 	Window:CreateSlider("Skins", "ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, nil, UpdateChatBubble)
 
 	Window:CreateSection("AddOn Skins")
@@ -697,6 +735,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "PlayerPower", L["Player Power Bar"])
 	Window:CreateSlider("Unitframe", "PlayerFrameHeight", L["Player Frame Height"], 20, 75, 1)
 	Window:CreateSlider("Unitframe", "PlayerFrameWidth", L["Player Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "PlayerHealthTextSize", "Player Health Text Size", 11, 24, 1, nil, updatePlayerHealthTextSize)
+	Window:CreateSlider("Unitframe", "PlayerPowerTextSize", "Player Power Text Size", 11, 24, 1, nil, updatePlayerPowerTextSize)
 
 	Window:CreateSection(TARGET)
 	Window:CreateSwitch("Unitframe", "OnlyShowPlayerDebuff", L["Only Show Your Debuffs"])
@@ -708,6 +748,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "TargetPower", L["Target Power Bar"])
 	Window:CreateSlider("Unitframe", "TargetFrameHeight", L["Target Frame Height"], 20, 75, 1)
 	Window:CreateSlider("Unitframe", "TargetFrameWidth", L["Target Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "TargetHealthTextSize", "Target Health Text Size", 11, 24, 1, nil, updateTargetHealthTextSize)
+	Window:CreateSlider("Unitframe", "TargetPowerTextSize", "Target Power Text Size", 11, 24, 1, nil, updateTargetPowerTextSize)
 
 	Window:CreateSection(PET)
 	Window:CreateSwitch("Unitframe", "PetPower", L["Pet Power Bar"])
@@ -827,6 +869,8 @@ local WorldMap = function(self)
 	Window:CreateSwitch("WorldMap", "Coordinates", L["Show Player/Mouse Coordinates"])
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])
+	Window:CreateSwitch("WorldMap", "AutoZoneChange", "Auto Change Zone")
+	Window:CreateSwitch("WorldMap", "RememberZoom", "Remember Map Zoom Level")
 
 	Window:CreateSection("WorldMap Reveal")
 	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])

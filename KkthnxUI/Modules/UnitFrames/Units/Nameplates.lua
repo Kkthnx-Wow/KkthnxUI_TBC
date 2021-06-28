@@ -898,8 +898,37 @@ function Module:UpdateTargetClassPower()
 	end
 end
 
+function Module:RefreshNameplates()
+	local plateHeight = C["Nameplate"].PlateHeight
+	local nameTextSize = C["Nameplate"].NameTextSize
+	local iconSize = plateHeight * 2 + 3
+
+	for nameplate in pairs(platesList) do
+		nameplate:SetSize(C["Nameplate"].PlateWidth, plateHeight)
+		nameplate.nameText:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.npcTitle:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize - 1, "")
+		nameplate.Castbar.Icon:SetSize(iconSize, iconSize)
+		nameplate.Castbar:SetHeight(plateHeight)
+		nameplate.Castbar.Time:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.Castbar.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.Castbar.spellTarget:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 3, "")
+		nameplate.healthValue:SetFont(C["Media"].Fonts.KkthnxUIFont, C["Nameplate"].HealthTextSize, "")
+		nameplate.healthValue:UpdateTag()
+		-- Module.UpdateNameplateAuras(nameplate)
+		Module.UpdateTargetIndicator(nameplate)
+		Module.UpdateTargetChange(nameplate)
+	end
+end
+
+function Module:RefreshAllPlates()
+	if C["Nameplate"].ShowPlayerPlate then
+		Module:ResizePlayerPlate()
+	end
+	Module:RefreshNameplates()
+end
+
 local DisabledElements = {
-	"Health", "Castbar", "HealPredictionAndAbsorb", "PvPClassificationIndicator", "ThreatIndicator"
+	"Health", "Castbar", "HealthPrediction", "ThreatIndicator"
 }
 function Module:UpdatePlateByType()
 	local name = self.nameText

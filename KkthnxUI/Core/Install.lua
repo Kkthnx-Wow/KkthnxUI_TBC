@@ -849,24 +849,24 @@ local function HelloWorld()
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 	goTutor.text:SetPoint("CENTER")
-	goTutor.text:SetText("Tutorial")
+	goTutor.text:SetText("INSTALL")
 
-	goTutor.glowFrame = CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
+	goTutor.glowFrame = goTutor.glowFrame or CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
 	goTutor.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 	goTutor.glowFrame:SetPoint("TOPLEFT", goTutor, -5, 5)
 	goTutor.glowFrame:SetPoint("BOTTOMRIGHT", goTutor, 5, -5)
 	goTutor.glowFrame:SetBackdropBorderColor(K.r, K.g, K.b)
 	goTutor.glowFrame:Hide()
 
-	goTutor.glowFrame.Animation = goTutor.glowFrame:CreateAnimationGroup()
+	goTutor.glowFrame.Animation = goTutor.glowFrame.Animation or goTutor.glowFrame:CreateAnimationGroup()
 	goTutor.glowFrame.Animation:SetLooping("BOUNCE")
-	goTutor.glowFrame.Animation.Fader = goTutor.glowFrame.Animation:CreateAnimation("Alpha")
+	goTutor.glowFrame.Animation.Fader = goTutor.glowFrame.Animation.Fader or goTutor.glowFrame.Animation:CreateAnimation("Alpha")
 	goTutor.glowFrame.Animation.Fader:SetFromAlpha(0.8)
 	goTutor.glowFrame.Animation.Fader:SetToAlpha(0.2)
 	goTutor.glowFrame.Animation.Fader:SetDuration(1)
 	goTutor.glowFrame.Animation.Fader:SetSmoothing("OUT")
 
-	if not goTutor.glowFrame.Animation:IsPlaying() then
+	if goTutor.glowFrame.Animation and not goTutor.glowFrame.Animation:IsPlaying() then
 		goTutor.glowFrame.Animation:Play()
 		goTutor.glowFrame:Show()
 	end

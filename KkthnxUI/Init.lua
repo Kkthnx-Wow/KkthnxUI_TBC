@@ -52,6 +52,7 @@ do
 	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
 	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
 	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
+	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
 end
@@ -79,7 +80,6 @@ K.Realm = GetRealmName()
 K.FullName = K.Name.."-"..K.Realm
 K.Sex = UnitSex("player")
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
-K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
@@ -97,6 +97,7 @@ K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:5
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
 K.AFKTex = "|T"..FRIENDS_TEXTURE_AFK..":14:14:0:0:16:16:1:15:1:15|t"
 K.DNDTex = "|T"..FRIENDS_TEXTURE_DND..":14:14:0:0:16:16:1:15:1:15|t"
+K.KkthnxUIString = "[KkthnxUI]: "
 
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0

@@ -31,10 +31,12 @@ local function OnUpdate(self, elapsed)
 			coordX, coordY = x, y
 			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
 			Module.CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
+			Module.CoordsDataTextFrame:Show()
 		else
 			coordX, coordY = 0, 0
 			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
 			Module.CoordsDataTextFrame:SetScript("OnUpdate", nil)
+			Module.CoordsDataTextFrame:Hide()
 		end
 
 		self.elapsed = 0
@@ -46,26 +48,15 @@ local function OnEvent()
 	zone = GetZoneText()
 	pvpType, _, faction = GetZonePVPInfo()
 	pvpType = pvpType or "neutral"
-
-	local r, g, b = unpack(zoneInfo[pvpType][2])
-	GameTooltip:AddLine((subzone ~= "") and subzone or zone, r, g, b)
 end
 
 local function OnEnter()
 	GameTooltip:SetOwner(Module.CoordsDataTextFrame, "ANCHOR_BOTTOM", 0, -15)
 	GameTooltip:ClearLines()
 
-	-- if pvpType and not IsInInstance() then
-	-- 	local r, g, b = unpack(zoneInfo[pvpType][2])
-	-- 	if subzone and subzone ~= zone then
-	-- 		GameTooltip:AddLine(subzone, r, g, b)
-	-- 	end
-	-- 	GameTooltip:AddLine(string_format(zoneInfo[pvpType][1], faction or ""), r, g, b)
-	-- end
-
 	if pvpType and not IsInInstance() then
 		local r, g, b = unpack(zoneInfo[pvpType][2])
-		if subzone and subzone ~= zone then
+		if zone and subzone and subzone ~= "" then
 			GameTooltip:AddLine(K.GreyColor..ZONE..":|r "..zone, r, g, b)
 			GameTooltip:AddLine(K.GreyColor.."SubZone"..":|r "..subzone, r, g, b)
 		else
@@ -94,7 +85,7 @@ local function OnMouseUp(_, btn)
 			unitName = UnitName("target")
 		end
 
-		ChatFrame_OpenChat(string_format("%s: %s (%s) %s", "My Position", zone, formatCoords(), unitName or ""), SELECTED_DOCK_FRAME)
+		ChatFrame_OpenChat(string_format("%s: %s %s (%s) %s", "My Position", zone, subzone or "", formatCoords(), unitName or ""), SELECTED_DOCK_FRAME)
 	end
 end
 
@@ -108,13 +99,14 @@ function Module:CreateCoordsDataText()
 	Module.CoordsDataTextFrame:SetSize(24, 24)
 
 	Module.CoordsDataTextFrame.Texture = Module.CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.CoordsDataTextFrame.Texture:SetPoint("LEFT", Module.CoordsDataTextFrame, "LEFT", 0, 0)
-	Module.CoordsDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Movement")
+	Module.CoordsDataTextFrame.Texture:SetPoint("CENTER", Module.CoordsDataTextFrame, "CENTER", 0, 0)
+	Module.CoordsDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp"))
 	Module.CoordsDataTextFrame.Texture:SetSize(24, 24)
+	Module.CoordsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.CoordsDataTextFrame.Text = Module.CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.CoordsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -12)
 
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED", OnEvent)
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS", OnEvent)

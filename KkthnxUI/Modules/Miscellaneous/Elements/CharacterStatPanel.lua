@@ -322,7 +322,7 @@ local function ToggleStatPanel(texture)
 end
 
 function M:CharacterStatePanel()
-	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "KKUI_BasicFrameTemplateWithInset")
+	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "BasicFrameTemplateWithInset")
 	statPanel:SetSize(213, 423)
 	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -14)
 	M.StatPanel = statPanel
