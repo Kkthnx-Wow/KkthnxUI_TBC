@@ -357,7 +357,7 @@ function Module:OnEnable()
 		if LootFrame.selectedQuality >= _G.MASTER_LOOT_THREHOLD then
 			local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName.._G.FONT_COLOR_CODE_CLOSE, self:GetText())
 			if dialog then
-				dialog.data = self.values
+				dialog.data = self.value
 			end
 		else
 			GiveMasterLoot(LootFrame.selectedSlot, self.value)
@@ -371,7 +371,8 @@ function Module:OnEnable()
 
 	_G.StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].preferredIndex = 3
 
-	hooksecurefunc(MasterLooterFrame, 'Hide', function(self)
+	-- Try to fix a weird issue where the ML bugs out the dropdown
+	hooksecurefunc(MasterLooterFrame, "Hide", function(self)
 		self:ClearAllPoints()
 	end)
 

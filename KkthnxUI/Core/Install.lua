@@ -849,7 +849,7 @@ local function HelloWorld()
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 	goTutor.text:SetPoint("CENTER")
-	goTutor.text:SetText("INSTALL")
+	goTutor.text:SetText(L["Install"])
 
 	goTutor.glowFrame = goTutor.glowFrame or CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
 	goTutor.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})

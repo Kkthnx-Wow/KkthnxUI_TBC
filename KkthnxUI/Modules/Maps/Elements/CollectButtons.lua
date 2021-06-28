@@ -98,9 +98,7 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local isGoodLookingIcon = {
-		["ZygorGuidesViewerMapIcon"] = true,
-	}
+	local isGoodLookingIcon = {}
 
 	local currentIndex, pendingTime, timeThreshold = 0, 5, 12
 	local buttons, numMinimapChildren = {}, 0
