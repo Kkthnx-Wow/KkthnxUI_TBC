@@ -75,13 +75,13 @@ function Module:InterruptAlert_Update(...)
 				if auraType and auraType == AURA_TYPE_BUFF or blackList[spellID] then
 					return
 				end
-				SendChatMessage(string_format(infoText, sourceName, destName..GetSpellLink(spellID)), msgChannel())
+				SendChatMessage(string_format(sourceName, infoText, destName, GetSpellLink(spellID)), msgChannel())
 			else
 				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
 					return
 				end
 				-- SendChatMessage(string_format(infoText, sourceName..GetSpellLink(spellID), destName..GetSpellLink(extraskillID)), msgChannel())
-				SendChatMessage(string_format(infoText, destName..GetSpellLink(extraskillID)), msgChannel())
+				SendChatMessage(string_format(infoText, destName, GetSpellLink(extraskillID)), msgChannel())
 			end
 		end
 	end

@@ -154,7 +154,7 @@ function Module:CreateParty()
 		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("TOPLEFT", 24, 22)
+		self.Castbar:SetPoint("TOPLEFT", 22, 22)
 		self.Castbar:SetPoint("TOPRIGHT", 0, 22)
 		self.Castbar:SetHeight(16)
 

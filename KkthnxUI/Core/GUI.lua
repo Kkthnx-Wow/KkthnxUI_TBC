@@ -103,6 +103,7 @@ local CreditLines = {
 	"Alza",
 	ShamanIconColor.."Azilroka",
 	"|cff00c0faBenik|r",
+	WarlockIconColor.."Bitflipped",
 	"Blazeflack",
 	"Caellian",
 	"Caith",
@@ -135,6 +136,7 @@ local CreditLines = {
 	"Tulla",
 	"Tuller",
 	"oUF Team",
+	PaladinIconColor.."Yoni"
 }
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)

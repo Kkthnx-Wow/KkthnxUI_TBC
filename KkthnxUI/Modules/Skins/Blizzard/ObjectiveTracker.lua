@@ -437,7 +437,7 @@ function Module:CreateQuestTracker()
 
 	local timerMover = CreateFrame("Frame", "KKUI_QuestTimerMover", UIParent)
 	timerMover:SetSize(150, 30)
-	K.Mover(timerMover, QUEST_TIMERS, "QuestTimer", {"TOPRIGHT", frame, "TOPLEFT", -10, 0})
+	K.Mover(timerMover, QUEST_TIMERS, "QuestTimer", {"TOPRIGHT", frame, "TOPLEFT", -16, 6})
 
 	hooksecurefunc(QuestTimerFrame, "SetPoint", function(self, _, parent)
 		if parent ~= timerMover then
@@ -445,6 +445,9 @@ function Module:CreateQuestTracker()
 			self:SetPoint("TOP", timerMover)
 		end
 	end)
+
+	QuestTimerFrame:StripTextures()
+	QuestTimerFrame:CreateBorder(nil, nil, 32, nil, -8, nil, nil, nil, nil, nil, nil, nil, -2)
 
 	Module:EnhancedQuestLog()
 	Module:EnhancedQuestTracker()
