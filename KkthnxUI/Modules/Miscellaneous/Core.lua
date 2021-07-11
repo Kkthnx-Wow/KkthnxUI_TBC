@@ -410,15 +410,43 @@ if not IsAddOnLoaded("QuestIconDesaturation") then
 end
 
 function Module:CreateGUIGameMenuButton()
-	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
-	gui:SetText(K.InfoColor.."KkthnxUI|r")
-	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
+	KKUI_GUIButton:SetText(K.InfoColor.."KkthnxUI|r")
+	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	KKUI_GUIButton:SkinButton()
+
 	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
+		local plusHeight = 34
+		GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
+
+		_G.GameMenuButtonOptions:ClearAllPoints()
+		_G.GameMenuButtonOptions:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -16)
+
+		_G.GameMenuButtonUIOptions:ClearAllPoints()
+		_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonKeybindings:ClearAllPoints()
+		_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonMacros:ClearAllPoints()
+		_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonAddons:ClearAllPoints()
+		_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonQuit:ClearAllPoints()
+		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
+
+		if (C_StorePublic.IsEnabled()) then
+			plusHeight = plusHeight + 6
+		elseif (GameMenuButtonRatings:IsShown()) then
+			plusHeight = plusHeight + 6
+		end
+
+		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + plusHeight)
 	end)
 
-	gui:SetScript("OnClick", function()
+	KKUI_GUIButton:SetScript("OnClick", function()
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return

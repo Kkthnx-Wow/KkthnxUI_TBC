@@ -157,6 +157,7 @@
    <Include file="Skins\Blizzard\Character.lua" />
    <Include file="Skins\Blizzard\ChatBubble.lua" />
    <Include file="Skins\Blizzard\ChatFrame.lua" />
+   <Include file="Skins\Blizzard\GameMenu.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />

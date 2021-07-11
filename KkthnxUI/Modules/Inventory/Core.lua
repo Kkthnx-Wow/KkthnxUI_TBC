@@ -118,10 +118,11 @@ function Module:CreateInfoFrame()
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
 	moneyTag:SetPoint("LEFT", icon, "RIGHT", 5, 0)
 
-	-- local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
-	-- currencyTag:SetFontObject(bagsFont)
-	-- currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
-	-- currencyTag:SetPoint("TOP", self, "BOTTOM", 0, -6)
+	local moneyTagFrame = CreateFrame("Frame", nil, UIParent)
+	moneyTagFrame:SetParent(infoFrame)
+	moneyTagFrame:SetAllPoints(moneyTag)
+	moneyTagFrame:SetScript("OnEnter", K.GoldButton_OnEnter)
+	moneyTagFrame:SetScript("OnLeave", K.GoldButton_OnLeave)
 end
 
 function Module:CreateBagBar(settings, columns)

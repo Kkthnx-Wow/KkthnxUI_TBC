@@ -20,7 +20,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
-local GoldDataTextFrame
+local GoldDataText
 local slotString = "Bags"..": %s%d"
 local profit = 0
 local spent = 0
@@ -65,7 +65,7 @@ end
 local function OnEvent(_, event, arg1)
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
-		GoldDataTextFrame:UnregisterEvent(event)
+		GoldDataText:UnregisterEvent(event)
 	elseif event == "BAG_UPDATE" then
 		if arg1 < 0 or arg1 > 4 then
 			return
@@ -82,12 +82,12 @@ local function OnEvent(_, event, arg1)
 
 	if C["DataText"].Gold then
 		if C["DataText"].HideText then
-			GoldDataTextFrame.Text:SetText("")
+			GoldDataText.Text:SetText("")
 		else
 			if KkthnxUIDB.ShowSlots then
-				GoldDataTextFrame.Text:SetText(getSlotString())
+				GoldDataText.Text:SetText(getSlotString())
 			else
-				GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+				GoldDataText.Text:SetText(K.FormatMoney(newMoney))
 			end
 		end
 	end
@@ -113,9 +113,9 @@ local function OnEvent(_, event, arg1)
 	oldMoney = newMoney
 end
 
-local function OnEnter()
-	GameTooltip:SetOwner(GoldDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint("BOTTOMLEFT", GoldDataTextFrame, "TOPRIGHT", 2, 2)
+local function OnEnter(self)
+	GameTooltip:SetOwner(GoldDataText, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
@@ -148,12 +148,15 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
 
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Toggle Bags".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+	if self == GoldDataText then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(" ", K.LeftButton.."Toggle Bags".." ", 1, 1, 1, 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+	end
 	GameTooltip:Show()
 end
+K.GoldButton_OnEnter = OnEnter
 
 local function OnMouseUp(_, btn)
 	if btn == "RightButton" then
@@ -162,9 +165,9 @@ local function OnMouseUp(_, btn)
 		else
 			KkthnxUIDB.ShowSlots = not KkthnxUIDB.ShowSlots
 			if KkthnxUIDB.ShowSlots then
-				GoldDataTextFrame:RegisterEvent("BAG_UPDATE")
+				GoldDataText:RegisterEvent("BAG_UPDATE")
 			else
-				GoldDataTextFrame:UnregisterEvent("BAG_UPDATE")
+				GoldDataText:UnregisterEvent("BAG_UPDATE")
 			end
 			OnEvent()
 		end
@@ -182,41 +185,42 @@ end
 local function OnLeave()
 	K.HideTooltip()
 end
+K.GoldButton_OnLeave = OnLeave
 
 function Module:CreateGoldDataText()
 	if not C["DataText"].Gold then
 		return
 	end
 
-	GoldDataTextFrame = GoldDataTextFrame or CreateFrame("Button", nil, UIParent)
+	GoldDataText = GoldDataText or CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
-		GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		GoldDataTextFrame:SetSize(24, 24)
+		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
+		GoldDataText:SetSize(24, 24)
 
-		GoldDataTextFrame.Texture = GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-		GoldDataTextFrame.Texture:SetPoint("LEFT", GoldDataTextFrame, "LEFT", 0, 0)
-		GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
-		GoldDataTextFrame.Texture:SetSize(24, 24)
-		GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "BACKGROUND")
+		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 0, 0)
+		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		GoldDataText.Texture:SetSize(24, 24)
+		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-		GoldDataTextFrame.Text = GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
-		GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		GoldDataTextFrame.Text:SetPoint("LEFT", GoldDataTextFrame.Texture, "RIGHT", 0, 0)
+		GoldDataText.Text = GoldDataText:CreateFontString(nil, "ARTWORK")
+		GoldDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 0, 0)
 	end
 
-	GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
-	GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
-	GoldDataTextFrame:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
-	GoldDataTextFrame:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
-	GoldDataTextFrame:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
-	GoldDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	GoldDataText:RegisterEvent("PLAYER_MONEY", OnEvent)
+	GoldDataText:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
+	GoldDataText:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 
-	GoldDataTextFrame:SetScript("OnEvent", OnEvent)
+	GoldDataText:SetScript("OnEvent", OnEvent)
+	GoldDataText:SetScript("OnEnter", OnEnter)
+	GoldDataText:SetScript("OnLeave", OnLeave)
 	if C["DataText"].Gold then
-		GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-		GoldDataTextFrame:SetScript("OnEnter", OnEnter)
-		GoldDataTextFrame:SetScript("OnLeave", OnLeave)
+		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		K.Mover(GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
+		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
 	end
 end

@@ -283,6 +283,47 @@ function Module:UpdateBlipTexture()
 	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
 end
 
+local function UpdateDifficultyFlag()
+	local frame = _G["KKUI_MinimapDifficulty"]
+	local _, instanceType, difficulty, _, _, _, _, _, instanceGroupSize = GetInstanceInfo()
+	local _, _, isHeroic, _, displayHeroic = GetDifficultyInfo(difficulty)
+	if instanceType == "raid" or isHeroic or displayHeroic then
+		if isHeroic or displayHeroic then
+			frame.tex:SetTexCoord(0, .25, .0703125, .4296875)
+		else
+			frame.tex:SetTexCoord(0, .25, .5703125, .9296875)
+		end
+		frame.text:SetText(instanceGroupSize)
+		frame:Show()
+	else
+		frame:Hide()
+	end
+end
+
+function Module:MinimapDifficulty()
+	if _G.MiniMapInstanceDifficulty then -- hide flag if blizz makes its own
+		return
+	end
+
+	local frame = CreateFrame("Frame", "KKUI_MinimapDifficulty", Minimap)
+	frame:SetSize(38, 46)
+	frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+	frame:SetScale(0.9)
+
+	local tex = frame:CreateTexture(nil, "ARTWORK")
+	tex:SetTexture("Interface\\Minimap\\UI-DungeonDifficulty-Button")
+	tex:SetPoint("CENTER")
+	tex:SetSize(64, 46)
+	tex:SetTexCoord(0, 0.25, 0.0703125, 0.4140625)
+	frame.tex = tex
+
+	frame.text = K.CreateFontString(frame, 12, "", "", false, "CENTER", 1, -8)
+
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateDifficultyFlag)
+	K:RegisterEvent("UPDATE_INSTANCE_INFO", UpdateDifficultyFlag)
+	K:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED", UpdateDifficultyFlag)
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -331,6 +372,7 @@ function Module:OnEnable()
 	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
+	self:MinimapDifficulty()
 
 	if LibDBIcon10_TownsfolkTracker then
 		LibDBIcon10_TownsfolkTracker:DisableDrawLayer("OVERLAY")

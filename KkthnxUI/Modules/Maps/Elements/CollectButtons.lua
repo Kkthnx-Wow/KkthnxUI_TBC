@@ -22,19 +22,18 @@ function Module:CreateRecycleBin()
 	end
 
 	local blackList = {
-		["GameTimeFrame"] = true,
-		["MiniMapLFGFrame"] = true,
 		["BattlefieldMinimap"] = true,
-		["MinimapBackdrop"] = true,
-		["TimeManagerClockButton"] = true,
 		["FeedbackUIButton"] = true,
-		["HelpOpenTicketButton"] = true,
-		["MiniMapBattlefieldFrame"] = true,
-		["QueueStatusMinimapButton"] = true,
+		["GameTimeFrame"] = true,
 		["GarrisonLandingPageMinimapButton"] = true,
+		["MiniMapBattlefieldFrame"] = true,
+		["MiniMapLFGFrame"] = true,
+		["MinimapBackdrop"] = true,
 		["MinimapZoneTextButton"] = true,
+		["QueueStatusMinimapButton"] = true,
 		["RecycleBinFrame"] = true,
 		["RecycleBinToggleButton"] = true,
+		["TimeManagerClockButton"] = true,
 	}
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
@@ -86,8 +85,6 @@ function Module:CreateRecycleBin()
 	local ignoredButtons = {
 		["GatherMatePin"] = true,
 		["HandyNotes.-Pin"] = true,
-		["Guidelime"] = true,
-		["QuestieFrame"] = true,
 	}
 
 	local function isButtonIgnored(name)
@@ -98,8 +95,13 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local isGoodLookingIcon = {}
+	local isGoodLookingIcon = {
+		["Narci_MinimapButton"] = true,
+		["ZygorGuidesViewerMapIcon"] = true,
+	}
 
+	local iconsPerRow = 6
+	local rowMult = iconsPerRow / 2 - 1
 	local currentIndex, pendingTime, timeThreshold = 0, 5, 12
 	local buttons, numMinimapChildren = {}, 0
 	local removedTextures = {
@@ -176,7 +178,7 @@ function Module:CreateRecycleBin()
 				local name = child and child.GetName and child:GetName()
 				if name and not child.isExamed and not blackList[name] then
 					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not isButtonIgnored(name) then
-						ReskinMinimapButton(child)
+						ReskinMinimapButton(child, name)
 					end
 					child.isExamed = true
 				end
@@ -193,31 +195,44 @@ function Module:CreateRecycleBin()
 		end
 	end
 
+	local shownButtons = {}
 	local function SortRubbish()
 		if #buttons == 0 then
 			return
 		end
 
-		local lastbutton
+		table.wipe(shownButtons)
 		for _, button in pairs(buttons) do
 			if next(button) and button:IsShown() then -- fix for fuxking AHDB
-				button:ClearAllPoints()
-				if not lastbutton then
-					button:SetPoint("RIGHT", bin, -4, 0)
-				else
-					button:SetPoint("RIGHT", lastbutton, "LEFT", -5, 0)
-				end
-				lastbutton = button
+				table_insert(shownButtons, button)
 			end
 		end
+
+		local lastbutton
+		for index, button in pairs(shownButtons) do
+			button:ClearAllPoints()
+			if not lastbutton then
+				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
+			elseif mod(index, iconsPerRow) == 1 then
+				button:SetPoint("TOP", shownButtons[index - iconsPerRow], "BOTTOM", 0, -6)
+			else
+				button:SetPoint("RIGHT", lastbutton, "LEFT", -6, 0)
+			end
+			lastbutton = button
+		end
+
+		local numShown = #shownButtons
+		local row = numShown == 0 and 1 or K.Round((numShown + rowMult) / iconsPerRow)
+		local newHeight = row * 37 + 3
+		bin:SetHeight(newHeight)
 	end
 
 	bu:SetScript("OnClick", function()
-		SortRubbish()
 		if bin:IsShown() then
 			clickFunc()
 		else
 			PlaySound(825)
+			SortRubbish()
 			UIFrameFadeIn(bin, 0.5, 0, 1)
 		end
 	end)

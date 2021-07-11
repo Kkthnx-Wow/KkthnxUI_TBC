@@ -3,22 +3,23 @@ local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
-local wipe, select, pairs, tonumber = wipe, select, pairs, tonumber
-local strsplit, strfind = strsplit, strfind
+local wipe, select, pairs, tonumber = _G.wipe, _G.select, _G.pairs, _G.tonumber
+local strsplit, strfind = _G.strsplit, _G.strfind
 
-local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR
-local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
-local C_Mail_IsCommandPending = C_Mail.IsCommandPending
-local C_Timer_After = C_Timer.After
-local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo
-local GetSendMailPrice, GetMoney = GetSendMailPrice, GetMoney
-local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem
-local NORMAL_STRING = GUILDCONTROL_OPTION16
-local OPENING_STRING = OPEN_ALL_MAIL_BUTTON_OPENING
+local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = _G.ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
+local C_Mail_HasInboxMoney = _G.C_Mail.HasInboxMoney
+local C_Mail_IsCommandPending = _G.C_Mail.IsCommandPending
+local C_Timer_After = _G.C_Timer.After
+local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = _G.GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
+local GetSendMailPrice, GetMoney = _G.GetSendMailPrice, _G.GetMoney
+local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = _G.InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
+local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
+local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
 
 local mailIndex, timeToWait, totalCash, inboxItems = 0, .15, 0, {}
 local isGoldCollecting
 local contactList = {}
+local contactListByRealm = {}
 
 function Module:MailBox_DelectClick()
 	local selectedID = self.id + (InboxFrame.pageNum - 1) * 7
@@ -115,20 +116,31 @@ function Module:ContactButton_Create(parent, index)
 	return button
 end
 
+local function GenerateDataByRealm(realm)
+	if contactListByRealm[realm] then
+		for name, color in pairs(contactListByRealm[realm]) do
+			local r, g, b = strsplit(":", color)
+			table.insert(contactList, {name = name.."-"..realm, r = r, g = g, b = b})
+		end
+	end
+end
+
 function Module:ContactList_Refresh()
 	wipe(contactList)
+	wipe(contactListByRealm)
 
-	local count = 0
-	for name, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
-		count = count + 1
-		local r, g, b = strsplit(":", color)
-		if not contactList[count] then
-			contactList[count] = {}
+	for fullname, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
+		local name, realm = strsplit("-", fullname)
+		if not contactListByRealm[realm] then contactListByRealm[realm] = {} end
+		contactListByRealm[realm][name] = color
+	end
+
+	GenerateDataByRealm(K.Realm)
+
+	for realm in pairs(contactListByRealm) do
+		if realm ~= K.Realm then
+			GenerateDataByRealm(realm)
 		end
-		contactList[count].name = name
-		contactList[count].r = r
-		contactList[count].g = g
-		contactList[count].b = b
 	end
 
 	Module:ContactList_Update()
@@ -420,16 +432,16 @@ function Module:LastMailSaver()
 	mailSaver:SetHitRectInsets(0, 0, 0, 0)
 	mailSaver:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 0, 0)
 	mailSaver:SetSize(24, 24)
-	mailSaver:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver)
+	mailSaver:SetChecked(C["Misc"].MailSaver)
 	mailSaver:SetScript("OnClick", function(self)
-		KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver = self:GetChecked()
+		C["Misc"].MailSaver = self:GetChecked()
 	end)
 	K.AddTooltip(mailSaver, "ANCHOR_TOP", L["Save Mail Target"])
 
 	local resetPending
 	hooksecurefunc("SendMailFrame_SendMail", function()
-		if KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver then
-			KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget = SendMailNameEditBox:GetText()
+		if C["Misc"].MailSaver then
+			C["Misc"].MailTarget = SendMailNameEditBox:GetText()
 			resetPending = true
 		else
 			resetPending = nil
@@ -439,13 +451,13 @@ function Module:LastMailSaver()
 	hooksecurefunc(SendMailNameEditBox, "SetText", function(self, text)
 		if resetPending and text == "" then
 			resetPending = nil
-			self:SetText(KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget)
+			self:SetText(C["Misc"].MailTarget)
 		end
 	end)
 
 	SendMailFrame:HookScript("OnShow", function()
-		if KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver then
-			SendMailNameEditBox:SetText(KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget)
+		if C["Misc"].MailSaver then
+			SendMailNameEditBox:SetText(C["Misc"].MailTarget)
 		end
 	end)
 end

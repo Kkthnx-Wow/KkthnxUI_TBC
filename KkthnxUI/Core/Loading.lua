@@ -203,14 +203,6 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget then
-		KkthnxUIDB.Variables[K.Realm][K.Name].MailTarget = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver == nil then
-		KkthnxUIDB.Variables[K.Realm][K.Name].MailSaver = false
-	end
-
 	-- Settings
 	if (not KkthnxUIDB.Settings) then
 		KkthnxUIDB.Settings = {}

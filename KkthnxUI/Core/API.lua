@@ -297,7 +297,11 @@ local function SetModifiedBackdrop(self)
 end
 
 local function SetOriginalBackdrop(self)
-	self.KKUI_Border:SetVertexColor(1, 1, 1)
+	if C["General"].ColorTextures then
+		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+	else
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
 end
 
 local blizzButtonRegions = {

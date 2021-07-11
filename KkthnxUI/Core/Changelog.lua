@@ -15,7 +15,12 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
+	"Added skinning to the gamemenu frame",
 	"Fixed interrupt module throwing an error",
+	"Fixed saved variables for aurawatch when being reset",
+	"Updated bags gold text to show gold info on mouseover",
+	"Updated minimap to show instance difficulty",
+	"Updated rare alert module code and sound",
 }
 
 local changelogFrame
@@ -31,7 +36,7 @@ local function changelog()
 	changelogFrame:CreateBorder()
 
 	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 208, 16)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 210, 16)
 	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
 	K.CreateMoverFrame(changelogFrame)
 
