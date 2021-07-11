@@ -23,7 +23,7 @@ table_insert(C.defaultThemes, function()
 	local NewBorder = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 	NewBorder:SetPoint("TOPLEFT", 6, -6)
 	NewBorder:SetPoint("BOTTOMRIGHT", -6, 6)
-	NewBorder:CreateBorder(nil, nil, 32, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
+	NewBorder:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
 
 	WorldMapFrameCloseButton:SetFrameLevel(10)
 	WorldMapFrameCloseButton:SetSize(34, 34)

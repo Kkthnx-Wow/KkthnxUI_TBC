@@ -419,8 +419,8 @@ function Module:CreateGUIGameMenuButton()
 		local plusHeight = 34
 		GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
 
-		_G.GameMenuButtonOptions:ClearAllPoints()
-		_G.GameMenuButtonOptions:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -16)
+		_G.GameMenuButtonStore:ClearAllPoints()
+		_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
 
 		_G.GameMenuButtonUIOptions:ClearAllPoints()
 		_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)

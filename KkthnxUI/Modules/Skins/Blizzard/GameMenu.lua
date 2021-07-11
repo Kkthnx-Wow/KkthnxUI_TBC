@@ -8,7 +8,7 @@ table_insert(C.defaultThemes, function()
 	GameMenuFrameHeader:ClearAllPoints()
 	GameMenuFrameHeader:SetPoint("TOP", GameMenuFrame, 0, 7)
     GameMenuFrame:StripTextures()
-	GameMenuFrame:CreateBorder(nil, nil, 32, nil, -10)
+	GameMenuFrame:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10 or nil)
 
 	local buttons = {
 		GameMenuButtonHelp,

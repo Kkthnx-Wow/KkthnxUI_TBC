@@ -447,7 +447,7 @@ function Module:CreateQuestTracker()
 	end)
 
 	QuestTimerFrame:StripTextures()
-	QuestTimerFrame:CreateBorder(nil, nil, 32, nil, -8, nil, nil, nil, nil, nil, nil, nil, -2)
+	QuestTimerFrame:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -8 or nil, nil, nil, nil, nil, nil, nil, nil, -2)
 
 	Module:EnhancedQuestLog()
 	Module:EnhancedQuestTracker()
