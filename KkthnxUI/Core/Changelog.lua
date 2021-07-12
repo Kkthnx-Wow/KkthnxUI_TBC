@@ -16,6 +16,7 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	"Added check to ignore pixel border option if we are sizing the border",
+	"Fixed chat ebitbox inset so it will not overlap character count",
 	"Fixed gold datatext throwing nil error for tooltip on bags",
 	"Fixed minimap button collection picking up questie",
 }
