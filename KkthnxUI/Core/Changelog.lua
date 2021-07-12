@@ -15,12 +15,9 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added skinning to the gamemenu frame",
-	"Fixed interrupt module throwing an error",
-	"Fixed saved variables for aurawatch when being reset",
-	"Updated bags gold text to show gold info on mouseover",
-	"Updated minimap to show instance difficulty",
-	"Updated rare alert module code and sound",
+	"Added check to ignore pixel border option if we are sizing the border",
+	"Fixed gold datatext throwing nil error for tooltip on bags",
+	"Fixed minimap button collection picking up questie",
 }
 
 local changelogFrame
