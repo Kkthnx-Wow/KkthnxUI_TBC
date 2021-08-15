@@ -3,6 +3,7 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 
+local AmmoEquipLoc = _G.INVTYPE_AMMO
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
 local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
@@ -50,7 +51,7 @@ local function isItemAmmo(item)
 	end
 
 	if K.Class == "HUNTER" then
-		return item.equipLoc == "INVTYPE_AMMO" or Module.BagsType[item.bagID] == -1
+		return item.equipLoc == AmmoEquipLoc or Module.BagsType[item.bagID] == -1
 	elseif K.Class == "WARLOCK" then
 		return item.id == 6265 or Module.BagsType[item.bagID] == 1
 	end
