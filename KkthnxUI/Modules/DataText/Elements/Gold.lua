@@ -2,30 +2,28 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
-local string_format = _G.string.format
 local pairs = _G.pairs
+local string_format = _G.string.format
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CURRENCY = _G.CURRENCY
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
 local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
 local GetMoney = _G.GetMoney
-local InCombatLockdown = _G.InCombatLockdown
 local IsControlKeyDown = _G.IsControlKeyDown
 local NO = _G.NO
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
-local GoldDataText
 local slotString = "Bags"..": %s%d"
 local profit = 0
 local spent = 0
 local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
+local GoldDataText
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = {[1] = K.Realm}
@@ -63,6 +61,10 @@ local function getSlotString()
 end
 
 local function OnEvent(_, event, arg1)
+	if not IsLoggedIn() then
+		return
+	end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		GoldDataText:UnregisterEvent(event)
@@ -112,6 +114,7 @@ local function OnEvent(_, event, arg1)
 
 	oldMoney = newMoney
 end
+K.GoldButton_OnEvent = OnEvent
 
 local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -121,7 +124,7 @@ local function OnEnter(self)
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
+	GameTooltip:AddLine(L["Session"], 0.5, 0.7, 1)
 	GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
 	GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
 	if profit < spent then
@@ -132,7 +135,7 @@ local function OnEnter(self)
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
+	GameTooltip:AddLine(L["RealmCharacter"], 0.5, 0.7, 1)
 	for realm in pairs(KkthnxUIDB.Gold.ServerID[K.ServerID]) do
 		local thisRealmList = KkthnxUIDB.Gold.totalGold[realm]
 		if thisRealmList then
@@ -150,21 +153,21 @@ local function OnEnter(self)
 
 	if self == GoldDataText then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(" ", K.LeftButton.."Toggle Bags".." ", 1, 1, 1, 0.6, 0.8, 1)
-		GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1,1,1, 0.6, 0.8, 1)
-		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.5, 0.7, 1)
 	end
 	GameTooltip:Show()
 end
 K.GoldButton_OnEnter = OnEnter
 
-local function OnMouseUp(_, btn)
+local function OnMouseUp(self, btn)
 	if btn == "RightButton" then
 		if IsControlKeyDown() then
 			StaticPopup_Show("RESETGOLD")
 		else
-			KkthnxUIDB.ShowSlots = not KkthnxUIDB.ShowSlots
-			if KkthnxUIDB.ShowSlots then
+			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
+			if KkthnxUIDB["ShowSlots"] then
 				GoldDataText:RegisterEvent("BAG_UPDATE")
 			else
 				GoldDataText:UnregisterEvent("BAG_UPDATE")
@@ -172,13 +175,9 @@ local function OnMouseUp(_, btn)
 			OnEvent()
 		end
 	elseif btn == "MiddleButton" then
-		OnEnter()
+		OnEnter(self)
 	else
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
-		ToggleAllBags()
+		ToggleCharacter("TokenFrame")
 	end
 end
 
@@ -188,11 +187,7 @@ end
 K.GoldButton_OnLeave = OnLeave
 
 function Module:CreateGoldDataText()
-	if not C["DataText"].Gold then
-		return
-	end
-
-	GoldDataText = GoldDataText or CreateFrame("Button", nil, UIParent)
+	GoldDataText = GoldDataText or CreateFrame("Button", "KKUI_GoldDataText", UIParent)
 	if C["DataText"].Gold then
 		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
 		GoldDataText:SetSize(24, 24)
@@ -221,6 +216,6 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 0, -302})
+		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
 	end
 end
