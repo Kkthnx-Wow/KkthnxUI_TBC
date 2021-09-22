@@ -11,17 +11,19 @@ local CreateFrame = _G.CreateFrame
 local CursorOnUpdate = _G.CursorOnUpdate
 local CursorUpdate = _G.CursorUpdate
 local GameTooltip = _G.GameTooltip
-local GetCursorPosition = _G.GetCursorPosition
 local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
+local GetCursorPosition = _G.GetCursorPosition
 local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetNumLootItems = _G.GetNumLootItems
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
-local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local LOOT = _G.LOOT
 local LootSlotHasItem = _G.LootSlotHasItem
+local MasterLooterFrame_Show = _G.MasterLooterFrame_Show
+local MasterLooterFrame_UpdatePlayers = _G.MasterLooterFrame_UpdatePlayers
 local ResetCursor = _G.ResetCursor
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local TEXTURE_ITEM_QUEST_BANG = _G.TEXTURE_ITEM_QUEST_BANG
@@ -39,7 +41,9 @@ local coinTextureIDs = {
 }
 
 -- Credit Haste
-local iconSize, lootFrame, lootFrameHolder = 30
+local iconSize = 30
+local lootFrame
+local lootFrameHolder
 
 local function OnEnter(self)
 	local slot = self:GetID()
@@ -55,7 +59,7 @@ end
 
 local function OnLeave(self)
 	if self.quality and (self.quality > 1) then
-		local color = ITEM_QUALITY_COLORS[self.quality]
+		local color = ITEM_QUALITY_COLORS[self.quality or 0]
 		self.drop:SetVertexColor(color.r, color.g, color.b)
 	else
 		self.drop:Hide()
@@ -243,10 +247,8 @@ function Module.LOOT_OPENED(_, autoloot)
 
 			slot.quality = quality
 			slot.name:SetText(item)
-			if color then
-				slot.name:SetTextColor(color.r, color.g, color.b)
-				slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-			end
+			slot.name:SetTextColor(color.r, color.g, color.b)
+			slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 			slot.icon:SetTexture(textureID)
 
 			if quality then
@@ -276,12 +278,9 @@ function Module.LOOT_OPENED(_, autoloot)
 	else
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
-
-		slot.name:SetText(L["Empty Slot"])
-		if color then
-			slot.name:SetTextColor(color.r, color.g, color.b)
-		end
-		slot.icon:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
+		slot.name:SetText("No Loot")
+		slot.name:SetTextColor(color.r, color.g, color.b)
+		slot.icon:SetTexture()
 
 		w = max(w, slot.name:GetStringWidth())
 
@@ -301,11 +300,13 @@ function Module.LOOT_OPENED(_, autoloot)
 end
 
 function Module:OPEN_MASTER_LOOT_LIST()
-	ToggleDropDownMenu(1, nil, _G.GroupLootDropDown, lootFrame.slots[_G.LootFrame.selectedSlot], 0, 0)
+	MasterLooterFrame_Show(_G.LootFrame.selectedLootButton)
 end
 
 function Module:UPDATE_MASTER_LOOT_LIST()
-	UIDropDownMenu_Refresh(_G.GroupLootDropDown)
+	if _G.LootFrame.selectedLootButton then
+		MasterLooterFrame_UpdatePlayers()
+	end
 end
 
 function Module:OnEnable()
@@ -337,6 +338,10 @@ function Module:OnEnable()
 	lootFrame:SetScript("OnHide", function()
 		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
 		CloseLoot()
+
+		if _G.MasterLooterFrame then
+			_G.MasterLooterFrame:Hide()
+		end
 	end)
 
 	K:RegisterEvent("LOOT_OPENED", self.LOOT_OPENED)
@@ -351,30 +356,6 @@ function Module:OnEnable()
 
 	LootFrame:UnregisterAllEvents()
 	table_insert(UISpecialFrames, "KKUI_LootFrame")
-
-	function _G.GroupLootDropDown_GiveLoot()
-		local LootFrame = _G.LootFrame
-		if LootFrame.selectedQuality >= _G.MASTER_LOOT_THREHOLD then
-			local dialog = StaticPopup_Show("CONFIRM_LOOT_DISTRIBUTION", ITEM_QUALITY_COLORS[LootFrame.selectedQuality].hex..LootFrame.selectedItemName.._G.FONT_COLOR_CODE_CLOSE, self:GetText())
-			if dialog then
-				dialog.data = self.value
-			end
-		else
-			GiveMasterLoot(LootFrame.selectedSlot, self.value)
-		end
-		CloseDropDownMenus()
-	end
-
-	StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(data)
-		GiveMasterLoot(_G.LootFrame.selectedSlot, data)
-	end
-
-	_G.StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].preferredIndex = 3
-
-	-- Try to fix a weird issue where the ML bugs out the dropdown
-	hooksecurefunc(MasterLooterFrame, "Hide", function(self)
-		self:ClearAllPoints()
-	end)
 
 	self:CreateAutoConfirm()
 	self:CreateAutoGreed()
