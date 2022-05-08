@@ -502,7 +502,7 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
-	hooksecurefunc("GameTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
+	hooksecurefunc("SharedTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements
