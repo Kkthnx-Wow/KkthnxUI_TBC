@@ -65,9 +65,9 @@ local classification = {
 	worldboss = string_format("|cffAF5050 %s|r", BOSS),
 	rareelite = string_format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
 	elite = "|cffAF5050+|r",
-	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC)
+	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
-local npcIDstring = "ID: "..K.InfoColor.."%s"
+local npcIDstring = "ID: " .. K.InfoColor .. "%s"
 
 function Module:GetUnit()
 	local _, unit = self and self:GetUnit()
@@ -85,7 +85,7 @@ function Module:HideLines()
 	end
 
 	for i = 3, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft"..i]
+		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
@@ -96,14 +96,14 @@ function Module:HideLines()
 					tiptext:SetText(nil)
 					tiptext:Hide()
 				else
-					tiptext:SetText("|cffff5040"..linetext.."|r")
+					tiptext:SetText("|cffff5040" .. linetext .. "|r")
 				end
 			elseif linetext == FACTION_ALLIANCE then
 				if C["Tooltip"].FactionIcon then
 					tiptext:SetText(nil)
 					tiptext:Hide()
 				else
-					tiptext:SetText("|cff4080ff"..linetext.."|r")
+					tiptext:SetText("|cff4080ff" .. linetext .. "|r")
 				end
 			end
 		end
@@ -116,7 +116,7 @@ function Module:GetLevelLine()
 	end
 
 	for i = 2, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft"..i]
+		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 		if linetext and string_find(linetext, LEVEL) then
 			return tiptext
@@ -126,9 +126,9 @@ end
 
 function Module:GetTarget(unit)
 	if UnitIsUnit(unit, "player") then
-		return string_format("|cffff0000%s|r", ">"..string_upper(YOU).."<")
+		return string_format("|cffff0000%s|r", ">" .. string_upper(YOU) .. "<")
 	else
-		return K.RGBToHex(K.UnitColor(unit))..UnitName(unit).."|r"
+		return K.RGBToHex(K.UnitColor(unit)) .. UnitName(unit) .. "|r"
 	end
 end
 
@@ -140,7 +140,7 @@ function Module:InsertFactionFrame(faction)
 		self.factionFrame:SetSize(38, 38)
 	end
 
-	self.factionFrame:SetTexture("Interface\\Timer\\"..faction.."-Logo")
+	self.factionFrame:SetTexture("Interface\\Timer\\" .. faction .. "-Logo")
 	self.factionFrame:SetAlpha(0.3)
 end
 
@@ -178,7 +178,7 @@ function Module:OnTooltipSetUnit()
 		end
 
 		if ricon and text then
-			GameTooltipTextLeft1:SetFormattedText(("%s %s"), ICON_LIST[ricon].."18|t", text)
+			GameTooltipTextLeft1:SetFormattedText("%s %s", ICON_LIST[ricon] .. "18|t", text)
 		end
 
 		local isPlayer = UnitIsPlayer(unit)
@@ -193,11 +193,11 @@ function Module:OnTooltipSetUnit()
 
 			if realm and realm ~= "" then
 				if isShiftKeyDown or not C["Tooltip"].HideRealm then
-					name = name.."-"..realm
+					name = name .. "-" .. realm
 				elseif relationship == LE_REALM_RELATION_COALESCED then
-					name = name..FOREIGN_SERVER_LABEL
+					name = name .. FOREIGN_SERVER_LABEL
 				elseif relationship == LE_REALM_RELATION_VIRTUAL then
-					name = name..INTERACTIVE_SERVER_LABEL
+					name = name .. INTERACTIVE_SERVER_LABEL
 				end
 			end
 
@@ -205,7 +205,7 @@ function Module:OnTooltipSetUnit()
 			if status then
 				status = string_format(" |cffffcc00[%s]|r", status)
 			end
-			GameTooltipTextLeft1:SetFormattedText("%s", name..(status or ""))
+			GameTooltipTextLeft1:SetFormattedText("%s", name .. (status or ""))
 
 			if C["Tooltip"].FactionIcon then
 				local faction = UnitFactionGroup(unit)
@@ -230,7 +230,7 @@ function Module:OnTooltipSetUnit()
 				end
 
 				if guildRealm and isShiftKeyDown then
-					guildName = guildName.."-"..guildRealm
+					guildName = guildName .. "-" .. guildRealm
 				end
 
 				if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
@@ -238,12 +238,12 @@ function Module:OnTooltipSetUnit()
 						guildName = "..."
 					end
 				end
-				GameTooltipTextLeft2:SetText("<"..guildName.."> "..rank.."("..rankIndex..")")
+				GameTooltipTextLeft2:SetText("<" .. guildName .. "> " .. rank .. "(" .. rankIndex .. ")")
 			end
 		end
 
 		local line1 = GameTooltipTextLeft1:GetText()
-		GameTooltipTextLeft1:SetFormattedText("%s", hexColor..line1)
+		GameTooltipTextLeft1:SetFormattedText("%s", hexColor .. line1)
 
 		local alive = not UnitIsDeadOrGhost(unit)
 		local level = UnitLevel(unit)
@@ -260,19 +260,19 @@ function Module:OnTooltipSetUnit()
 			local tiptextLevel = Module.GetLevelLine(self)
 			if tiptextLevel then
 				local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
-				local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor..(UnitClass(unit) or "").."|r") or UnitCreatureType(unit) or ""
-				tiptextLevel:SetFormattedText(("%s%s %s %s"), textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC"..DEAD.."|r" or ""))
+				local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
+				tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
 			end
 		end
 
-		if UnitExists(unit.."target") then
-			local tarRicon = GetRaidTargetIndex(unit.."target")
+		if UnitExists(unit .. "target") then
+			local tarRicon = GetRaidTargetIndex(unit .. "target")
 			if tarRicon and tarRicon > 8 then
 				tarRicon = nil
 			end
 
-			local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon].."10|t") or "", Module:GetTarget(unit.."target"))
-			self:AddLine(TARGET..": "..tar)
+			local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon] .. "10|t") or "", Module:GetTarget(unit .. "target"))
+			self:AddLine(TARGET .. ": " .. tar)
 		end
 
 		if not isPlayer and isShiftKeyDown then
@@ -310,7 +310,7 @@ function Module:StatusBar_OnValueChanged(value)
 	if value > 0 and max == 1 then
 		self.text:SetFormattedText("%d%%", value * 100)
 	else
-		self.text:SetText(K.ShortValue(value).." - "..K.ShortValue(max))
+		self.text:SetText(K.ShortValue(value) .. " - " .. K.ShortValue(max))
 	end
 end
 
@@ -375,7 +375,7 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
 	else
 		if not GameTooltip_Mover then
-			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36}, 240, 120)
+			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36 }, 240, 120)
 		end
 
 		self:SetOwner(parent, "ANCHOR_NONE")
@@ -414,9 +414,9 @@ end
 local fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 fakeBg:SetBackdrop({
 	bgFile = C["Media"].Textures.BlankTexture,
-	edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border_Tooltip.tga",
+	edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. C["General"].BorderStyle.Value .. "\\Border_Tooltip.tga",
 	edgeSize = 12,
-	insets = {left = 4, right = 4, top = 4, bottom = 4}
+	insets = { left = 4, right = 4, top = 4, bottom = 4 },
 })
 
 local function __GetBackdrop()
@@ -444,6 +444,10 @@ function Module:ReskinTooltip()
 	end
 
 	if not self.isTipStyled then
+		if self.NineSlice then
+			self.NineSlice:SetAlpha(0)
+		end
+
 		if self.SetBackdrop then
 			self:SetBackdrop(nil)
 		end
@@ -486,14 +490,6 @@ function Module:ReskinTooltip()
 	end
 end
 
-function Module:SharedTooltip_SetBackdropStyle()
-	if not self.isTipStyled then
-		return
-	end
-
-	self:SetBackdrop(nil)
-end
-
 function Module:OnEnable()
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
@@ -502,7 +498,6 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
-	hooksecurefunc("GameTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements
@@ -542,7 +537,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		ShoppingTooltip1,
 		ShoppingTooltip2,
 		VoiceMacroMenu,
-		WorldMapTooltip
+		WorldMapTooltip,
 	}
 
 	for _, f in pairs(tooltips) do
@@ -553,9 +548,9 @@ Module:RegisterTooltips("KkthnxUI", function()
 
 	-- DropdownMenu
 	local function reskinDropdown()
-		for _, name in pairs({"DropDownList", "L_DropDownList", "Lib_DropDownList"}) do
+		for _, name in pairs({ "DropDownList", "L_DropDownList", "Lib_DropDownList" }) do
 			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-				local menu = _G[name..i.."MenuBackdrop"]
+				local menu = _G[name .. i .. "MenuBackdrop"]
 				if menu and not menu.isStyled then
 					menu:HookScript("OnShow", Module.ReskinTooltip)
 					menu.isStyled = true

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2,...))
+local K, C = unpack(select(2, ...))
 
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
@@ -15,10 +15,8 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added check to ignore pixel border option if we are sizing the border",
-	"Fixed chat ebitbox inset so it will not overlap character count",
-	"Fixed gold datatext throwing nil error for tooltip on bags",
-	"Fixed minimap button collection picking up questie",
+	"Fixed tooltip border",
+	"Fixed power bar being black",
 }
 
 local changelogFrame
@@ -57,7 +55,7 @@ local function changelog()
 
 	local offset = 0
 	for n, t in pairs(changelogData) do
-		K.CreateFontString(changelogFrame, 12, K.InfoColor..n..": |r"..t, "", false, "TOPLEFT", 15, -(50 + offset))
+		K.CreateFontString(changelogFrame, 12, K.InfoColor .. n .. ": |r" .. t, "", false, "TOPLEFT", 15, -(50 + offset))
 		offset = offset + 20
 	end
 	changelogFrame:SetSize(520, 60 + offset)
