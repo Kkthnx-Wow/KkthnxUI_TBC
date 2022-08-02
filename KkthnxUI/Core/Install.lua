@@ -151,14 +151,14 @@ function Module:ForceChatSettings()
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
-	local chatGroup = { "SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT", "MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT" }
+	local chatGroup = {"SAY", "EMOTE", "YELL", "GUILD", "OFFICER", "GUILD_ACHIEVEMENT", "MONSTER_SAY", "MONSTER_EMOTE", "MONSTER_YELL", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "SYSTEM", "ERRORS", "AFK", "DND", "IGNORED", "ACHIEVEMENT"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
 	-- ChatFrame3
-	chatGroup = { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }
+	chatGroup = {"WHISPER", "BN_WHISPER", "BN_CONVERSATION"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame3, v)
@@ -170,16 +170,16 @@ function Module:ForceChatSettings()
 	ChatFrame_AddChannel(ChatFrame4, GENERAL)
 	ChatFrame_AddChannel(ChatFrame4, "LookingForGroup")
 
-	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "MONEY", "SKILL" }
+	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "MONEY", "SKILL"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
 	end
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = { "SAY", "YELL", "GUILD", "OFFICER", "WHISPER", "WHISPER_INFORM", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "EMOTE", "CHANNEL1", "CHANNEL2", "CHANNEL3", "CHANNEL4", "CHANNEL5", "CHANNEL6", "CHANNEL7", "CHANNEL8", "CHANNEL9", "CHANNEL10", "CHANNEL11", "CHANNEL12", "CHANNEL13", "CHANNEL14", "CHANNEL15", "CHANNEL16", "CHANNEL17", "CHANNEL18", "CHANNEL19", "CHANNEL20" }
+	chatGroup = {"SAY", "YELL", "GUILD", "OFFICER", "WHISPER", "WHISPER_INFORM", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "EMOTE", "CHANNEL1", "CHANNEL2", "CHANNEL3", "CHANNEL4", "CHANNEL5", "CHANNEL6", "CHANNEL7", "CHANNEL8", "CHANNEL9", "CHANNEL10", "CHANNEL11", "CHANNEL12", "CHANNEL13", "CHANNEL14", "CHANNEL15", "CHANNEL16", "CHANNEL17", "CHANNEL18", "CHANNEL19", "CHANNEL20"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
-		table.insert(chatGroup, "CHANNEL" .. i)
+		table.insert(chatGroup, 'CHANNEL'..i)
 	end
 
 	for _, v in ipairs(chatGroup) do
@@ -187,9 +187,9 @@ function Module:ForceChatSettings()
 	end
 
 	-- Adjust Chat Colors
-	ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255) -- General
-	ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255) -- Trade
-	ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255) -- Local Defense
+	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
+	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
+	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 end
 
 local function ForceHekiliOptions()
@@ -331,7 +331,8 @@ local function ForceMaxDPSOptions()
 	MaxDpsOptions = {
 		["global"] = {
 			["texture"] = "Interface\\Cooldown\\star4",
-			["customRotations"] = {},
+			["customRotations"] = {
+			},
 			["disabledInfo"] = true,
 		},
 	}
@@ -371,7 +372,7 @@ local function ForceDBMOptions()
 				["HugeTimerY"] = -42,
 				["FontSize"] = 10,
 				["StartColorR"] = 1,
-				["StartColorG"] = 0.7,
+				["StartColorG"] = .7,
 				["StartColorB"] = 0,
 				["EndColorR"] = 1,
 				["EndColorG"] = 0,
@@ -412,30 +413,44 @@ local function ForceSkadaOptions()
 		["profiles"] = {
 			["Default"] = {
 				["windows"] = {
-					{ ["barheight"] = 18, ["classicons"] = false, ["barslocked"] = true, ["y"] = 28, ["x"] = -3, ["title"] = {
-						["color"] = {
-							["a"] = 0.3,
+					{	["barheight"] = 18,
+						["classicons"] = false,
+						["barslocked"] = true,
+						["y"] = 28,
+						["x"] = -3,
+						["title"] = {
+							["color"] = {
+								["a"] = 0.3,
+								["b"] = 0,
+								["g"] = 0,
+								["r"] = 0,
+							},
+							["font"] = "",
+							["borderthickness"] = 0,
+							["fontflags"] = "OUTLINE",
+							["fontsize"] = 14,
+							["texture"] = "normTex",
+						},
+						["barfontflags"] = "OUTLINE",
+						["point"] = "BOTTOMRIGHT",
+						["mode"] = "",
+						["barwidth"] = 300,
+						["barbgcolor"] = {
+							["a"] = 0,
 							["b"] = 0,
 							["g"] = 0,
 							["r"] = 0,
 						},
-						["font"] = "",
-						["borderthickness"] = 0,
-						["fontflags"] = "OUTLINE",
-						["fontsize"] = 14,
-						["texture"] = "normTex",
-					}, ["barfontflags"] = "OUTLINE", ["point"] = "BOTTOMRIGHT", ["mode"] = "", ["barwidth"] = 300, ["barbgcolor"] = {
-						["a"] = 0,
-						["b"] = 0,
-						["g"] = 0,
-						["r"] = 0,
-					}, ["barfontsize"] = 14, ["background"] = {
-						["height"] = 180,
-						["texture"] = "None",
-						["bordercolor"] = {
-							["a"] = 0,
+						["barfontsize"] = 14,
+						["background"] = {
+							["height"] = 180,
+							["texture"] = "None",
+							["bordercolor"] = {
+								["a"] = 0,
+							},
 						},
-					}, ["bartexture"] = "KKUI_Statusbar" }, -- [1]
+						["bartexture"] = "KKUI_Statusbar",
+					}, -- [1]
 				},
 				["tooltiprows"] = 10,
 				["setstokeep"] = 30,
@@ -617,11 +632,11 @@ local function YesTutor()
 	K.CreateFontString(tutor, 30, K.Title, "", true, "TOPLEFT", 10, 25)
 	local ll = CreateFrame("Frame", nil, tutor)
 	ll:SetPoint("TOP", -40, -32)
-	K.CreateGF(ll, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
+	K.CreateGF(ll, 80, 1, "Horizontal", .7, .7, .7, 0, .7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, tutor)
 	lr:SetPoint("TOP", 40, -32)
-	K.CreateGF(lr, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
+	K.CreateGF(lr, 80, 1, "Horizontal", .7, .7, .7, .7, 0)
 	lr:SetFrameStrata("HIGH")
 
 	local title = K.CreateFontString(tutor, 13, "", "", true, "TOP", 0, -10)
@@ -632,11 +647,11 @@ local function YesTutor()
 	body:SetJustifyH("LEFT")
 	body:SetWordWrap(true)
 
-	local progressBar = CreateFrame("StatusBar", nil, tutor)
+	local progressBar = CreateFrame('StatusBar', nil, tutor)
 	progressBar:SetMinMaxValues(0, 500)
 	progressBar:SetValue(0)
 	progressBar:CreateBorder()
-	progressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
+	progressBar:SetPoint('TOP', tutor, 'BOTTOM', 0, -6)
 	progressBar:SetSize(480, 22)
 	progressBar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 
@@ -673,21 +688,21 @@ local function YesTutor()
 	apply.text:SetTextColor(0, 1, 0)
 
 	local titles = {
-		DEFAULT .. " " .. SETTINGS,
+		DEFAULT.." "..SETTINGS,
 		CHAT,
 		UI_SCALE,
 		"Skins",
-		"Tips",
+		"Tips"
 	}
 
 	local function RefreshText(page)
 		title:SetText(titles[page])
-		body:SetText(L["Tutorial Page" .. page])
+		body:SetText(L["Tutorial Page"..page])
 
 		if progressBar then
-			progressBar:SetValue(page .. "00")
+			progressBar:SetValue(page.."00")
 			progressBar:SetStatusBarColor(K.r, K.g, K.b)
-			progressBar.text:SetText(page .. "/5")
+			progressBar.text:SetText(page.."/5")
 		end
 	end
 	RefreshText(1)
@@ -710,18 +725,18 @@ local function YesTutor()
 		if currentPage == 1 then
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
-			UIErrorsFrame:AddMessage(K.InfoColor .. "Default CVars Loaded.")
+			UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Loaded.")
 			PlaySound(21968)
 		elseif currentPage == 2 then
 			StopSound(21968)
 			Module:ForceChatSettings()
-			UIErrorsFrame:AddMessage(K.InfoColor .. "Chat Frame Settings Loaded")
+			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
 			C["General"].AutoScale = true
 			K.SetupUIScale()
-			UIErrorsFrame:AddMessage(K.InfoColor .. "UI Scale Loaded")
+			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 			PlaySound(21968)
 		elseif currentPage == 4 then
 			StopSound(21968)
@@ -733,7 +748,7 @@ local function YesTutor()
 			KkthnxUIDB.Variables["HekiliRequest"] = true
 			ForceAddonSkins()
 			KkthnxUIDB.Variables["ResetDetails"] = true
-			UIErrorsFrame:AddMessage(K.InfoColor .. "Relevant AddOns Settings Loaded, You need to ReloadUI.")
+			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 			PlaySound(21968)
 		elseif currentPage == 5 then
@@ -783,14 +798,14 @@ local function HelloWorld()
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
-	K.CreateGF(ll, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
+	K.CreateGF(ll, 100, 1, "Horizontal", .7, .7, .7, 0, .7)
 	ll:SetFrameStrata("HIGH")
 
 	local lr = CreateFrame("Frame", nil, welcome)
 	lr:SetPoint("TOP", 50, -35)
-	K.CreateGF(lr, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
+	K.CreateGF(lr, 100, 1, "Horizontal", .7, .7, .7, .7, 0)
 	lr:SetFrameStrata("HIGH")
-	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v" .. K.SystemColor .. K.Version .. "|r!", "", false, "TOP", 0, -50)
+	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v"..K.SystemColor..K.Version.."|r!", "", false, "TOP", 0, -50)
 	K.CreateFontString(welcome, 13, "|cff669dffKkthnxUI|r is a simplistic user interface that holds", "", false, "TOP", 0, -86)
 	K.CreateFontString(welcome, 13, "onto the information and functionality, while still keeping", "", false, "TOP", 0, -106)
 	K.CreateFontString(welcome, 13, "most of the good looks. It can be used for any class or role.", "", false, "TOP", 0, -126)
@@ -801,15 +816,15 @@ local function HelloWorld()
 	K.CreateFontString(welcome, 13, "ado. If you wish to get more involved though,", "", false, "TOP", 0, -220)
 	K.CreateFontString(welcome, 13, "have some questions you can't find answers to", "", false, "TOP", 0, -240)
 	K.CreateFontString(welcome, 13, "anywhere else or simply just wish to stop by,", "", false, "TOP", 0, -260)
-	K.CreateFontString(welcome, 13, "we have a discord server.", "", false, "TOP", 0, -280)
+	K.CreateFontString(welcome, 13, "we have both a discord server and a facebook page.", "", false, "TOP", 0, -280)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", welcome, -90, -326)
-	K.CreateGF(ll, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
+	K.CreateGF(ll, 180, 1, "Horizontal", .7, .7, .7, 0, .7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, welcome)
 	lr:SetPoint("TOP", welcome, 90, -326)
-	K.CreateGF(lr, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
+	K.CreateGF(lr, 180, 1, "Horizontal", .7, .7, .7, .7, 0)
 	lr:SetFrameStrata("HIGH")
 
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
@@ -837,7 +852,7 @@ local function HelloWorld()
 	goTutor.text:SetText(L["Install"])
 
 	goTutor.glowFrame = goTutor.glowFrame or CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
-	goTutor.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
+	goTutor.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 	goTutor.glowFrame:SetPoint("TOPLEFT", goTutor, -5, 5)
 	goTutor.glowFrame:SetPoint("BOTTOMRIGHT", goTutor, 5, -5)
 	goTutor.glowFrame:SetBackdropBorderColor(K.r, K.g, K.b)
@@ -873,7 +888,7 @@ local function HelloWorld()
 	goSteam.text = goSteam:CreateFontString(nil, "OVERLAY")
 	goSteam.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 	goSteam.text:SetPoint("CENTER")
-	goSteam.text:SetText(K.SystemColor .. "Steam Wishlist|r")
+	goSteam.text:SetText(K.SystemColor.."Steam Wishlist|r")
 
 	goSteam:SetScript("OnClick", function()
 		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://store.steampowered.com/wishlist/id/Kkthnx")
