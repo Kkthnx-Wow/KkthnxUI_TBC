@@ -109,7 +109,7 @@ end
 local function createSlot(id)
 	local iconsize = (iconSize - 4)
 
-	local frame = CreateFrame("Button", "KKUI_LootSlot"..id, lootFrame)
+	local frame = CreateFrame("Button", "KKUI_LootSlot" .. id, lootFrame)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
 	frame:SetHeight(iconsize)
@@ -154,7 +154,7 @@ local function createSlot(id)
 	drop:SetPoint("LEFT", icon, "RIGHT", 0, 0)
 	drop:SetPoint("RIGHT", frame)
 	drop:SetAllPoints(frame)
-	drop:SetAlpha(.3)
+	drop:SetAlpha(0.3)
 	frame.drop = drop
 
 	local questTexture = iconFrame:CreateTexture(nil, "OVERLAY")
@@ -192,7 +192,7 @@ end
 function Module.LOOT_OPENED(_, autoloot)
 	lootFrame:Show()
 
-	if (not lootFrame:IsShown()) then
+	if not lootFrame:IsShown() then
 		CloseLoot(not autoloot)
 	end
 
@@ -247,8 +247,10 @@ function Module.LOOT_OPENED(_, autoloot)
 
 			slot.quality = quality
 			slot.name:SetText(item)
-			slot.name:SetTextColor(color.r, color.g, color.b)
-			slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+			if color then
+				slot.name:SetTextColor(color.r, color.g, color.b)
+				slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+			end
 			slot.icon:SetTexture(textureID)
 
 			if quality then
@@ -257,10 +259,10 @@ function Module.LOOT_OPENED(_, autoloot)
 			w = max(w, slot.name:GetStringWidth())
 
 			local questTexture = slot.questTexture
-			if (questId and not isActive) then
+			if questId and not isActive then
 				questTexture:Show()
 				K.ShowButtonGlow(slot.iconFrame)
-			elseif (questId or isQuestItem) then
+			elseif questId or isQuestItem then
 				questTexture:Hide()
 				K.ShowButtonGlow(slot.iconFrame)
 			else
@@ -279,7 +281,9 @@ function Module.LOOT_OPENED(_, autoloot)
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 		slot.name:SetText("No Loot")
-		slot.name:SetTextColor(color.r, color.g, color.b)
+		if color then
+			slot.name:SetTextColor(color.r, color.g, color.b)
+		end
 		slot.icon:SetTexture()
 
 		w = max(w, slot.name:GetStringWidth())
@@ -295,7 +299,7 @@ function Module.LOOT_OPENED(_, autoloot)
 	t = t + 5
 
 	local color = ITEM_QUALITY_COLORS[m]
-	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, .8)
+	lootFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b, 0.8)
 	lootFrame:SetWidth(max(w, t))
 end
 
@@ -350,8 +354,8 @@ function Module:OnEnable()
 	K:RegisterEvent("OPEN_MASTER_LOOT_LIST", self.OPEN_MASTER_LOOT_LIST)
 	K:RegisterEvent("UPDATE_MASTER_LOOT_LIST", self.UPDATE_MASTER_LOOT_LIST)
 
-	if (GetCVar("lootUnderMouse") == "0") then
-		K.Mover(lootFrameHolder, "LootFrame", "LootFrame", {"TOPLEFT", 36, -195})
+	if GetCVar("lootUnderMouse") == "0" then
+		K.Mover(lootFrameHolder, "LootFrame", "LootFrame", { "TOPLEFT", 36, -195 })
 	end
 
 	LootFrame:UnregisterAllEvents()
