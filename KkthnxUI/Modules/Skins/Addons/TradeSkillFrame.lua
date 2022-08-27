@@ -75,7 +75,7 @@ function Module:CreateSearchWidget(parent, anchor)
 	searchBox:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -42, -20)
 	searchBox:HookScript("OnEscapePressed", removeInputText)
 	searchBox.title = L["Tips"]
-	K.AddTooltip(searchBox, "ANCHOR_TOP", L["TradeSearchTip"]..L["EditBox Tip"], "info")
+	K.AddTooltip(searchBox, "ANCHOR_TOP", L["TradeSearchTip"] .. L["EditBox Tip"], "info")
 
 	local nextButton = createArrowButton(searchBox, searchBox, "down")
 	local prevButton = createArrowButton(searchBox, nextButton, "up")
@@ -175,18 +175,18 @@ function Module:EnhancedTradeSkill()
 
 	-- Position existing buttons
 	for i = 1 + 1, TRADE_SKILLS_DISPLAYED do
-		_G["TradeSkillSkill"..i]:ClearAllPoints()
-		_G["TradeSkillSkill"..i]:SetPoint("TOPLEFT", _G["TradeSkillSkill"..(i - 1)], "BOTTOMLEFT", 0, 1)
+		_G["TradeSkillSkill" .. i]:ClearAllPoints()
+		_G["TradeSkillSkill" .. i]:SetPoint("TOPLEFT", _G["TradeSkillSkill" .. (i - 1)], "BOTTOMLEFT", 0, 1)
 	end
 
 	-- Create and position new buttons
 	_G.TRADE_SKILLS_DISPLAYED = _G.TRADE_SKILLS_DISPLAYED + 14
 	for i = oldTradeSkillsDisplayed + 1, TRADE_SKILLS_DISPLAYED do
-		local button = CreateFrame("Button", "TradeSkillSkill"..i, TradeSkillFrame, "TradeSkillSkillButtonTemplate")
+		local button = CreateFrame("Button", "TradeSkillSkill" .. i, TradeSkillFrame, "TradeSkillSkillButtonTemplate")
 		button:SetID(i)
 		button:Hide()
 		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", _G["TradeSkillSkill"..(i - 1)], "BOTTOMLEFT", 0, 1)
+		button:SetPoint("TOPLEFT", _G["TradeSkillSkill" .. (i - 1)], "BOTTOMLEFT", 0, 1)
 	end
 
 	-- Set highlight bar width when shown
@@ -217,7 +217,7 @@ function Module:EnhancedTradeSkill()
 	TradeSkillExpandTabLeft:Hide()
 
 	-- Get tradeskill frame textures
-	local regions = {TradeSkillFrame:GetRegions()}
+	local regions = { TradeSkillFrame:GetRegions() }
 
 	-- Set top left texture
 	regions[2]:SetTexture("Interface\\QUESTFRAME\\UI-QuestLogDualPane-Left")
@@ -266,7 +266,7 @@ function Module:EnhancedTradeSkill()
 		end
 
 		if not Module:GetTradeSearchResult(text, 1, GetNumTradeSkills(), 1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["InvalidName"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["InvalidName"])
 		end
 	end)
 
@@ -277,7 +277,7 @@ function Module:EnhancedTradeSkill()
 		end
 
 		if not Module:GetTradeSearchResult(text, GetTradeSkillSelectionIndex() + 1, GetNumTradeSkills(), 1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["NoMatchReult"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["NoMatchReult"])
 		end
 	end)
 
@@ -288,7 +288,7 @@ function Module:EnhancedTradeSkill()
 		end
 
 		if not Module:GetTradeSearchResult(text, GetTradeSkillSelectionIndex() - 1, 1, -1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["NoMatchReult"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["NoMatchReult"])
 		end
 	end)
 end
@@ -317,22 +317,22 @@ function Module:EnhancedCraft()
 	Craft1Cost:ClearAllPoints()
 	Craft1Cost:SetPoint("RIGHT", Craft1, "RIGHT", -30, 0)
 	for i = 1 + 1, CRAFTS_DISPLAYED do
-		_G["Craft"..i]:ClearAllPoints()
-		_G["Craft"..i]:SetPoint("TOPLEFT", _G["Craft"..(i - 1)], "BOTTOMLEFT", 0, 1)
-		_G["Craft"..i.."Cost"]:ClearAllPoints()
-		_G["Craft"..i.."Cost"]:SetPoint("RIGHT", _G["Craft"..i], "RIGHT", -30, 0)
+		_G["Craft" .. i]:ClearAllPoints()
+		_G["Craft" .. i]:SetPoint("TOPLEFT", _G["Craft" .. (i - 1)], "BOTTOMLEFT", 0, 1)
+		_G["Craft" .. i .. "Cost"]:ClearAllPoints()
+		_G["Craft" .. i .. "Cost"]:SetPoint("RIGHT", _G["Craft" .. i], "RIGHT", -30, 0)
 	end
 
 	-- Create and position new buttons
 	_G.CRAFTS_DISPLAYED = _G.CRAFTS_DISPLAYED + 14
 	for i = oldCraftsDisplayed + 1, CRAFTS_DISPLAYED do
-		local button = CreateFrame("Button", "Craft"..i, CraftFrame, "CraftButtonTemplate")
+		local button = CreateFrame("Button", "Craft" .. i, CraftFrame, "CraftButtonTemplate")
 		button:SetID(i)
 		button:Hide()
 		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", _G["Craft"..(i-1)], "BOTTOMLEFT", 0, 1)
-		_G["Craft"..i.."Cost"]:ClearAllPoints()
-		_G["Craft"..i.."Cost"]:SetPoint("RIGHT", _G["Craft"..i], "RIGHT", -30, 0)
+		button:SetPoint("TOPLEFT", _G["Craft" .. (i - 1)], "BOTTOMLEFT", 0, 1)
+		_G["Craft" .. i .. "Cost"]:ClearAllPoints()
+		_G["Craft" .. i .. "Cost"]:SetPoint("RIGHT", _G["Craft" .. i], "RIGHT", -30, 0)
 	end
 
 	-- Move craft frame points (such as Beast Training)
@@ -370,7 +370,7 @@ function Module:EnhancedCraft()
 	CraftExpandTabLeft:Hide()
 
 	-- Get craft frame textures
-	local regions = {CraftFrame:GetRegions()}
+	local regions = { CraftFrame:GetRegions() }
 
 	-- Set top left texture
 	regions[2]:SetTexture("Interface\\QUESTFRAME\\UI-QuestLogDualPane-Left")
@@ -412,7 +412,7 @@ function Module:EnhancedCraft()
 		end
 
 		if not Module:GetCraftSearchResult(text, 1, GetNumCrafts(), 1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["InvalidName"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["InvalidName"])
 		end
 	end)
 
@@ -423,7 +423,7 @@ function Module:EnhancedCraft()
 		end
 
 		if not Module:GetCraftSearchResult(text, GetCraftSelectionIndex() + 1, GetNumCrafts(), 1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["NoMatchReult"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["NoMatchReult"])
 		end
 	end)
 
@@ -434,7 +434,7 @@ function Module:EnhancedCraft()
 		end
 
 		if not Module:GetCraftSearchResult(text, GetCraftSelectionIndex() - 1, 1, -1) then
-			UIErrorsFrame:AddMessage(K.InfoColor..L["NoMatchReult"])
+			UIErrorsFrame:AddMessage(K.InfoColor .. L["NoMatchReult"])
 		end
 	end)
 end
